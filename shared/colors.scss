@@ -1,9 +1,11 @@
-@mixin -color($name, $light, $dark: $light) {
+@mixin -color($name, $light, $dark: null) {
 	:root {
 		--#{$name}: #{$light};
 
-		@media (prefers-color-scheme: dark) {
-			--#{$name}: #{$dark};
+		@if ($dark) {
+			@media (prefers-color-scheme: dark) {
+				--#{$name}: #{$dark};
+			}
 		}
 	}
 }
