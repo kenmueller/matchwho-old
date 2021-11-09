@@ -9,7 +9,7 @@
 <slot />
 
 <style lang="scss" global>
-	@use 'shared/colors' as *;
+	@use 'shared/colors';
 
 	*,
 	::before,
@@ -17,8 +17,9 @@
 		box-sizing: border-box;
 		margin: 0;
 		padding: 0;
-		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-			Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+		font-family: inherit;
+		font-size: inherit;
+		font-weight: inherit;
 		border: none;
 		outline: none;
 	}
@@ -30,6 +31,16 @@
 
 	body {
 		overscroll-behavior: none;
-		background: var(--background);
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+			Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+		background: colors.$background;
+	}
+
+	button {
+		cursor: pointer;
+
+		&:disabled {
+			cursor: default;
+		}
 	}
 </style>
