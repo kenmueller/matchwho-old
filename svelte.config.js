@@ -26,7 +26,12 @@ const config = {
 			template: 'lib/index.html'
 		},
 		vite: {
-			plugins: [app]
+			plugins: [app],
+			server: {
+				fs: {
+					allow: ['.']
+				}
+			}
 		}
 	}
 }
