@@ -5,24 +5,36 @@
 	import handleError from '../lib/error/handle'
 	import Navbar from '../components/Navbar.svelte'
 
+	let isCreating = false
+	let isJoining = false
+
 	let code = ''
 	$: code = code.toLowerCase()
 
 	const create = async () => {
 		try {
+			isCreating = true
+
 			const response = await fetch('/games', { method: 'POST' })
 			if (!response.ok) throw new Error(await response.text())
 
 			await goto(`/${await response.text()}`)
 		} catch (error) {
+			isCreating = false
 			handleError(error)
 		}
 	}
 
 	const join = async () => {
 		try {
+			isJoining = true
+
+			const response = await fetch(`/games/${code}`)
+			if (!response.ok) throw new Error(await response.text())
+
 			await goto(`/${code}`)
 		} catch (error) {
+			isJoining = false
 			handleError(error)
 		}
 	}
@@ -35,7 +47,9 @@
 <div class="root">
 	<Navbar />
 	<main>
-		<button class="create" on:click={create}>Create Game</button>
+		<button class="create" disabled={isCreating} on:click={create}>
+			Create Game
+		</button>
 		<hr />
 		<form on:submit|preventDefault={join}>
 			<input
@@ -43,9 +57,9 @@
 				bind:value={code}
 				maxlength={CODE_LENGTH}
 			/>
-			<button class="join" disabled={code.length < CODE_LENGTH}
-				>Join Game</button
-			>
+			<button class="join" disabled={isJoining || code.length < CODE_LENGTH}>
+				Join Game
+			</button>
 		</form>
 	</main>
 </div>
@@ -66,9 +80,8 @@
 		align-items: center;
 	}
 
-	.create {
-		padding: 1rem 1.4rem;
-		font-size: 1.5rem;
+	.create,
+	.join {
 		font-weight: 700;
 		color: colors.$yellow;
 		background: transparentize(colors.$yellow, 0.6);
@@ -76,10 +89,15 @@
 		border-radius: 1rem;
 		transition: background 0.15s, border-color 0.15s;
 
-		&:hover {
+		&:not(:disabled):hover {
 			background: transparent;
 			border-color: colors.$yellow;
 		}
+	}
+
+	.create {
+		padding: 1rem 1.4rem;
+		font-size: 1.5rem;
 	}
 
 	hr {
@@ -118,20 +136,5 @@
 		margin-top: 0.8rem;
 		padding: 0.4rem 0.8rem;
 		font-size: 1.1rem;
-		font-weight: 700;
-		color: colors.$yellow;
-		background: transparentize(colors.$yellow, 0.6);
-		border: 0.125rem solid transparent;
-		border-radius: 0.8rem;
-		transition: background 0.15s, border-color 0.15s, opacity 0.15s;
-
-		&:not(:disabled):hover {
-			background: transparent;
-			border-color: colors.$yellow;
-		}
-
-		&:disabled {
-			opacity: 0.5;
-		}
 	}
 </style>
