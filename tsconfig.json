@@ -8,12 +8,9 @@
 		"isolatedModules": true,
 		"resolveJsonModule": true,
 		"strict": true,
-		"sourceMap": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
-		"allowJs": true,
-		"checkJs": true,
 		"typeRoots": ["node_modules/@types", "@types"]
 	},
 	"include": ["**/*.d.ts", "**/*.ts", "**/*.svelte"],

@@ -1,12 +1,16 @@
 {
 	"compilerOptions": {
+		"moduleResolution": "node",
 		"module": "es2020",
 		"target": "es2019",
 		"outDir": "server-build",
+		"importsNotUsedAsValues": "error",
+		"isolatedModules": true,
+		"resolveJsonModule": true,
 		"strict": true,
 		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
 		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
 		"incremental": true,
 		"typeRoots": ["node_modules/@types", "server/@types"]
 	},

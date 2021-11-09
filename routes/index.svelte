@@ -1,17 +1,30 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
 
+	import CODE_LENGTH from '../lib/game/code'
+	import handleError from '../lib/error/handle'
 	import Navbar from '../components/Navbar.svelte'
-
-	const length = 6
 
 	let code = ''
 	$: code = code.toLowerCase()
 
-	const create = () => {}
+	const create = async () => {
+		try {
+			const response = await fetch('/games', { method: 'POST' })
+			if (!response.ok) throw new Error(await response.text())
 
-	const join = () => {
-		goto(`/${code}`)
+			await goto(`/${await response.text()}`)
+		} catch (error) {
+			handleError(error)
+		}
+	}
+
+	const join = async () => {
+		try {
+			await goto(`/${code}`)
+		} catch (error) {
+			handleError(error)
+		}
 	}
 </script>
 
@@ -25,8 +38,14 @@
 		<button class="create" on:click={create}>Create Game</button>
 		<hr />
 		<form on:submit|preventDefault={join}>
-			<input placeholder="Game Code" bind:value={code} maxlength={length} />
-			<button class="join" disabled={code.length < length}>Join Game</button>
+			<input
+				placeholder="Game Code"
+				bind:value={code}
+				maxlength={CODE_LENGTH}
+			/>
+			<button class="join" disabled={code.length < CODE_LENGTH}
+				>Join Game</button
+			>
 		</form>
 	</main>
 </div>
