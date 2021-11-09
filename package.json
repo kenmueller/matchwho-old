@@ -1,0 +1,32 @@
+{
+	"name": "matchwho",
+	"version": "1.0.0",
+	"type": "module",
+	"scripts": {
+		"lint": "eslint .",
+		"format": "prettier --write .",
+		"dev": "npm run server:build && svelte-kit dev",
+		"build": "npm run server:build && svelte-kit build",
+		"server:build": "tsc -p tsconfig.server.json",
+		"start": "node server-build"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-node": "next",
+		"@sveltejs/kit": "next",
+		"@types/express": "^4.17.13",
+		"@typescript-eslint/eslint-plugin": "^5.3.1",
+		"@typescript-eslint/parser": "^5.3.1",
+		"eslint": "^8.2.0",
+		"eslint-config-prettier": "^8.3.0",
+		"eslint-plugin-svelte3": "^3.2.1",
+		"express": "^4.17.1",
+		"prettier": "^2.4.1",
+		"prettier-plugin-svelte": "^2.4.0",
+		"sass": "^1.43.4",
+		"svelte": "^3.44.1",
+		"svelte-preprocess": "^4.9.8",
+		"tslib": "^2.3.1",
+		"typescript": "^4.4.4"
+	},
+	"private": true
+}
