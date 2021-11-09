@@ -5,6 +5,9 @@
 	import handleError from '../lib/error/handle'
 	import Navbar from '../components/Navbar.svelte'
 
+	let input: HTMLInputElement | null = null
+	$: input?.focus()
+
 	let isCreating = false
 	let isJoining = false
 
@@ -47,17 +50,22 @@
 <div class="root">
 	<Navbar />
 	<main>
-		<button class="create" disabled={isCreating} on:click={create}>
+		<button class="create" aria-busy={isCreating} on:click={create}>
 			Create Game
 		</button>
 		<hr />
 		<form on:submit|preventDefault={join}>
 			<input
 				placeholder="Game Code"
-				bind:value={code}
 				maxlength={CODE_LENGTH}
+				bind:this={input}
+				bind:value={code}
 			/>
-			<button class="join" disabled={isJoining || code.length < CODE_LENGTH}>
+			<button
+				class="join"
+				aria-busy={isJoining}
+				disabled={code.length < CODE_LENGTH}
+			>
 				Join Game
 			</button>
 		</form>
@@ -87,11 +95,19 @@
 		background: transparentize(colors.$yellow, 0.6);
 		border: 0.125rem solid transparent;
 		border-radius: 1rem;
-		transition: background 0.15s, border-color 0.15s;
+		transition: background 0.15s, border-color 0.15s, opacity 0.15s;
 
-		&:not(:disabled):hover {
+		&[aria-busy='false']:not(:disabled):hover {
 			background: transparent;
 			border-color: colors.$yellow;
+		}
+
+		&[aria-busy='true'] {
+			cursor: default;
+		}
+
+		&:disabled {
+			opacity: 0.5;
 		}
 	}
 
