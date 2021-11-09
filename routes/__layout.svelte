@@ -1,3 +1,11 @@
+<script lang="ts">
+	import icon from '../shared/icon.svg'
+</script>
+
+<svelte:head>
+	<link rel="icon" href={icon} />
+</svelte:head>
+
 <slot />
 
 <style lang="scss" global>

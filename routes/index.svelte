@@ -1,5 +1,5 @@
 <svelte:head>
-	<title>Hello, world!</title>
+	<title>Match Who</title>
 </svelte:head>
 
 <main>
