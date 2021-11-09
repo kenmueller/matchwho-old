@@ -9,6 +9,8 @@
 <slot />
 
 <style lang="scss" global>
+	@use 'shared/colors' as *;
+
 	*,
 	::before,
 	::after {
@@ -24,5 +26,10 @@
 	html,
 	body {
 		height: 100%;
+	}
+
+	body {
+		overscroll-behavior: none;
+		background: var(--background);
 	}
 </style>

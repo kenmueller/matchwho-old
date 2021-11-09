@@ -1,0 +1,17 @@
+@mixin -color($name, $light, $dark: $light) {
+	:root {
+		--#{$name}: #{$light};
+
+		@media (prefers-color-scheme: dark) {
+			--#{$name}: #{$dark};
+		}
+	}
+}
+
+@include -color('yellow', #fce49c);
+
+@include -color('text', #1c1c1e, #f9f9f9);
+@include -color('background', #f9f9f9, #1c1c1e);
+@include -color('border', #c4c4c4, #3a3a3c);
+
+@include -color('overlay', #f0f0f0, #262628);

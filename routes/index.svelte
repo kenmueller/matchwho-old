@@ -1,18 +1,9 @@
+<script lang="ts">
+	import Navbar from '../components/Navbar.svelte'
+</script>
+
 <svelte:head>
 	<title>Match Who</title>
 </svelte:head>
 
-<main>
-	<h1>Hello, world!</h1>
-</main>
-
-<style lang="scss">
-	main {
-		display: flex;
-		height: 100%;
-	}
-
-	h1 {
-		margin: auto;
-	}
-</style>
+<Navbar />
