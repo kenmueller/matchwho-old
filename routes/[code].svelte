@@ -49,37 +49,24 @@
 
 	let game: Game | null = null
 
-	// $: socket?.addEventListener('message', ({ data }) => {
-	// 	try {
-	// 		const { key, value }: IncomingGameData = JSON.parse(data)
+	$: socket?.addEventListener('message', ({ data }) => {
+		try {
+			const { key, value }: IncomingGameData = JSON.parse(data)
 
-	// 		switch (key) {
-	// 			case 'game':
-	// 				game = value
-	// 				break
-	// 		}
-	// 	} catch (error) {
-	// 		handleError(error)
-	// 	}
-	// })
+			switch (key) {
+				case 'game':
+					game = value
+					break
+			}
+		} catch (error) {
+			handleError(error)
+		}
+	})
 
 	const join = () => {
 		socket = new WebSocket(
 			`${SOCKET_ORIGIN}/games/${code}?name=${encodeURIComponent(name)}`
 		)
-		socket?.addEventListener('message', ({ data }) => {
-			try {
-				const { key, value }: IncomingGameData = JSON.parse(data)
-
-				switch (key) {
-					case 'game':
-						game = value
-						break
-				}
-			} catch (error) {
-				handleError(error)
-			}
-		})
 	}
 
 	onDestroy(() => socket?.close())
@@ -88,7 +75,7 @@
 <svelte:head>
 	<meta name="description" content="Match Who" />
 	<title>
-		{socket ? 'Game in Progress' : `Join ${leader ?? 'Game'}`} | Match Who
+		Join {leader ?? 'Game'} | Match Who
 	</title>
 </svelte:head>
 
@@ -99,7 +86,9 @@
 		<Navbar />
 		<form on:submit|preventDefault={join}>
 			<input placeholder="Name" bind:this={input} bind:value={name} />
-			<button class="join" disabled={!name}>Join Game</button>
+			<button aria-busy={socket !== null && !game} disabled={!name}>
+				Join Game
+			</button>
 		</form>
 	</div>
 {/if}
@@ -135,7 +124,7 @@
 		}
 	}
 
-	.join {
+	button {
 		margin-top: 0.8rem;
 		padding: 0.4rem 0.8rem;
 		font-size: 1.1rem;
@@ -146,9 +135,13 @@
 		border-radius: 1rem;
 		transition: background 0.15s, border-color 0.15s, opacity 0.15s;
 
-		&:not(:disabled):hover {
+		&[aria-busy='false']:not(:disabled):hover {
 			background: transparent;
 			border-color: colors.$yellow;
+		}
+
+		&[aria-busy='true'] {
+			cursor: default;
 		}
 
 		&:disabled {

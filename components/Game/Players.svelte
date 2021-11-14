@@ -15,14 +15,16 @@
 <style lang="scss">
 	@use 'shared/colors';
 
-	$spacing: 0.8rem;
+	aside {
+		grid-area: players;
+	}
 
-	div {
-		& + & {
-			margin-top: $spacing;
-			padding-top: $spacing;
-			border-top: 0.125rem solid colors.$border;
-		}
+	div + div {
+		$spacing: 0.8rem;
+
+		margin-top: $spacing;
+		padding-top: $spacing;
+		border-top: 0.125rem solid colors.$border;
 	}
 
 	p {

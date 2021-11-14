@@ -44,7 +44,6 @@
 </script>
 
 <svelte:head>
-	<meta name="description" content="Match Who" />
 	<title>Match Who</title>
 </svelte:head>
 
