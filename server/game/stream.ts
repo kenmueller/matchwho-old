@@ -17,7 +17,11 @@ socket('/games/:code', (socket, req) => {
 		if (!game) throw new HttpsError(1003, 'This game does not exist')
 		if (!name) throw new HttpsError(1003, 'You must enter a name')
 
-		game.join(socket, name)
+		const player = game.join(socket, name)
+
+		socket.on('close', () => {
+			game.leave(player)
+		})
 	} catch (error) {
 		closeWithError(socket, error)
 	}

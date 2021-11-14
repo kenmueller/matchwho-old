@@ -1,3 +1,3 @@
 export default interface GameMeta {
-	leader: string | null
+	readonly leader: string | null
 }
