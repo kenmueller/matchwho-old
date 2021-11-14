@@ -17,7 +17,7 @@ router.get('/games/:code', (req, res) => {
 		const game = Game.withCode(code)
 		if (!game) throw new HttpsError(404, 'This game does not exist')
 
-		res.send({ leader: game.leader })
+		res.send(game.meta)
 	} catch (error) {
 		sendError(res, error)
 	}

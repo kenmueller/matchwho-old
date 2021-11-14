@@ -23,8 +23,16 @@ export default class Game {
 			? Game.games[code]
 			: null
 
+	get meta(): GameMeta {
+		return { leader: this.leader }
+	}
+
 	readonly join = (socket: WebSocket, name: string) => {
 		if (!this.players.size) this.leader = name
 		this.players.set(socket, { socket, name })
 	}
+}
+
+export interface GameMeta {
+	leader: string | null
 }

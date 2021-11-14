@@ -1,15 +1,24 @@
 <script lang="ts" context="module">
-	export const load: Load = async ({ page, fetch }) => {
+	export const load: Load = async ({ page, session, fetch }) => {
 		const { code } = page.params
 
-		const response = await fetch(`/games/${code}`)
-		if (!response.ok) return { status: 307, redirect: '/' }
+		if (browser) {
+			const response = await fetch(`${ORIGIN}/games/${code}`)
+			if (!response.ok) return { status: 307, redirect: '/' }
+
+			return {
+				props: {
+					code,
+					leader: (await response.json()).leader
+				}
+			}
+		}
+
+		const { gameMeta } = session as Session
+		if (!gameMeta) return { status: 307, redirect: '/' }
 
 		return {
-			props: {
-				code,
-				leader: (await response.json()).leader
-			}
+			props: { code, leader: gameMeta.leader }
 		}
 	}
 </script>
@@ -18,10 +27,12 @@
 	import type { Load } from '@sveltejs/kit'
 	import { onDestroy } from 'svelte'
 
+	import { browser } from '$app/env'
+
 	import ORIGIN from '../lib/origin'
 	import SOCKET_ORIGIN from '../lib/origin/socket'
+	import type Session from '../lib/session'
 	import Navbar from '../components/Navbar.svelte'
-	import { browser } from '$app/env'
 
 	export let code: string
 	export let leader: string | null

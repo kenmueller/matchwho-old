@@ -20,7 +20,7 @@ const config = {
 		adapter: adapter(),
 		files: {
 			assets: 'public',
-			hooks: 'hooks',
+			hooks: 'lib/hooks',
 			lib: 'lib',
 			routes: 'routes',
 			serviceWorker: 'lib/service-worker',
