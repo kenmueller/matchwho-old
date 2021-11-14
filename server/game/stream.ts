@@ -3,6 +3,7 @@ import HttpsError from '../error/https.js'
 import closeWithError from '../error/close.js'
 import CODE_LENGTH from './code.js'
 import Game from './index.js'
+import type IncomingGameData from './data/incoming.js'
 
 socket('/games/:code', (socket, req) => {
 	try {
@@ -18,6 +19,21 @@ socket('/games/:code', (socket, req) => {
 		if (!name) throw new HttpsError(1003, 'You must enter a name')
 
 		const player = game.join(socket, name)
+
+		socket.on('message', (data, isBinary) => {
+			try {
+				const message: IncomingGameData | null = JSON.parse(
+					data.toString(isBinary ? 'binary' : 'utf8')
+				)
+
+				if (typeof message?.key !== 'string')
+					throw new HttpsError(1003, 'Invalid data')
+
+				game.onMessage(player, message)
+			} catch (error) {
+				closeWithError(socket, error)
+			}
+		})
 
 		socket.on('close', () => {
 			game.leave(player)

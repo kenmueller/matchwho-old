@@ -3,7 +3,9 @@ import { nanoid } from 'nanoid'
 
 import CODE_LENGTH from './code.js'
 import ID_LENGTH from './id.js'
+import HttpsError from '../error/https.js'
 import Player, { dataFromPlayer } from './player.js'
+import type IncomingGameData from './data/incoming.js'
 import type OutgoingGameData from './data/outgoing.js'
 import type GameState from './state.js'
 
@@ -57,6 +59,22 @@ export default class Game {
 		}
 
 		this.sendGame()
+	}
+
+	readonly onMessage = (player: Player, message: IncomingGameData) => {
+		switch (message.key) {
+			case 'start':
+				if (this.state !== 'joining')
+					throw new HttpsError(1003, 'The game has already started')
+
+				if (!player.leader)
+					throw new HttpsError(1003, 'You must be the leader to start the game')
+
+				this.state = 'started'
+				this.sendGame()
+
+				break
+		}
 	}
 
 	private readonly sendGame = () => {
