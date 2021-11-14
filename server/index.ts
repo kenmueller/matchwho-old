@@ -1,3 +1,5 @@
+import { server } from './root.js'
+
 import PORT from './port.js'
 import app from './app.js'
 
@@ -15,6 +17,4 @@ app.use(assetsMiddleware)
 app.use(prerenderedMiddleware)
 app.use(kitMiddleware)
 
-app.listen(PORT, () => {
-	console.log(`Listening on port ${PORT}`)
-})
+server.listen(PORT)
