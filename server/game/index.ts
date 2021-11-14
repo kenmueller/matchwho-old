@@ -1,11 +1,16 @@
+import type WebSocket from 'ws'
 import { nanoid } from 'nanoid'
 
 import CODE_LENGTH from './code.js'
+import type Player from './player.js'
 
 export default class Game {
 	private static readonly games: Record<string, Game> = {}
 
 	readonly code = nanoid(CODE_LENGTH).toLowerCase()
+	readonly players = new Map<WebSocket, Player>()
+
+	leader: string | null = null
 
 	constructor() {
 		Game.games[this.code] = this
@@ -17,4 +22,9 @@ export default class Game {
 		Object.prototype.hasOwnProperty.call(Game.games, code)
 			? Game.games[code]
 			: null
+
+	readonly join = (socket: WebSocket, name: string) => {
+		if (!this.players.size) this.leader = name
+		this.players.set(socket, { socket, name })
+	}
 }

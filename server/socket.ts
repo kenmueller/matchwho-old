@@ -1,4 +1,4 @@
-import { WebSocket, WebSocketServer } from 'ws'
+import WebSocket, { WebSocketServer } from 'ws'
 import type { IncomingMessage } from 'http'
 import type { Socket } from 'net'
 import Pattern from 'url-pattern'
@@ -9,6 +9,7 @@ import ORIGIN from './origin.js'
 
 export interface SocketRequest extends IncomingMessage {
 	params: Record<string, string>
+	query: URLSearchParams
 }
 
 export type SocketListener = (socket: WebSocket, req: SocketRequest) => void
@@ -23,14 +24,15 @@ const socket = (path: string, listener: SocketListener) => {
 }
 
 server.on('upgrade', async (req: SocketRequest, socket: Socket, head) => {
-	const { pathname } = new URL(req.url ?? '', ORIGIN)
+	const { pathname, searchParams } = new URL(req.url ?? '', ORIGIN)
 	if (DEV && pathname === '/') return
 
 	for (const [pattern, socketServer] of socketServers) {
 		const params: Record<string, string> | null = pattern.match(pathname)
-
 		if (!params) continue
+
 		req.params = params
+		req.query = searchParams
 
 		const client = await new Promise<WebSocket>(resolve => {
 			socketServer.handleUpgrade(req, socket, head, resolve)

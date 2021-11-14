@@ -1,4 +1,4 @@
-import type { WebSocket } from 'ws'
+import type WebSocket from 'ws'
 
 import HttpsError from './https.js'
 

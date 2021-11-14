@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import CODE_LENGTH from './code.js'
 
 import HttpsError from '../error/https.js'
 import sendError from '../error/send.js'
+import CODE_LENGTH from './code.js'
 import Game from './index.js'
 
 const router = Router()
@@ -14,10 +14,10 @@ router.get('/games/:code', (req, res) => {
 		if (!Game.validCode(code))
 			throw new HttpsError(400, `Game codes must be ${CODE_LENGTH} characters`)
 
-		if (!Game.withCode(code))
-			throw new HttpsError(404, 'This game does not exist')
+		const game = Game.withCode(code)
+		if (!game) throw new HttpsError(404, 'This game does not exist')
 
-		res.send()
+		res.send({ leader: game.leader })
 	} catch (error) {
 		sendError(res, error)
 	}
