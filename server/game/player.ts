@@ -4,7 +4,7 @@ export default interface Player {
 	readonly socket: WebSocket
 	readonly id: string
 	readonly name: string
-	readonly leader: boolean
+	leader: boolean
 }
 
 export type PlayerData = Omit<Player, 'socket'>

@@ -14,7 +14,7 @@
 			}
 		}
 
-		const { gameMeta } = session as Session
+		const { gameMeta }: Session = session
 		if (!gameMeta) return { status: 307, redirect: '/' }
 
 		return {
@@ -32,7 +32,11 @@
 	import ORIGIN from '../lib/origin'
 	import SOCKET_ORIGIN from '../lib/origin/socket'
 	import type Session from '../lib/session'
+	import type Game from '../lib/game'
+	import type IncomingGameData from '../lib/game/data/incoming'
+	import handleError from '../lib/error/handle'
 	import Navbar from '../components/Navbar.svelte'
+	import GameView from '../components/Game/View.svelte'
 
 	export let code: string
 	export let leader: string | null
@@ -43,10 +47,39 @@
 	let socket: WebSocket | null = null
 	let name = ''
 
+	let game: Game | null = null
+
+	// $: socket?.addEventListener('message', ({ data }) => {
+	// 	try {
+	// 		const { key, value }: IncomingGameData = JSON.parse(data)
+
+	// 		switch (key) {
+	// 			case 'game':
+	// 				game = value
+	// 				break
+	// 		}
+	// 	} catch (error) {
+	// 		handleError(error)
+	// 	}
+	// })
+
 	const join = () => {
 		socket = new WebSocket(
 			`${SOCKET_ORIGIN}/games/${code}?name=${encodeURIComponent(name)}`
 		)
+		socket?.addEventListener('message', ({ data }) => {
+			try {
+				const { key, value }: IncomingGameData = JSON.parse(data)
+
+				switch (key) {
+					case 'game':
+						game = value
+						break
+				}
+			} catch (error) {
+				handleError(error)
+			}
+		})
 	}
 
 	onDestroy(() => socket?.close())
@@ -59,8 +92,8 @@
 	</title>
 </svelte:head>
 
-{#if socket}
-	Game in Progress
+{#if socket && game}
+	<GameView {socket} {game} />
 {:else}
 	<div class="root">
 		<Navbar />

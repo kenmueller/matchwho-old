@@ -1,9 +1,9 @@
 import type { PlayerData } from '../player.js'
 import type GameState from '../state.js'
 
-type OutgoingGameData = { key: 'players'; value: PlayersValue }
+type OutgoingGameData = { key: 'game'; value: GameValue }
 
-export interface PlayersValue {
+export interface GameValue {
 	state: GameState
 	current: PlayerData
 	players: PlayerData[]
