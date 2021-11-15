@@ -1,6 +1,6 @@
 import type { Response } from 'express'
 
-import HttpsError from './https.js'
+import HttpsError from '../../shared/error/https.js'
 
 const sendError = (res: Response, error: unknown) => {
 	try {

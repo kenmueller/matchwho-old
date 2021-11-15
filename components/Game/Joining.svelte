@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type Game from '../../lib/game'
-	import type OutgoingGameData from '../../lib/game/data/outgoing'
-	import { MIN_PLAYERS } from '../../lib/game/players/bounds'
+	import type Game from '../../shared/game/index.js'
+	import type ClientGameData from '../../shared/game/data/client.js'
+	import { MIN_PLAYERS } from '../../shared/game/player/bounds.js'
 
 	export let socket: WebSocket
 	export let game: Game
@@ -11,7 +11,7 @@
 	const start = () => {
 		started = true
 
-		const data: OutgoingGameData = { key: 'start' }
+		const data: ClientGameData = { key: 'start' }
 		socket.send(JSON.stringify(data))
 	}
 </script>

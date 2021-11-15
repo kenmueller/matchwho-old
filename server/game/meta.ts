@@ -1,8 +1,8 @@
 import { Router } from 'express'
 
-import HttpsError from '../error/https.js'
+import HttpsError from '../../shared/error/https.js'
 import sendError from '../error/send.js'
-import CODE_LENGTH from './code.js'
+import CODE_LENGTH from '../../shared/game/code.js'
 import Game from './index.js'
 
 const router = Router()

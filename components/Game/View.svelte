@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type Game from '../../lib/game'
-	import { MAX_PLAYERS } from '../../lib/game/players/bounds'
+	import type Game from '../../shared/game/index.js'
+	import { MAX_PLAYERS } from '../../shared/game/player/bounds.js'
 	import Players from './Players.svelte'
 	import Joining from './Joining.svelte'
 	import Started from './Started.svelte'

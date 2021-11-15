@@ -1,4 +1,4 @@
-import type GameState from './state'
+import type GameState from './state.js'
 
 export default interface GameMeta {
 	readonly state: GameState

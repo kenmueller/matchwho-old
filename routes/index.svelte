@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation'
 
-	import CODE_LENGTH from '../lib/game/code'
-	import handleError from '../lib/error/handle'
+	import CODE_LENGTH from '../shared/game/code.js'
+	import handleError from '../lib/error/handle.js'
 	import Navbar from '../components/Navbar.svelte'
 
 	let input: HTMLInputElement | null = null

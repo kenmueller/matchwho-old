@@ -1,4 +1,4 @@
-import ORIGIN from '.'
+import ORIGIN from './index.js'
 
 const SOCKET_ORIGIN = ORIGIN.replace(/^http/, 'ws')
 

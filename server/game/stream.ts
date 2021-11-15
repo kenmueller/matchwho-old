@@ -1,9 +1,9 @@
 import socket from '../socket.js'
-import HttpsError from '../error/https.js'
+import HttpsError from '../../shared/error/https.js'
 import closeWithError from '../error/close.js'
-import CODE_LENGTH from './code.js'
+import CODE_LENGTH from '../../shared/game/code.js'
 import Game from './index.js'
-import type IncomingGameData from './data/incoming.js'
+import type ClientGameData from '../../shared/game/data/client.js'
 
 socket('/games/:code', (socket, req) => {
 	try {
@@ -29,7 +29,7 @@ socket('/games/:code', (socket, req) => {
 						'You cannot interact with the game while spectating'
 					)
 
-				const message: IncomingGameData | null = JSON.parse(
+				const message: ClientGameData | null = JSON.parse(
 					data.toString(isBinary ? 'binary' : 'utf8')
 				)
 

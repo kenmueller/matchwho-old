@@ -1,6 +1,6 @@
 import type WebSocket from 'ws'
 
-import HttpsError from './https.js'
+import HttpsError from '../../shared/error/https.js'
 
 const closeWithError = (socket: WebSocket, error: unknown) => {
 	try {

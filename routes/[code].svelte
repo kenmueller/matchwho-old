@@ -26,13 +26,13 @@
 
 	import { browser } from '$app/env'
 
-	import ORIGIN from '../lib/origin'
-	import SOCKET_ORIGIN from '../lib/origin/socket'
-	import type Session from '../lib/session'
-	import type Game from '../lib/game'
-	import type GameMeta from '../lib/game/meta'
-	import type IncomingGameData from '../lib/game/data/incoming'
-	import handleError from '../lib/error/handle'
+	import ORIGIN from '../lib/origin/index.js'
+	import SOCKET_ORIGIN from '../lib/origin/socket.js'
+	import type Session from '../lib/session.js'
+	import type Game from '../shared/game/index.js'
+	import type GameMeta from '../shared/game/meta.js'
+	import type ServerGameData from '../shared/game/data/server.js'
+	import handleError from '../lib/error/handle.js'
 	import Navbar from '../components/Navbar.svelte'
 	import GameView from '../components/Game/View.svelte'
 
@@ -51,7 +51,7 @@
 
 	$: socket?.addEventListener('message', ({ data }) => {
 		try {
-			const { key, value }: IncomingGameData = JSON.parse(data)
+			const { key, value }: ServerGameData = JSON.parse(data)
 
 			switch (key) {
 				case 'game':

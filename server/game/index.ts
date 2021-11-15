@@ -1,14 +1,14 @@
 import type WebSocket from 'ws'
 import { nanoid } from 'nanoid'
 
-import CODE_LENGTH from './code.js'
-import ID_LENGTH from './id.js'
-import ROUNDS from './rounds.js'
-import HttpsError from '../error/https.js'
+import CODE_LENGTH from '../../shared/game/code.js'
+import ID_LENGTH from '../../shared/game/id.js'
+import ROUNDS from '../../shared/game/rounds.js'
+import HttpsError from '../../shared/error/https.js'
 import Player, { dataFromPlayer } from './player.js'
-import type IncomingGameData from './data/incoming.js'
-import type OutgoingGameData from './data/outgoing.js'
-import type GameState from './state.js'
+import type ServerGameData from '../../shared/game/data/server.js'
+import type ClientGameData from '../../shared/game/data/client.js'
+import type GameState from '../../shared/game/state.js'
 
 export default class Game {
 	private static readonly games: Record<string, Game> = {}
@@ -75,7 +75,7 @@ export default class Game {
 		this.sendGame()
 	}
 
-	readonly onMessage = (player: Player, message: IncomingGameData) => {
+	readonly onMessage = (player: Player, message: ClientGameData) => {
 		switch (message.key) {
 			case 'start':
 				if (this.state !== 'joining')
@@ -108,15 +108,15 @@ export default class Game {
 			.map(dataFromPlayer)
 
 		for (const player of this.players) {
-			const data: OutgoingGameData = {
+			const data: ServerGameData = {
 				key: 'game',
 				value: {
 					state: this.state,
 					round: this.round,
-					turn: {
-						state: 'answering',
-						player: this.current
-					},
+					// turn: {
+					// 	state: 'answering',
+					// 	player: this.current
+					// },
 					self: player.spectating ? null : dataFromPlayer(player),
 					players
 				}
