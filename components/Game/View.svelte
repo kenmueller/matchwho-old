@@ -1,8 +1,9 @@
 <script lang="ts">
 	import type Game from '../../lib/game'
 	import { MAX_PLAYERS } from '../../lib/game/players/bounds'
-	import Joining from './Joining.svelte'
 	import Players from './Players.svelte'
+	import Joining from './Joining.svelte'
+	import Started from './Started.svelte'
 
 	export let socket: WebSocket
 	export let game: Game
@@ -23,13 +24,13 @@
 	<title>{status} | Match Who</title>
 </svelte:head>
 
-<div class="root" data-spectating={!game.current}>
+<div class="root" data-spectating={!game.self}>
 	<h1>{status}</h1>
 	<Players {game} />
 	{#if game.state === 'joining'}
 		<Joining {socket} {game} />
 	{:else if game.state === 'started'}
-		<h3 style="grid-area: main;">Started</h3>
+		<Started />
 	{:else}
 		<h3 style="grid-area: main;">Completed</h3>
 	{/if}

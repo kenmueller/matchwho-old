@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid'
 
 import CODE_LENGTH from './code.js'
 import ID_LENGTH from './id.js'
+import ROUNDS from './rounds.js'
 import HttpsError from '../error/https.js'
 import Player, { dataFromPlayer } from './player.js'
 import type IncomingGameData from './data/incoming.js'
@@ -13,10 +14,13 @@ export default class Game {
 	private static readonly games: Record<string, Game> = {}
 
 	readonly code = nanoid(CODE_LENGTH).toLowerCase()
-	readonly players = new Map<string, Player>()
 
-	leader: Player | null = null
+	players: Player[] = []
+	spectators: Player[] = []
+
 	state: GameState = 'joining'
+	round = 1
+	index = 0
 
 	constructor() {
 		Game.games[this.code] = this
@@ -29,37 +33,45 @@ export default class Game {
 			? Game.games[code]
 			: null
 
+	get leader() {
+		return this.players[0] ?? null
+	}
+
+	get current() {
+		return this.players[this.index] ?? null
+	}
+
 	get meta(): GameMeta {
 		const { state, leader } = this
-		return { state: state, leader: leader && leader.name }
+		return { state, leader: leader && leader.name }
 	}
 
 	readonly join = (socket: WebSocket, name: string) => {
-		const leader = !this.players.size
+		const spectating = !(this.state === 'joining' && name)
 
 		const player: Player = {
 			socket,
-			spectating: this.state === 'started' || !name,
+			spectating,
 			id: nanoid(ID_LENGTH),
 			name,
-			leader
+			leader: !this.leader
 		}
 
-		this.players.set(player.id, player)
-		if (leader) this.leader = player
+		this[spectating ? 'spectators' : 'players'].push(player)
+		if (!spectating) this.sendGame()
 
-		this.sendGame()
 		return player
 	}
 
 	readonly leave = (player: Player) => {
-		this.players.delete(player.id)
+		const index = this.players.indexOf(player)
 
-		if (player.leader) {
-			const [firstPlayer] = this.players.values()
-			if (firstPlayer) firstPlayer.leader = true
-		}
+		if (index < 0) return
+		if (index < this.index) this.index--
 
+		this.players.splice(index, 1)
+
+		this.playersChanged()
 		this.sendGame()
 	}
 
@@ -79,17 +91,33 @@ export default class Game {
 		}
 	}
 
+	private readonly playersChanged = () => {
+		if (this.index < this.players.length) return
+
+		if (this.round === ROUNDS) {
+			this.state = 'completed'
+		} else {
+			this.round++
+			this.index = 0
+		}
+	}
+
 	private readonly sendGame = () => {
-		const players = [...this.players.values()]
+		const players = this.players
 			.filter(({ spectating }) => !spectating)
 			.map(dataFromPlayer)
 
-		for (const player of this.players.values()) {
+		for (const player of this.players) {
 			const data: OutgoingGameData = {
 				key: 'game',
 				value: {
 					state: this.state,
-					current: player.spectating ? null : dataFromPlayer(player),
+					round: this.round,
+					turn: {
+						state: 'answering',
+						player: this.current
+					},
+					self: player.spectating ? null : dataFromPlayer(player),
 					players
 				}
 			}

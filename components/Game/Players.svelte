@@ -7,7 +7,7 @@
 
 <aside>
 	{#each game.players as player (player.id)}
-		<div data-current={game.current?.id === player.id}>
+		<div data-self={game.self?.id === player.id}>
 			<p>{player.name}</p>
 			{#if player.leader}
 				<Leader />
@@ -41,7 +41,7 @@
 	p {
 		font-weight: 700;
 
-		div[data-current='true'] &::after {
+		div[data-self='true'] &::after {
 			content: ' (you)';
 			opacity: 0.5;
 		}

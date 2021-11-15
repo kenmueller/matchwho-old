@@ -16,6 +16,9 @@ socket('/games/:code', (socket, req) => {
 		const game = Game.withCode(code)
 		if (!game) throw new HttpsError(1003, 'This game does not exist')
 
+		if (game.state === 'completed')
+			throw new HttpsError(1003, 'This game has already ended')
+
 		const player = game.join(socket, name)
 
 		socket.on('message', (data, isBinary) => {
