@@ -5,7 +5,7 @@ type OutgoingGameData = { key: 'game'; value: GameValue }
 
 export interface GameValue {
 	state: GameState
-	current: PlayerData
+	current: PlayerData | null
 	players: PlayerData[]
 }
 

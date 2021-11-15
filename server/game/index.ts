@@ -30,7 +30,8 @@ export default class Game {
 			: null
 
 	get meta(): GameMeta {
-		return { leader: this.leader && this.leader.name }
+		const { state, leader } = this
+		return { state: state, leader: leader && leader.name }
 	}
 
 	readonly join = (socket: WebSocket, name: string) => {
@@ -38,6 +39,7 @@ export default class Game {
 
 		const player: Player = {
 			socket,
+			spectating: this.state === 'started' || !name,
 			id: nanoid(ID_LENGTH),
 			name,
 			leader
@@ -54,7 +56,7 @@ export default class Game {
 		this.players.delete(player.id)
 
 		if (player.leader) {
-			const firstPlayer = [...this.players.values()][0]
+			const [firstPlayer] = this.players.values()
 			if (firstPlayer) firstPlayer.leader = true
 		}
 
@@ -79,15 +81,16 @@ export default class Game {
 
 	private readonly sendGame = () => {
 		const players = [...this.players.values()]
-		const values = players.map(dataFromPlayer)
+			.filter(({ spectating }) => !spectating)
+			.map(dataFromPlayer)
 
-		for (const player of players) {
+		for (const player of this.players.values()) {
 			const data: OutgoingGameData = {
 				key: 'game',
 				value: {
 					state: this.state,
-					current: dataFromPlayer(player),
-					players: values
+					current: player.spectating ? null : dataFromPlayer(player),
+					players
 				}
 			}
 
@@ -97,5 +100,6 @@ export default class Game {
 }
 
 export interface GameMeta {
+	readonly state: GameState
 	readonly leader: string | null
 }

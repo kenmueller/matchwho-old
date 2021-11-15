@@ -7,7 +7,7 @@
 
 <aside>
 	{#each game.players as player (player.id)}
-		<div data-current={game.current.id === player.id}>
+		<div data-current={game.current?.id === player.id}>
 			<p>{player.name}</p>
 			{#if player.leader}
 				<Leader />

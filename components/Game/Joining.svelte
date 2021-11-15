@@ -16,7 +16,7 @@
 	}
 </script>
 
-{#if game.current.leader}
+{#if game.current?.leader}
 	<button
 		style="--min-players: {MIN_PLAYERS};"
 		aria-busy={started && game.state === 'joining'}

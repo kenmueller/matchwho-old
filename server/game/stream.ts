@@ -8,20 +8,24 @@ import type IncomingGameData from './data/incoming.js'
 socket('/games/:code', (socket, req) => {
 	try {
 		const { code } = req.params
-		const name = req.query.get('name')
+		const name = req.query.get('name') ?? ''
 
 		if (!Game.validCode(code))
 			throw new HttpsError(1003, `Game codes must be ${CODE_LENGTH} characters`)
 
 		const game = Game.withCode(code)
-
 		if (!game) throw new HttpsError(1003, 'This game does not exist')
-		if (!name) throw new HttpsError(1003, 'You must enter a name')
 
 		const player = game.join(socket, name)
 
 		socket.on('message', (data, isBinary) => {
 			try {
+				if (player.spectating)
+					throw new HttpsError(
+						1003,
+						'You cannot interact with the game while spectating'
+					)
+
 				const message: IncomingGameData | null = JSON.parse(
 					data.toString(isBinary ? 'binary' : 'utf8')
 				)

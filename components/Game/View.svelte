@@ -7,17 +7,23 @@
 	export let socket: WebSocket
 	export let game: Game
 
-	$: status =
-		game.state === 'joining'
-			? `Waiting for Players (${game.players.length}/${MAX_PLAYERS})`
-			: 'Status'
+	$: status = (() => {
+		switch (game.state) {
+			case 'joining':
+				return `Waiting for Players (${game.players.length}/${MAX_PLAYERS})`
+			case 'started':
+				return 'Started'
+			case 'completed':
+				return 'Completed'
+		}
+	})()
 </script>
 
 <svelte:head>
 	<title>{status} | Match Who</title>
 </svelte:head>
 
-<div class="root">
+<div class="root" data-spectating={!game.current}>
 	<h1>{status}</h1>
 	<Players {game} />
 	{#if game.state === 'joining'}
@@ -38,6 +44,7 @@
 			'status status' auto
 			'players main' 1fr /
 			15rem 1fr;
+		position: relative;
 		height: 100%;
 		gap: 2rem 3rem;
 		padding: 2rem 4rem;
@@ -49,6 +56,17 @@
 
 		@media (min-width: 75rem) {
 			padding: 4rem 12rem;
+		}
+
+		&[data-spectating='true']::after {
+			content: 'spectating';
+			position: absolute;
+			top: 1rem;
+			right: 2rem;
+			font-size: 1.2rem;
+			font-weight: 800;
+			color: colors.$text;
+			opacity: 0.5;
 		}
 	}
 

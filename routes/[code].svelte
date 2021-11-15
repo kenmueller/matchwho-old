@@ -7,18 +7,15 @@
 			if (!response.ok) return { status: 307, redirect: '/' }
 
 			return {
-				props: {
-					code,
-					leader: (await response.json()).leader
-				}
+				props: { code, meta: await response.json() }
 			}
 		}
 
-		const { gameMeta }: Session = session
-		if (!gameMeta) return { status: 307, redirect: '/' }
+		const { gameMeta: meta }: Session = session
+		if (!meta) return { status: 307, redirect: '/' }
 
 		return {
-			props: { code, leader: gameMeta.leader }
+			props: { code, meta }
 		}
 	}
 </script>
@@ -33,13 +30,14 @@
 	import SOCKET_ORIGIN from '../lib/origin/socket'
 	import type Session from '../lib/session'
 	import type Game from '../lib/game'
+	import type GameMeta from '../lib/game/meta'
 	import type IncomingGameData from '../lib/game/data/incoming'
 	import handleError from '../lib/error/handle'
 	import Navbar from '../components/Navbar.svelte'
 	import GameView from '../components/Game/View.svelte'
 
 	export let code: string
-	export let leader: string | null
+	export let meta: GameMeta
 
 	let input: HTMLInputElement | null = null
 	$: input?.focus()
@@ -48,6 +46,8 @@
 	let name = ''
 
 	let game: Game | null = null
+
+	$: if (browser && meta.state === 'started') join()
 
 	$: socket?.addEventListener('message', ({ data }) => {
 		try {
@@ -74,22 +74,24 @@
 
 <svelte:head>
 	<meta name="description" content="Match Who" />
-	<title>
-		Join {leader ?? 'Game'} | Match Who
-	</title>
+	<title>Join {meta.leader ?? 'Game'} | Match Who</title>
 </svelte:head>
 
 {#if socket && game}
 	<GameView {socket} {game} />
-{:else}
+{:else if meta.state !== 'started'}
 	<div class="root">
 		<Navbar />
-		<form on:submit|preventDefault={join}>
-			<input placeholder="Name" bind:this={input} bind:value={name} />
-			<button aria-busy={socket !== null && !game} disabled={!name}>
-				Join Game
-			</button>
-		</form>
+		{#if meta.state === 'joining'}
+			<form on:submit|preventDefault={join}>
+				<input placeholder="Name" bind:this={input} bind:value={name} />
+				<button aria-busy={socket !== null && !game} disabled={!name}>
+					Join Game
+				</button>
+			</form>
+		{:else}
+			<h1>This game has ended</h1>
+		{/if}
 	</div>
 {/if}
 
@@ -147,5 +149,14 @@
 		&:disabled {
 			opacity: 0.5;
 		}
+	}
+
+	h1 {
+		justify-self: center;
+		align-self: center;
+		text-align: center;
+		font-size: 2rem;
+		font-weight: 800;
+		color: colors.$text;
 	}
 </style>
