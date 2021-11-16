@@ -6,7 +6,9 @@ const app = {
 	name: 'app',
 	configureServer: async server => {
 		global.server = server.httpServer
-		server.middlewares.use((await import('./server-build/app.js')).default)
+		server.middlewares.use(
+			(await import('./server-build/server/app.js')).default
+		)
 	}
 }
 
@@ -32,6 +34,14 @@ const config = {
 				fs: {
 					allow: ['.']
 				}
+			},
+			resolve: {
+				alias: [
+					{
+						find: /^(.*)\.js$/,
+						replacement: '$1'
+					}
+				]
 			}
 		}
 	}
