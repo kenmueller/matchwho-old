@@ -89,7 +89,7 @@
 					Join Game
 				</button>
 			</form>
-		{:else}
+		{:else if meta.state === 'completed'}
 			<h1>This game has ended</h1>
 		{/if}
 	</div>

@@ -1,9 +1,11 @@
-import type Player from './player/index.js'
 import type GameState from './state.js'
+import type GameTurn from './turn/index.js'
+import type Player from './player/index.js'
 
 export default interface Game {
-	state: GameState
-	round: number
-	self: Player | null
-	players: Player[]
+	readonly state: GameState
+	readonly round: number
+	readonly turn: GameTurn | null
+	readonly self: Player | null
+	readonly players: Player[]
 }

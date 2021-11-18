@@ -8,10 +8,14 @@ export default interface Player {
 	readonly id: string
 	readonly name: string
 	leader: boolean
+	points: number
+	answer: string | null
 }
 
 export const dataFromPlayer = (player: Player): PlayerData => ({
 	id: player.id,
 	name: player.name,
-	leader: player.leader
+	leader: player.leader,
+	points: player.points,
+	answered: player.answer !== null
 })

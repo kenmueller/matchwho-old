@@ -80,6 +80,7 @@
 	}
 
 	h3 {
+		text-align: center;
 		font-size: 1.5rem;
 		font-weight: 700;
 		color: colors.$text;

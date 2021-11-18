@@ -30,8 +30,8 @@
 	{#if game.state === 'joining'}
 		<Joining {socket} {game} />
 	{:else if game.state === 'started'}
-		<Started />
-	{:else}
+		<Started {socket} {game} />
+	{:else if game.state === 'completed'}
 		<h3 style="grid-area: main;">Completed</h3>
 	{/if}
 </div>

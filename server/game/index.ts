@@ -9,18 +9,23 @@ import Player, { dataFromPlayer } from './player.js'
 import type ServerGameData from '../../shared/game/data/server.js'
 import type ClientGameData from '../../shared/game/data/client.js'
 import type GameState from '../../shared/game/state.js'
+import type GameMeta from '../../shared/game/meta.js'
+import type GameTurn from '../../shared/game/turn/index.js'
+import type InternalGameTurn from './turn.js'
 
 export default class Game {
 	private static readonly games: Record<string, Game> = {}
 
 	readonly code = nanoid(CODE_LENGTH).toLowerCase()
 
-	players: Player[] = []
-	spectators: Player[] = []
+	private readonly players: Player[] = []
+	private readonly spectators: Player[] = []
 
 	state: GameState = 'joining'
-	round = 1
-	index = 0
+
+	private round = 1
+	private index = 0
+	private turn: InternalGameTurn = { state: 'waiting', question: null }
 
 	constructor() {
 		Game.games[this.code] = this
@@ -33,17 +38,17 @@ export default class Game {
 			? Game.games[code]
 			: null
 
-	get leader() {
-		return this.players[0] ?? null
-	}
-
-	get current() {
-		return this.players[this.index] ?? null
-	}
-
 	get meta(): GameMeta {
 		const { state, leader } = this
 		return { state, leader: leader && leader.name }
+	}
+
+	private get leader() {
+		return this.players[0] ?? null
+	}
+
+	private get current() {
+		return this.players[this.index] ?? null
 	}
 
 	readonly join = (socket: WebSocket, name: string) => {
@@ -54,22 +59,27 @@ export default class Game {
 			spectating,
 			id: nanoid(ID_LENGTH),
 			name,
-			leader: !this.leader
+			leader: !this.leader,
+			points: 0,
+			answer: null
 		}
 
-		this[spectating ? 'spectators' : 'players'].push(player)
+		this.listOf(player).push(player)
 		if (!spectating) this.sendGame()
 
 		return player
 	}
 
 	readonly leave = (player: Player) => {
-		const index = this.players.indexOf(player)
+		const list = this.listOf(player)
 
+		const index = list.indexOf(player)
 		if (index < 0) return
-		if (index < this.index) this.index--
 
-		this.players.splice(index, 1)
+		list.splice(index, 1)
+
+		if (player.spectating) return
+		if (index < this.index) this.index--
 
 		this.playersChanged()
 		this.sendGame()
@@ -88,6 +98,46 @@ export default class Game {
 				this.sendGame()
 
 				break
+			case 'question': {
+				const { current } = this
+
+				if (!current)
+					throw new HttpsError(1003, 'The questioner does not exist')
+
+				if (player.id !== current.id)
+					throw new HttpsError(1003, 'You are not allowed to ask a question')
+
+				if (this.turn.state !== 'waiting')
+					throw new HttpsError(1003, 'Asking is not allowed at this time')
+
+				if (this.turn.question !== null)
+					throw new HttpsError(1003, 'A question has already been provided')
+
+				this.turn = { state: 'answering', question: message.value }
+				this.sendGame()
+
+				break
+			}
+			case 'answer': {
+				const { current } = this
+
+				if (!current)
+					throw new HttpsError(1003, 'The questioner does not exist')
+
+				if (player.id === current.id)
+					throw new HttpsError(1003, 'You cannot answer your own question')
+
+				if (this.turn.state !== 'answering')
+					throw new HttpsError(1003, 'Answering is not allowed at this time')
+
+				if (player.answer !== null)
+					throw new HttpsError(1003, 'An answer has already been provided')
+
+				player.answer = message.value
+				this.sendGame()
+
+				break
+			}
 		}
 	}
 
@@ -103,20 +153,20 @@ export default class Game {
 	}
 
 	private readonly sendGame = () => {
-		const players = this.players
-			.filter(({ spectating }) => !spectating)
-			.map(dataFromPlayer)
+		const turn: GameTurn = {
+			...this.turn,
+			player: dataFromPlayer(this.current)
+		}
 
-		for (const player of this.players) {
+		const players = this.players.map(dataFromPlayer)
+
+		for (const player of [...this.players, ...this.spectators]) {
 			const data: ServerGameData = {
 				key: 'game',
 				value: {
 					state: this.state,
 					round: this.round,
-					// turn: {
-					// 	state: 'answering',
-					// 	player: this.current
-					// },
+					turn,
 					self: player.spectating ? null : dataFromPlayer(player),
 					players
 				}
@@ -125,9 +175,7 @@ export default class Game {
 			player.socket.send(JSON.stringify(data))
 		}
 	}
-}
 
-export interface GameMeta {
-	readonly state: GameState
-	readonly leader: string | null
+	private readonly listOf = (player: Player) =>
+		this[player.spectating ? 'spectators' : 'players']
 }
