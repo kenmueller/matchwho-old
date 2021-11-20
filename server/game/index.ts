@@ -99,6 +99,8 @@ export default class Game {
 
 				break
 			case 'question': {
+				if (!message.value) throw new HttpsError(1003, 'Invalid question')
+
 				const { current } = this
 
 				if (!current)
@@ -119,6 +121,8 @@ export default class Game {
 				break
 			}
 			case 'answer': {
+				if (!message.value) throw new HttpsError(1003, 'Invalid answer')
+
 				const { current } = this
 
 				if (!current)
@@ -153,9 +157,11 @@ export default class Game {
 	}
 
 	private readonly sendGame = () => {
-		const turn: GameTurn = {
+		const { current } = this
+
+		const turn: GameTurn = current && {
 			...this.turn,
-			player: dataFromPlayer(this.current)
+			player: dataFromPlayer(current)
 		}
 
 		const players = this.players.map(dataFromPlayer)

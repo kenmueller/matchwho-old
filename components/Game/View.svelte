@@ -1,31 +1,16 @@
 <script lang="ts">
 	import type Game from '../../shared/game/index.js'
-	import { MAX_PLAYERS } from '../../shared/game/player/bounds.js'
+	import Status from './Status.svelte'
 	import Players from './Players.svelte'
 	import Joining from './Joining.svelte'
 	import Started from './Started.svelte'
 
 	export let socket: WebSocket
 	export let game: Game
-
-	$: status = (() => {
-		switch (game.state) {
-			case 'joining':
-				return `Waiting for Players (${game.players.length}/${MAX_PLAYERS})`
-			case 'started':
-				return 'Started'
-			case 'completed':
-				return 'Completed'
-		}
-	})()
 </script>
 
-<svelte:head>
-	<title>{status} | Match Who</title>
-</svelte:head>
-
 <div class="root" data-spectating={!game.self}>
-	<h1>{status}</h1>
+	<Status {game} />
 	<Players {game} />
 	{#if game.state === 'joining'}
 		<Joining {socket} {game} />
@@ -69,12 +54,5 @@
 			color: colors.$text;
 			opacity: 0.5;
 		}
-	}
-
-	h1 {
-		grid-area: status;
-		font-size: 3rem;
-		font-weight: 800;
-		color: colors.$text;
 	}
 </style>

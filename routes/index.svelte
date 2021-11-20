@@ -56,7 +56,7 @@
 		<hr />
 		<form on:submit|preventDefault={join}>
 			<input
-				placeholder="Game Code"
+				placeholder="Game code"
 				maxlength={CODE_LENGTH}
 				bind:this={input}
 				bind:value={code}
