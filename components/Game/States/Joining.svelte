@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type Game from '../../shared/game/index.js'
-	import type ClientGameData from '../../shared/game/data/client.js'
-	import GameState from '../../shared/game/state.js'
-	import { MIN_PLAYERS } from '../../shared/game/player/bounds.js'
+	import type Game from '../../../shared/game/index.js'
+	import type ClientGameData from '../../../shared/game/data/client.js'
+	import GameState from '../../../shared/game/state.js'
+	import { MIN_PLAYERS } from '../../../shared/game/player/bounds.js'
 
 	export let socket: WebSocket
 	export let game: Game

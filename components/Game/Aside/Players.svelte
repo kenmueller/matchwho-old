@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type Game from '../../shared/game/index.js'
-	import Leader from '../../icons/Leader.svelte'
+	import type Game from '../../../shared/game/index.js'
+	import Leader from '../../../icons/Leader.svelte'
 
 	export let game: Game
 </script>

@@ -2,10 +2,10 @@
 	import type Game from '../../shared/game/index.js'
 	import GameState from '../../shared/game/state.js'
 	import closeMessage from '../../lib/close/message.js'
-	import Status from './Status.svelte'
-	import Players from './Players.svelte'
-	import Joining from './Joining.svelte'
-	import Started from './Started.svelte'
+	import Status from './Aside/Status.svelte'
+	import Players from './Aside/Players.svelte'
+	import Joining from './States/Joining.svelte'
+	import Started from './States/Started.svelte'
 
 	export let socket: WebSocket
 	export let game: Game

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type Game from '../../shared/game/index.js'
-	import GameTurnState from '../../shared/game/turn/state.js'
-	import AskQuestion from './Actions/AskQuestion.svelte'
+	import type Game from '../../../shared/game/index.js'
+	import GameTurnState from '../../../shared/game/turn/state.js'
+	import AskQuestion from '../Actions/AskQuestion.svelte'
 
 	export let socket: WebSocket
 	export let game: Game

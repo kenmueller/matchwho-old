@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type Game from '../../shared/game/index.js'
-	import GameState from '../../shared/game/state.js'
-	import GameTurnState from '../../shared/game/turn/state.js'
-	import { MAX_PLAYERS } from '../../shared/game/player/bounds.js'
+	import type Game from '../../../shared/game/index.js'
+	import GameState from '../../../shared/game/state.js'
+	import GameTurnState from '../../../shared/game/turn/state.js'
+	import { MAX_PLAYERS } from '../../../shared/game/player/bounds.js'
 
 	export let game: Game
 
