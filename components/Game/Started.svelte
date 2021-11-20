@@ -14,19 +14,26 @@
 		{#if myTurn}
 			<AskQuestion {socket} />
 		{:else}
-			<h3>{game.turn.player.name} is thinking of a question</h3>
+			<main>
+				<h3>{game.turn.player.name} is thinking of a question</h3>
+			</main>
 		{/if}
 	{:else if game.turn.state === GameTurnState.Answering}
 		{#if myTurn}
-			<h3>Players are answering</h3>
+			<main>
+				<h3>Players are answering your question</h3>
+				<p>{game.turn.question ?? '(error)'}</p>
+			</main>
 		{:else}
-			Answer the question: {game.turn.question ?? '(error)'}
+			{game.turn.question ?? '(error)'}
 		{/if}
 	{:else if game.turn.state === GameTurnState.Matching}
 		{#if myTurn}
 			Match the answers
 		{:else}
-			<h3>{game.turn.player.name} is matching your answers</h3>
+			<main>
+				<h3>{game.turn.player.name} is matching your answers</h3>
+			</main>
 		{/if}
 	{/if}
 {:else}
@@ -36,14 +43,22 @@
 <style lang="scss">
 	@use 'shared/colors';
 
-	h3 {
+	main {
 		grid-area: main;
 		justify-self: center;
 		align-self: center;
 		text-align: center;
-		font-size: 1.5rem;
-		font-weight: 700;
 		color: colors.$text;
+		font-weight: 700;
+	}
+
+	h3 {
+		font-size: 1.5rem;
+	}
+
+	p {
+		margin-top: 1rem;
+		opacity: 0.5;
 	}
 
 	.error {
