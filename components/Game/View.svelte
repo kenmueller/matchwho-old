@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type Game from '../../shared/game/index.js'
+	import GameState from '../../shared/game/state.js'
 	import Status from './Status.svelte'
 	import Players from './Players.svelte'
 	import Joining from './Joining.svelte'
@@ -12,11 +13,11 @@
 <div class="root" data-spectating={!game.self}>
 	<Status {game} />
 	<Players {game} />
-	{#if game.state === 'joining'}
+	{#if game.state === GameState.Joining}
 		<Joining {socket} {game} />
-	{:else if game.state === 'started'}
+	{:else if game.state === GameState.Started}
 		<Started {socket} {game} />
-	{:else if game.state === 'completed'}
+	{:else if game.state === GameState.Completed}
 		<h3 style="grid-area: main;">Completed</h3>
 	{/if}
 </div>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type Game from '../../shared/game/index.js'
 	import type ClientGameData from '../../shared/game/data/client.js'
+	import GameState from '../../shared/game/state.js'
 	import { MIN_PLAYERS } from '../../shared/game/player/bounds.js'
 
 	export let socket: WebSocket
@@ -19,7 +20,7 @@
 {#if game.self?.leader}
 	<button
 		style="--min-players: {MIN_PLAYERS};"
-		aria-busy={started && game.state === 'joining'}
+		aria-busy={started && game.state === GameState.Joining}
 		disabled={game.players.length < MIN_PLAYERS}
 		on:click={start}
 	>

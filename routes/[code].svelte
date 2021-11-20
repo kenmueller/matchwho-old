@@ -32,6 +32,7 @@
 	import type Game from '../shared/game/index.js'
 	import type GameMeta from '../shared/game/meta.js'
 	import type ServerGameData from '../shared/game/data/server.js'
+	import GameState from '../shared/game/state.js'
 	import handleError from '../lib/error/handle.js'
 	import Navbar from '../components/Navbar.svelte'
 	import GameView from '../components/Game/View.svelte'
@@ -47,7 +48,7 @@
 
 	let game: Game | null = null
 
-	$: if (browser && meta.state === 'started') join()
+	$: if (browser && meta.state === GameState.Started) join()
 
 	$: socket?.addEventListener('message', ({ data }) => {
 		try {
@@ -79,17 +80,17 @@
 
 {#if socket && game}
 	<GameView {socket} {game} />
-{:else if meta.state !== 'started'}
+{:else if meta.state !== GameState.Started}
 	<div class="root">
 		<Navbar />
-		{#if meta.state === 'joining'}
+		{#if meta.state === GameState.Joining}
 			<form on:submit|preventDefault={join}>
 				<input placeholder="Name" bind:this={input} bind:value={name} />
 				<button aria-busy={socket !== null && !game} disabled={!name}>
 					Join Game
 				</button>
 			</form>
-		{:else if meta.state === 'completed'}
+		{:else if meta.state === GameState.Completed}
 			<h1>This game has ended</h1>
 		{/if}
 	</div>

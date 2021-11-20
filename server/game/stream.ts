@@ -3,6 +3,7 @@ import HttpsError from '../../shared/error/https.js'
 import closeWithError from '../error/close.js'
 import CODE_LENGTH from '../../shared/game/code.js'
 import Game from './index.js'
+import GameState from '../../shared/game/state.js'
 import type ClientGameData from '../../shared/game/data/client.js'
 
 socket('/games/:code', (socket, req) => {
@@ -16,7 +17,7 @@ socket('/games/:code', (socket, req) => {
 		const game = Game.withCode(code)
 		if (!game) throw new HttpsError(1003, 'This game does not exist')
 
-		if (game.state === 'completed')
+		if (game.state === GameState.Completed)
 			throw new HttpsError(1003, 'This game has already ended')
 
 		const player = game.join(socket, name)

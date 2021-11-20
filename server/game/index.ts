@@ -8,7 +8,8 @@ import HttpsError from '../../shared/error/https.js'
 import Player, { dataFromPlayer } from './player.js'
 import type ServerGameData from '../../shared/game/data/server.js'
 import type ClientGameData from '../../shared/game/data/client.js'
-import type GameState from '../../shared/game/state.js'
+import GameState from '../../shared/game/state.js'
+import GameTurnState from '../../shared/game/turn/state.js'
 import type GameMeta from '../../shared/game/meta.js'
 import type GameTurn from '../../shared/game/turn/index.js'
 import type InternalGameTurn from './turn.js'
@@ -21,11 +22,15 @@ export default class Game {
 	private readonly players: Player[] = []
 	private readonly spectators: Player[] = []
 
-	state: GameState = 'joining'
+	state = GameState.Joining
 
 	private round = 1
 	private index = 0
-	private turn: InternalGameTurn = { state: 'waiting', question: null }
+
+	private turn: InternalGameTurn = {
+		state: GameTurnState.Waiting,
+		question: null
+	}
 
 	constructor() {
 		Game.games[this.code] = this
@@ -52,7 +57,7 @@ export default class Game {
 	}
 
 	readonly join = (socket: WebSocket, name: string) => {
-		const spectating = !(this.state === 'joining' && name)
+		const spectating = !(this.state === GameState.Joining && name)
 
 		const player: Player = {
 			socket,
@@ -65,7 +70,7 @@ export default class Game {
 		}
 
 		this.listOf(player).push(player)
-		if (!spectating) this.sendGame()
+		spectating ? this.sendGame(player) : this.sendGame()
 
 		return player
 	}
@@ -81,20 +86,34 @@ export default class Game {
 		if (player.spectating) return
 		if (index < this.index) this.index--
 
+		if (index === this.index)
+			this.turn = { state: GameTurnState.Waiting, question: null }
+
 		this.playersChanged()
 		this.sendGame()
+	}
+
+	private readonly playersChanged = () => {
+		if (this.index < this.players.length) return
+
+		if (this.round === ROUNDS) {
+			this.state = GameState.Completed
+		} else {
+			this.round++
+			this.index = 0
+		}
 	}
 
 	readonly onMessage = (player: Player, message: ClientGameData) => {
 		switch (message.key) {
 			case 'start':
-				if (this.state !== 'joining')
+				if (this.state !== GameState.Joining)
 					throw new HttpsError(1003, 'The game has already started')
 
 				if (!player.leader)
 					throw new HttpsError(1003, 'You must be the leader to start the game')
 
-				this.state = 'started'
+				this.state = GameState.Started
 				this.sendGame()
 
 				break
@@ -109,13 +128,13 @@ export default class Game {
 				if (player.id !== current.id)
 					throw new HttpsError(1003, 'You are not allowed to ask a question')
 
-				if (this.turn.state !== 'waiting')
+				if (this.turn.state !== GameTurnState.Waiting)
 					throw new HttpsError(1003, 'Asking is not allowed at this time')
 
 				if (this.turn.question !== null)
 					throw new HttpsError(1003, 'A question has already been provided')
 
-				this.turn = { state: 'answering', question: message.value }
+				this.turn = { state: GameTurnState.Answering, question: message.value }
 				this.sendGame()
 
 				break
@@ -131,7 +150,7 @@ export default class Game {
 				if (player.id === current.id)
 					throw new HttpsError(1003, 'You cannot answer your own question')
 
-				if (this.turn.state !== 'answering')
+				if (this.turn.state !== GameTurnState.Answering)
 					throw new HttpsError(1003, 'Answering is not allowed at this time')
 
 				if (player.answer !== null)
@@ -145,18 +164,7 @@ export default class Game {
 		}
 	}
 
-	private readonly playersChanged = () => {
-		if (this.index < this.players.length) return
-
-		if (this.round === ROUNDS) {
-			this.state = 'completed'
-		} else {
-			this.round++
-			this.index = 0
-		}
-	}
-
-	private readonly sendGame = () => {
+	private readonly sendGame = (...destinations: Player[]) => {
 		const { current } = this
 
 		const turn: GameTurn = current && {
@@ -166,7 +174,11 @@ export default class Game {
 
 		const players = this.players.map(dataFromPlayer)
 
-		for (const player of [...this.players, ...this.spectators]) {
+		destinations = destinations.length
+			? destinations
+			: [...this.players, ...this.spectators]
+
+		for (const player of destinations) {
 			const data: ServerGameData = {
 				key: 'game',
 				value: {

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type ClientGameData from '../../../shared/game/data/client'
+	import type ClientGameData from '../../../shared/game/data/client.js'
 
 	export let socket: WebSocket
 
-	let input: HTMLInputElement | null = null
+	let input: HTMLTextAreaElement | null = null
 	$: input?.focus()
 
 	let question = ''
@@ -18,7 +18,7 @@
 </script>
 
 <form on:submit|preventDefault={ask}>
-	<input placeholder="Question" bind:this={input} bind:value={question} />
+	<textarea placeholder="Question" bind:this={input} bind:value={question} />
 	<button aria-busy={asking} disabled={!question}>Ask Question</button>
 </form>
 
@@ -27,5 +27,8 @@
 		grid-area: main;
 		justify-self: center;
 		align-self: center;
+	}
+
+	textarea {
 	}
 </style>

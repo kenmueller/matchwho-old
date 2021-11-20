@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type Game from '../../shared/game/index.js'
+	import GameTurnState from '../../shared/game/turn/state.js'
 	import AskQuestion from './Actions/AskQuestion.svelte'
 
 	export let socket: WebSocket
@@ -9,19 +10,19 @@
 </script>
 
 {#if game.turn}
-	{#if game.turn.state === 'waiting'}
+	{#if game.turn.state === GameTurnState.Waiting}
 		{#if myTurn}
 			<AskQuestion {socket} />
 		{:else}
 			<h3>{game.turn.player.name} is thinking of a question</h3>
 		{/if}
-	{:else if game.turn.state === 'answering'}
+	{:else if game.turn.state === GameTurnState.Answering}
 		{#if myTurn}
 			<h3>Players are answering</h3>
 		{:else}
 			Answer the question: {game.turn.question ?? '(error)'}
 		{/if}
-	{:else if game.turn.state === 'matching'}
+	{:else if game.turn.state === GameTurnState.Matching}
 		{#if myTurn}
 			Match the answers
 		{:else}

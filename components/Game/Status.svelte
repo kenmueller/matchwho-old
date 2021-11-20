@@ -1,5 +1,7 @@
 <script lang="ts">
 	import type Game from '../../shared/game/index.js'
+	import GameState from '../../shared/game/state.js'
+	import GameTurnState from '../../shared/game/turn/state.js'
 	import { MAX_PLAYERS } from '../../shared/game/player/bounds.js'
 
 	export let game: Game
@@ -8,20 +10,20 @@
 
 	$: status = (() => {
 		switch (game.state) {
-			case 'joining':
+			case GameState.Joining:
 				return `Waiting for players (${game.players.length}/${MAX_PLAYERS})`
-			case 'started':
+			case GameState.Started:
 				switch (game.turn?.state) {
-					case 'waiting':
+					case GameTurnState.Waiting:
 						return myTurn ? 'Ask a question' : 'Should be any time now...'
-					case 'answering':
+					case GameTurnState.Answering:
 						return myTurn ? 'Should be any time now...' : 'Answer time!'
-					case 'matching':
+					case GameTurnState.Matching:
 						return myTurn ? 'Match Who' : 'Should be any time now...'
 					default:
 						return "Oops! Something isn't right"
 				}
-			case 'completed':
+			case GameState.Completed:
 				return 'Completed'
 		}
 	})()

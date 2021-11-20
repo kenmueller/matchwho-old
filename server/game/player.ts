@@ -9,6 +9,8 @@ export default interface Player {
 	readonly name: string
 	leader: boolean
 	points: number
+
+	/** Answer to the current question. */
 	answer: string | null
 }
 
