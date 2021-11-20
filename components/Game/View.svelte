@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type Game from '../../shared/game/index.js'
 	import GameState from '../../shared/game/state.js'
+	import closeMessage from '../../lib/close/message.js'
 	import Status from './Status.svelte'
 	import Players from './Players.svelte'
 	import Joining from './Joining.svelte'
@@ -10,7 +11,13 @@
 	export let game: Game
 </script>
 
-<div class="root" data-spectating={!game.self}>
+<div
+	class="root"
+	data-spectating={!game.self}
+	use:closeMessage={game.state === GameState.Started
+		? 'You will lose all your progress if you exit the game now.'
+		: null}
+>
 	<Status {game} />
 	<Players {game} />
 	{#if game.state === GameState.Joining}

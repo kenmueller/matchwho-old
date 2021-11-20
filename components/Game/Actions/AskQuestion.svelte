@@ -27,8 +27,19 @@
 		grid-area: main;
 		justify-self: center;
 		align-self: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 100%;
+		max-width: 30rem;
 	}
 
 	textarea {
+		$line-height: 2ch;
+
+		resize: vertical;
+		width: 100%;
+		min-height: 3 * $line-height;
+		line-height: $line-height;
 	}
 </style>
