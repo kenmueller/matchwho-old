@@ -1,11 +1,7 @@
+import type GameTurn from '../../shared/game/turn/index.js'
 import type GameTurnState from '../../shared/game/turn/state.js'
 
-export default interface InternalGameTurn {
+export default interface InternalGameTurn
+	extends Pick<GameTurn, 'question' | 'answers' | 'matches'> {
 	state: GameTurnState
-
-	/**
-	 * The current question.
-	 * `null` if the current player hasn't thought of a question yet.
-	 */
-	readonly question: string | null
 }

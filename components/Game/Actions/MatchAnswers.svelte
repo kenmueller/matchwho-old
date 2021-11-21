@@ -1,21 +1,41 @@
 <script lang="ts">
 	import type Game from '../../../shared/game/index.js'
+	import type Player from '../../../shared/game/player/index.js'
 
 	export let game: Game
 	export let socket: WebSocket
 
+	let playerLink: Player | null = null
+	let answerLink: string | null = null
+
 	$: players = game.players.filter(({ id }) => id !== game.turn?.player.id)
+	$: answers = game.turn?.answers ?? []
+
+	$: if (playerLink && answerLink) {
+		console.log(playerLink, answerLink)
+		playerLink = answerLink = null
+	}
 </script>
 
 <main>
 	<section data-list="players">
 		{#each players as player (player.id)}
-			<p>{player.name}</p>
+			<p
+				on:mousedown={() => (playerLink = player)}
+				on:mouseup={() => (playerLink = player)}
+			>
+				{player.name}
+			</p>
 		{/each}
 	</section>
 	<section data-list="answers">
-		{#each players as player (player.id)}
-			<p>{player.answer}</p>
+		{#each answers as answer}
+			<p
+				on:mousedown={() => (answerLink = answer)}
+				on:mouseup={() => (answerLink = answer)}
+			>
+				{answer}
+			</p>
 		{/each}
 	</section>
 </main>
@@ -62,6 +82,7 @@
 	p {
 		max-width: max-content;
 		padding: 0.5rem 1rem;
+		cursor: pointer;
 		font-weight: 700;
 		color: colors.$text;
 		background: colors.$overlay;

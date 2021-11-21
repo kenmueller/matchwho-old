@@ -13,6 +13,7 @@
 	"dependencies": {
 		"express": "^4.17.1",
 		"nanoid": "^3.1.30",
+		"shuffle-array": "^1.0.1",
 		"url-pattern": "^1.0.3",
 		"ws": "^8.2.3"
 	},
@@ -20,6 +21,7 @@
 		"@sveltejs/adapter-node": "next",
 		"@sveltejs/kit": "next",
 		"@types/express": "^4.17.13",
+		"@types/shuffle-array": "^1.0.2",
 		"@types/ws": "^8.2.0",
 		"@typescript-eslint/eslint-plugin": "^5.4.0",
 		"@typescript-eslint/parser": "^5.4.0",

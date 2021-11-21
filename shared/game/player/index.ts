@@ -4,6 +4,6 @@ export default interface Player {
 	readonly leader: boolean
 	readonly points: number
 
-	/** The player's answer to the current question. */
-	readonly answer: string | null
+	/** If the player has answered the current question. */
+	readonly answered: boolean
 }

@@ -1,11 +1,12 @@
 import type WebSocket from 'ws'
 import { nanoid } from 'nanoid'
+import shuffle from 'shuffle-array'
 
 import CODE_LENGTH from '../../shared/game/code.js'
 import ID_LENGTH from '../../shared/game/id.js'
 import ROUNDS from '../../shared/game/rounds.js'
 import HttpError from '../../shared/error/http.js'
-import Player, { dataFromPlayer } from './player.js'
+import Player, { dataFromPlayer, dataFromSelf } from './player.js'
 import type ServerGameData from '../../shared/game/data/server.js'
 import type ClientGameData from '../../shared/game/data/client.js'
 import GameState from '../../shared/game/state.js'
@@ -29,7 +30,9 @@ export default class Game {
 
 	private turn: InternalGameTurn = {
 		state: GameTurnState.Waiting,
-		question: null
+		question: null,
+		answers: null,
+		matches: null
 	}
 
 	constructor() {
@@ -56,11 +59,15 @@ export default class Game {
 		return this.players[this.index] ?? null
 	}
 
-	private get allAnswered() {
+	private get answers() {
 		const { current } = this
-		if (!current) return false
+		if (!current) return null
 
-		return this.players.every(({ id, answer }) => id === current.id || answer)
+		const players = this.players
+			.filter(({ id }) => id !== current.id)
+			.map(({ answer }) => answer)
+
+		return players.every(Boolean) ? shuffle(players as string[]) : null
 	}
 
 	readonly join = (socket: WebSocket, name: string) => {
@@ -92,7 +99,12 @@ export default class Game {
 		if (index < this.index) this.index--
 
 		if (index === this.index)
-			this.turn = { state: GameTurnState.Waiting, question: null }
+			this.turn = {
+				state: GameTurnState.Waiting,
+				question: null,
+				answers: null,
+				matches: null
+			}
 
 		this.playersChanged()
 		this.sendGame()
@@ -122,10 +134,14 @@ export default class Game {
 
 				break
 			case 'question': {
-				if (!message.value) throw new HttpError(1003, 'Invalid question')
+				if (typeof message.value !== 'string')
+					throw new HttpError(1003, 'Invalid question')
+
+				const question = message.value.trim()
+				if (!question)
+					throw new HttpError(1003, 'Your question cannot be empty')
 
 				const { current } = this
-
 				if (!current) throw new HttpError(1003, 'The questioner does not exist')
 
 				if (player.id !== current.id)
@@ -139,16 +155,21 @@ export default class Game {
 
 				this.turn = {
 					state: GameTurnState.Answering,
-					question: message.value
+					question,
+					answers: null,
+					matches: null
 				}
 
 				break
 			}
 			case 'answer': {
-				if (!message.value) throw new HttpError(1003, 'Invalid answer')
+				if (typeof message.value !== 'string')
+					throw new HttpError(1003, 'Invalid answer')
+
+				const answer = message.value.trim()
+				if (!answer) throw new HttpError(1003, 'Your answer cannot be empty')
 
 				const { current } = this
-
 				if (!current) throw new HttpError(1003, 'The questioner does not exist')
 
 				if (player.id === current.id)
@@ -160,8 +181,16 @@ export default class Game {
 				if (player.answer !== null)
 					throw new HttpError(1003, 'An answer has already been provided')
 
-				player.answer = message.value
-				if (this.allAnswered) this.turn.state = GameTurnState.Matching
+				player.answer = answer
+				const { answers } = this
+
+				if (answers)
+					this.turn = {
+						...this.turn,
+						state: GameTurnState.Matching,
+						answers,
+						matches: {}
+					}
 
 				break
 			}
@@ -193,7 +222,7 @@ export default class Game {
 					state: this.state,
 					round: this.round,
 					turn,
-					self: player.spectating ? null : dataFromPlayer(player),
+					self: player.spectating ? null : dataFromSelf(player),
 					players
 				}
 			}
