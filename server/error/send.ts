@@ -1,11 +1,11 @@
 import type { Response } from 'express'
 
-import HttpsError from '../../shared/error/https.js'
+import HttpError from '../../shared/error/http.js'
 
 const sendError = (res: Response, error: unknown) => {
 	try {
 		res
-			.status(error instanceof HttpsError ? error.code : 500)
+			.status(error instanceof HttpError ? error.code : 500)
 			.send(
 				error instanceof Error ? error.message : 'An unknown error occurred'
 			)

@@ -4,6 +4,7 @@
 	import Message from './Message.svelte'
 	import AskQuestion from '../Actions/AskQuestion.svelte'
 	import AnswerQuestion from '../Actions/AnswerQuestion.svelte'
+	import MatchAnswers from '../Actions/MatchAnswers.svelte'
 
 	export let socket: WebSocket
 	export let game: Game
@@ -32,13 +33,7 @@
 			<AnswerQuestion {game} {socket} />
 		{/if}
 	{:else if game.turn.state === GameTurnState.Matching}
-		{#if myTurn}
-			<Message>Match the answers</Message>
-		{:else}
-			<Message>
-				{game.turn.player.name} is matching your answers
-			</Message>
-		{/if}
+		<MatchAnswers {game} {socket} />
 	{/if}
 {:else}
 	<Message error>An unknown error occurred</Message>

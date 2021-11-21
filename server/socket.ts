@@ -6,6 +6,7 @@ import Pattern from 'url-pattern'
 import { server } from './root.js'
 import DEV from './dev.js'
 import ORIGIN from './origin.js'
+import HttpError from '../shared/error/http.js'
 
 export interface SocketRequest extends IncomingMessage {
 	params: Record<string, string>
@@ -24,25 +25,38 @@ const socket = (path: string, listener: SocketListener) => {
 }
 
 server.on('upgrade', async (req: SocketRequest, socket: Socket, head) => {
-	const { pathname, searchParams } = new URL(req.url ?? '', ORIGIN)
-	if (DEV && pathname === '/') return
+	try {
+		const { origin, pathname, searchParams } = new URL(
+			req.url ?? '',
+			req.headers.origin
+		)
 
-	for (const [pattern, socketServer] of socketServers) {
-		const params: Record<string, string> | null = pattern.match(pathname)
-		if (!params) continue
+		if (origin !== ORIGIN) throw new HttpError(1003, 'Invalid origin')
+		if (DEV && pathname === '/') return
 
-		req.params = params
-		req.query = searchParams
+		for (const [pattern, socketServer] of socketServers) {
+			const params: Record<string, string> | null = pattern.match(pathname)
+			if (!params) continue
 
-		const client = await new Promise<WebSocket>(resolve => {
-			socketServer.handleUpgrade(req, socket, head, resolve)
-		})
+			req.params = params
+			req.query = searchParams
 
-		socketServer.emit('connection', client, req)
-		return
+			const client = await new Promise<WebSocket>(resolve => {
+				socketServer.handleUpgrade(req, socket, head, resolve)
+			})
+
+			socketServer.emit('connection', client, req)
+			return
+		}
+
+		throw new HttpError(1003, 'No matching paths')
+	} catch (error) {
+		try {
+			socket.destroy(error instanceof Error ? error : undefined)
+		} catch (error) {
+			console.error(error)
+		}
 	}
-
-	socket.destroy()
 })
 
 export default socket

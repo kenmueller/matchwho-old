@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid'
 import CODE_LENGTH from '../../shared/game/code.js'
 import ID_LENGTH from '../../shared/game/id.js'
 import ROUNDS from '../../shared/game/rounds.js'
-import HttpsError from '../../shared/error/https.js'
+import HttpError from '../../shared/error/http.js'
 import Player, { dataFromPlayer, dataFromSelf } from './player.js'
 import type ServerGameData from '../../shared/game/data/server.js'
 import type ClientGameData from '../../shared/game/data/client.js'
@@ -113,30 +113,29 @@ export default class Game {
 		switch (message.key) {
 			case 'start':
 				if (this.state !== GameState.Joining)
-					throw new HttpsError(1003, 'The game has already started')
+					throw new HttpError(1003, 'The game has already started')
 
 				if (!player.leader)
-					throw new HttpsError(1003, 'You must be the leader to start the game')
+					throw new HttpError(1003, 'You must be the leader to start the game')
 
 				this.state = GameState.Started
 
 				break
 			case 'question': {
-				if (!message.value) throw new HttpsError(1003, 'Invalid question')
+				if (!message.value) throw new HttpError(1003, 'Invalid question')
 
 				const { current } = this
 
-				if (!current)
-					throw new HttpsError(1003, 'The questioner does not exist')
+				if (!current) throw new HttpError(1003, 'The questioner does not exist')
 
 				if (player.id !== current.id)
-					throw new HttpsError(1003, 'You are not allowed to ask a question')
+					throw new HttpError(1003, 'You are not allowed to ask a question')
 
 				if (this.turn.state !== GameTurnState.Waiting)
-					throw new HttpsError(1003, 'Asking is not allowed at this time')
+					throw new HttpError(1003, 'Asking is not allowed at this time')
 
 				if (this.turn.question !== null)
-					throw new HttpsError(1003, 'A question has already been provided')
+					throw new HttpError(1003, 'A question has already been provided')
 
 				this.turn = {
 					state: GameTurnState.Answering,
@@ -146,21 +145,20 @@ export default class Game {
 				break
 			}
 			case 'answer': {
-				if (!message.value) throw new HttpsError(1003, 'Invalid answer')
+				if (!message.value) throw new HttpError(1003, 'Invalid answer')
 
 				const { current } = this
 
-				if (!current)
-					throw new HttpsError(1003, 'The questioner does not exist')
+				if (!current) throw new HttpError(1003, 'The questioner does not exist')
 
 				if (player.id === current.id)
-					throw new HttpsError(1003, 'You cannot answer your own question')
+					throw new HttpError(1003, 'You cannot answer your own question')
 
 				if (this.turn.state !== GameTurnState.Answering)
-					throw new HttpsError(1003, 'Answering is not allowed at this time')
+					throw new HttpError(1003, 'Answering is not allowed at this time')
 
 				if (player.answer !== null)
-					throw new HttpsError(1003, 'An answer has already been provided')
+					throw new HttpError(1003, 'An answer has already been provided')
 
 				player.answer = message.value
 				if (this.allAnswered) this.turn.state = GameTurnState.Matching
@@ -168,7 +166,7 @@ export default class Game {
 				break
 			}
 			default:
-				throw new HttpsError(1003, 'Invalid message')
+				throw new HttpError(1003, 'Invalid message')
 		}
 
 		this.sendGame()

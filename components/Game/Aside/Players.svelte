@@ -2,7 +2,6 @@
 	import type Game from '../../../shared/game/index.js'
 	import GameState from '../../../shared/game/state.js'
 	import Leader from '../../../icons/Leader.svelte'
-	import Done from '../../../icons/Done.svelte'
 	import Point from '../../../icons/Point.svelte'
 
 	export let game: Game
