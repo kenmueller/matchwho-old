@@ -22,8 +22,8 @@
 
 {#if game.self?.leader}
 	<button
-		style="--min-players: {MIN_PLAYERS};"
 		aria-busy={loading}
+		data-min-players={MIN_PLAYERS}
 		disabled={game.players.length < MIN_PLAYERS}
 		on:click={start}
 	>
@@ -64,8 +64,7 @@
 			background: transparentize(colors.$yellow, 0.8);
 
 			&::after {
-				counter-reset: min-players var(--min-players);
-				content: 'There must be at least ' counter(min-players) ' players';
+				content: 'There must be at least ' attr(data-min-players) ' players';
 				position: absolute;
 				top: 100%;
 				left: 0;
