@@ -8,8 +8,10 @@
 	export let game: Game
 
 	let started = false
+	$: loading = started && game.state === GameState.Joining
 
 	const start = () => {
+		if (loading) return
 		started = true
 
 		const data: ClientGameData = { key: 'start' }
@@ -20,7 +22,7 @@
 {#if game.self?.leader}
 	<button
 		style="--min-players: {MIN_PLAYERS};"
-		aria-busy={started && game.state === GameState.Joining}
+		aria-busy={loading}
 		disabled={game.players.length < MIN_PLAYERS}
 		on:click={start}
 	>

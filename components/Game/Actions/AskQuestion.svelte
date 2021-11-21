@@ -10,6 +10,7 @@
 	let asking = false
 
 	const ask = () => {
+		if (asking) return
 		asking = true
 
 		const data: ClientGameData = { key: 'question', value: question }

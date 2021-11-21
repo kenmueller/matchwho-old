@@ -8,36 +8,38 @@
 	let input: HTMLInputElement | null = null
 	$: input?.focus()
 
-	let isCreating = false
-	let isJoining = false
+	let creating = false
+	let joining = false
 
 	let code = ''
 	$: code = code.toLowerCase()
 
 	const create = async () => {
 		try {
-			isCreating = true
+			if (creating) return
+			creating = true
 
 			const response = await fetch('/games', { method: 'POST' })
 			if (!response.ok) throw new Error(await response.text())
 
 			await goto(`/${await response.text()}`)
 		} catch (error) {
-			isCreating = false
+			creating = false
 			handleError(error)
 		}
 	}
 
 	const join = async () => {
 		try {
-			isJoining = true
+			if (joining) return
+			joining = true
 
 			const response = await fetch(`/games/${code}`)
 			if (!response.ok) throw new Error(await response.text())
 
 			await goto(`/${code}`)
 		} catch (error) {
-			isJoining = false
+			joining = false
 			handleError(error)
 		}
 	}
@@ -50,7 +52,7 @@
 <div class="root">
 	<Navbar />
 	<main>
-		<button class="create" aria-busy={isCreating} on:click={create}>
+		<button class="create" aria-busy={creating} on:click={create}>
 			Create Game
 		</button>
 		<hr />
@@ -63,7 +65,7 @@
 			/>
 			<button
 				class="join"
-				aria-busy={isJoining}
+				aria-busy={joining}
 				disabled={code.length < CODE_LENGTH}
 			>
 				Join Game

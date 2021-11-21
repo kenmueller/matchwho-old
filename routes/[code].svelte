@@ -44,9 +44,10 @@
 	$: input?.focus()
 
 	let socket: WebSocket | null = null
-	let name = ''
-
 	let game: Game | null = null
+
+	let name = ''
+	$: joining = socket !== null && !game
 
 	$: if (browser && meta.state === GameState.Started) join()
 
@@ -65,6 +66,8 @@
 	})
 
 	const join = () => {
+		if (joining) return
+
 		socket = new WebSocket(
 			`${SOCKET_ORIGIN}/games/${code}?name=${encodeURIComponent(name)}`
 		)
@@ -86,9 +89,7 @@
 		{#if meta.state === GameState.Joining}
 			<form on:submit|preventDefault={join}>
 				<input placeholder="Name" bind:this={input} bind:value={name} />
-				<button aria-busy={socket !== null && !game} disabled={!name}>
-					Join Game
-				</button>
+				<button aria-busy={joining} disabled={!name}> Join Game </button>
 			</form>
 		{:else if meta.state === GameState.Completed}
 			<h1>This game has ended</h1>
