@@ -2,6 +2,7 @@
 	import type Game from '../../../shared/game/index.js'
 	import GameState from '../../../shared/game/state.js'
 	import Leader from '../../../icons/Leader.svelte'
+	import Done from '../../../icons/Done.svelte'
 	import Point from '../../../icons/Point.svelte'
 
 	export let game: Game
@@ -13,6 +14,7 @@
 			data-self={game.self?.id === player.id}
 			data-turn={game.state === GameState.Started &&
 				game.turn?.player.id === player.id}
+			data-done={player.answered}
 		>
 			<p class="name">
 				{player.name}
@@ -54,6 +56,10 @@
 
 	[data-turn='true'] {
 		color: colors.$yellow;
+	}
+
+	[data-done='true'] {
+		color: colors.$blue;
 	}
 
 	.name,

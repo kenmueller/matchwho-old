@@ -56,6 +56,13 @@ export default class Game {
 		return this.players[this.index] ?? null
 	}
 
+	private get allAnswered() {
+		const { current } = this
+		if (!current) return false
+
+		return this.players.every(({ id, answer }) => id === current.id || answer)
+	}
+
 	readonly join = (socket: WebSocket, name: string) => {
 		const player: Player = {
 			socket,
@@ -112,7 +119,6 @@ export default class Game {
 					throw new HttpsError(1003, 'You must be the leader to start the game')
 
 				this.state = GameState.Started
-				this.sendGame()
 
 				break
 			case 'question': {
@@ -132,8 +138,10 @@ export default class Game {
 				if (this.turn.question !== null)
 					throw new HttpsError(1003, 'A question has already been provided')
 
-				this.turn = { state: GameTurnState.Answering, question: message.value }
-				this.sendGame()
+				this.turn = {
+					state: GameTurnState.Answering,
+					question: message.value
+				}
 
 				break
 			}
@@ -155,11 +163,15 @@ export default class Game {
 					throw new HttpsError(1003, 'An answer has already been provided')
 
 				player.answer = message.value
-				this.sendGame()
+				if (this.allAnswered) this.turn.state = GameTurnState.Matching
 
 				break
 			}
+			default:
+				throw new HttpsError(1003, 'Invalid message')
 		}
+
+		this.sendGame()
 	}
 
 	private readonly sendGame = (...destinations: Player[]) => {
