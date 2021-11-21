@@ -13,7 +13,7 @@
 			data-self={game.self?.id === player.id}
 			data-turn={game.state === GameState.Started &&
 				game.turn?.player.id === player.id}
-			data-done={player.answered}
+			data-done={player.answer !== null}
 		>
 			<p class="name">
 				{player.name}

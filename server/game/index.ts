@@ -5,7 +5,7 @@ import CODE_LENGTH from '../../shared/game/code.js'
 import ID_LENGTH from '../../shared/game/id.js'
 import ROUNDS from '../../shared/game/rounds.js'
 import HttpError from '../../shared/error/http.js'
-import Player, { dataFromPlayer, dataFromSelf } from './player.js'
+import Player, { dataFromPlayer } from './player.js'
 import type ServerGameData from '../../shared/game/data/server.js'
 import type ClientGameData from '../../shared/game/data/client.js'
 import GameState from '../../shared/game/state.js'
@@ -193,7 +193,7 @@ export default class Game {
 					state: this.state,
 					round: this.round,
 					turn,
-					self: player.spectating ? null : dataFromSelf(player),
+					self: player.spectating ? null : dataFromPlayer(player),
 					players
 				}
 			}
