@@ -1,6 +1,7 @@
 import type GameState from './state.js'
 import type GameTurn from './turn/index.js'
 import type Player from './player/index.js'
+import type Self from './player/self.js'
 
 export default interface Game {
 	readonly state: GameState
@@ -13,7 +14,7 @@ export default interface Game {
 	 * The player this data is being sent to.
 	 * `null` if the player is spectating the game.
 	 */
-	readonly self: Player | null
+	readonly self: Self | null
 
 	readonly players: Player[]
 }

@@ -22,8 +22,11 @@
 		{/if}
 	{:else if game.turn.state === GameTurnState.Answering}
 		{#if myTurn}
-			<Message description={game.turn.question ?? '(error)'}>
+			<Message>
 				Players are answering your question
+				<svelte:fragment slot="description">
+					{game.turn.question ?? '(error)'}
+				</svelte:fragment>
 			</Message>
 		{:else}
 			<AnswerQuestion {game} {socket} />

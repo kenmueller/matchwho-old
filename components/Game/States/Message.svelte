@@ -1,5 +1,4 @@
 <script lang="ts">
-	export let description: string | null = null
 	export let error = false
 </script>
 
@@ -7,9 +6,12 @@
 	<h3>
 		<slot />
 	</h3>
-	{#if description}
-		<p>{description}</p>
+	{#if $$slots.description}
+		<p>
+			<slot name="description" />
+		</p>
 	{/if}
+	<slot name="content" />
 </main>
 
 <style lang="scss">

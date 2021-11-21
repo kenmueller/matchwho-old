@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type Game from '../../../shared/game/index.js'
 	import type ClientGameData from '../../../shared/game/data/client.js'
+	import Message from '../States/Message.svelte'
 
 	export let game: Game
 	export let socket: WebSocket
@@ -20,13 +21,23 @@
 	}
 </script>
 
-<form on:submit|preventDefault={submit}>
-	<h3 data-player={game.turn?.player.name}>
-		{game.turn?.question ?? '(error)'}
-	</h3>
-	<textarea placeholder="Answer" bind:this={input} bind:value={answer} />
-	<button aria-busy={answering} disabled={!answer}>Answer Question</button>
-</form>
+{#if game.self?.answer}
+	<Message>
+		Waiting for other players to answer
+		<section slot="content">
+			<h2>{game.turn?.question ?? '(error)'}</h2>
+			<p>{game.self.answer}</p>
+		</section>
+	</Message>
+{:else}
+	<form on:submit|preventDefault={submit}>
+		<h3 data-player={game.turn?.player.name}>
+			{game.turn?.question ?? '(error)'}
+		</h3>
+		<textarea placeholder="Answer" bind:this={input} bind:value={answer} />
+		<button aria-busy={answering} disabled={!answer}>Answer Question</button>
+	</form>
+{/if}
 
 <style lang="scss">
 	@use 'shared/colors';
@@ -107,5 +118,22 @@
 		&:disabled {
 			opacity: 0.5;
 		}
+	}
+
+	section {
+		margin-top: 0.7rem;
+		padding-top: 0.5rem;
+		text-align: left;
+		border-top: 0.125rem solid colors.$border;
+	}
+
+	h2 {
+		font-size: 1.8rem;
+	}
+
+	p {
+		margin-top: 0.2rem;
+		font-size: 1.2rem;
+		opacity: 0.5;
 	}
 </style>

@@ -3,6 +3,7 @@
 	import type ClientGameData from '../../../shared/game/data/client.js'
 	import GameState from '../../../shared/game/state.js'
 	import { MIN_PLAYERS } from '../../../shared/game/player/bounds.js'
+	import Message from './Message.svelte'
 
 	export let socket: WebSocket
 	export let game: Game
@@ -29,20 +30,16 @@
 		Start
 	</button>
 {:else}
-	<h3>The leader must start the game</h3>
+	<Message>The leader must start the game</Message>
 {/if}
 
 <style lang="scss">
 	@use 'shared/colors';
 
-	button,
-	h3 {
+	button {
 		grid-area: main;
 		justify-self: center;
 		align-self: center;
-	}
-
-	button {
 		position: relative;
 		padding: 0.8rem 8rem;
 		font-size: 1.5rem;
@@ -80,12 +77,5 @@
 				color: colors.$red;
 			}
 		}
-	}
-
-	h3 {
-		text-align: center;
-		font-size: 1.5rem;
-		font-weight: 700;
-		color: colors.$text;
 	}
 </style>
