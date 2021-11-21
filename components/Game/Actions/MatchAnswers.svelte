@@ -8,12 +8,12 @@
 </script>
 
 <main>
-	<section class="names">
+	<section data-list="players">
 		{#each players as player (player.id)}
 			<p>{player.name}</p>
 		{/each}
 	</section>
-	<section class="answers">
+	<section data-list="answers">
 		{#each players as player (player.id)}
 			<p>{player.answer}</p>
 		{/each}
@@ -29,20 +29,33 @@
 		align-self: center;
 		display: grid;
 		grid: 1fr / auto auto;
-		gap: 20rem;
+		gap: 15rem;
 	}
 
-	.names,
-	.answers {
+	section {
 		display: flex;
+		position: relative;
 		flex-direction: column;
+
+		&::before {
+			content: attr(data-list);
+			position: absolute;
+			bottom: 100%;
+			left: 0;
+			margin-bottom: 1rem;
+			white-space: nowrap;
+			text-transform: capitalize;
+			font-size: 1.5rem;
+			font-weight: 700;
+			color: colors.$text;
+		}
 	}
 
-	.names {
+	[data-list='players'] {
 		align-items: flex-end;
 	}
 
-	.answers {
+	[data-list='answers'] {
 		align-items: flex-start;
 	}
 
