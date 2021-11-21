@@ -66,6 +66,7 @@
 		[data-self='true'] &::after {
 			content: '(you)';
 			margin-left: 0.3em;
+			white-space: nowrap;
 			opacity: 0.5;
 		}
 

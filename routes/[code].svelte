@@ -41,6 +41,7 @@
 	export let meta: GameMeta
 
 	let input: HTMLInputElement | null = null
+	$: input?.focus()
 
 	let socket: WebSocket | null = null
 	let game: Game | null = null
@@ -70,7 +71,7 @@
 		})
 	}
 
-	onMount(() => (meta.state === GameState.Started ? join() : input?.focus()))
+	onMount(() => meta.state === GameState.Started && join())
 	onDestroy(() => socket?.close())
 </script>
 

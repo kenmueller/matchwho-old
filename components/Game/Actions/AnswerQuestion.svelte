@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
-
 	import type Game from '../../../shared/game/index.js'
 	import type ClientGameData from '../../../shared/game/data/client.js'
 	import Message from '../States/Message.svelte'
@@ -9,6 +7,7 @@
 	export let socket: WebSocket
 
 	let input: HTMLTextAreaElement | null = null
+	$: input?.focus()
 
 	let answer = ''
 	let answering = false
@@ -20,8 +19,6 @@
 		const data: ClientGameData = { key: 'answer', value: answer }
 		socket.send(JSON.stringify(data))
 	}
-
-	onMount(() => input?.focus())
 </script>
 
 {#if game.self?.answer}
@@ -69,6 +66,7 @@
 			bottom: 100%;
 			left: 0;
 			margin-bottom: 0.2rem;
+			white-space: nowrap;
 			font-size: 1rem;
 			opacity: 0.5;
 		}

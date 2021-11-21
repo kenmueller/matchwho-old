@@ -69,8 +69,8 @@
 				position: absolute;
 				top: 100%;
 				left: 0;
-				white-space: nowrap;
 				margin-top: 0.7rem;
+				white-space: nowrap;
 				text-align: left;
 				font-size: 1rem;
 				font-weight: 700;

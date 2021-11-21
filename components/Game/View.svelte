@@ -58,6 +58,7 @@
 		position: absolute;
 		top: 1rem;
 		right: 2rem;
+		white-space: nowrap;
 		font-size: 1.2rem;
 		font-weight: 800;
 		color: colors.$text;

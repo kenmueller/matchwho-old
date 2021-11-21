@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
-
 	import { goto } from '$app/navigation'
 
 	import CODE_LENGTH from '../shared/game/code.js'
@@ -8,6 +6,7 @@
 	import Navbar from '../components/Navbar.svelte'
 
 	let input: HTMLInputElement | null = null
+	$: input?.focus()
 
 	let creating = false
 	let joining = false
@@ -45,8 +44,6 @@
 			handleError(error)
 		}
 	}
-
-	onMount(() => input?.focus())
 </script>
 
 <svelte:head>
