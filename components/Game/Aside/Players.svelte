@@ -1,17 +1,29 @@
 <script lang="ts">
 	import type Game from '../../../shared/game/index.js'
+	import GameState from '../../../shared/game/state.js'
 	import Leader from '../../../icons/Leader.svelte'
+	import Point from '../../../icons/Point.svelte'
 
 	export let game: Game
 </script>
 
 <aside>
 	{#each game.players as player (player.id)}
-		<div data-self={game.self?.id === player.id}>
-			<p>{player.name}</p>
-			{#if player.leader}
-				<Leader />
-			{/if}
+		<div
+			data-self={game.self?.id === player.id}
+			data-turn={game.state === GameState.Started &&
+				game.turn?.player.id === player.id}
+		>
+			<p class="name">
+				{player.name}
+				{#if player.leader}
+					<Leader />
+				{/if}
+			</p>
+			<p class="points">
+				<Point />
+				{player.points}
+			</p>
 		</div>
 	{/each}
 </aside>
@@ -27,7 +39,9 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		font-weight: 700;
 		color: colors.$text;
+		transition: color 0.15s;
 
 		& + & {
 			$spacing: 0.8rem;
@@ -38,17 +52,31 @@
 		}
 	}
 
-	p {
-		font-weight: 700;
+	[data-turn='true'] {
+		color: colors.$yellow;
+	}
 
-		div[data-self='true'] &::after {
-			content: ' (you)';
+	.name,
+	.points {
+		display: flex;
+		align-items: center;
+	}
+
+	.name {
+		[data-self='true'] &::after {
+			content: '(you)';
+			margin-left: 0.3em;
 			opacity: 0.5;
+		}
+
+		> :global(svg) {
+			height: 1em;
+			margin-left: 0.3em;
 		}
 	}
 
-	div > :global(svg) {
-		height: 1.1rem;
-		margin-left: 0.5rem;
+	.points > :global(svg) {
+		height: 1em;
+		margin-right: 0.3em;
 	}
 </style>

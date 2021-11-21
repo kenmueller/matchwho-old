@@ -1,10 +1,11 @@
 <script lang="ts">
+	import { onMount } from 'svelte'
+
 	import type ClientGameData from '../../../shared/game/data/client.js'
 
 	export let socket: WebSocket
 
 	let input: HTMLTextAreaElement | null = null
-	$: input?.focus()
 
 	let question = ''
 	let asking = false
@@ -16,6 +17,8 @@
 		const data: ClientGameData = { key: 'question', value: question }
 		socket.send(JSON.stringify(data))
 	}
+
+	onMount(() => input?.focus())
 </script>
 
 <form on:submit|preventDefault={ask}>

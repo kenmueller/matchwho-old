@@ -57,11 +57,9 @@ export default class Game {
 	}
 
 	readonly join = (socket: WebSocket, name: string) => {
-		const spectating = !(this.state === GameState.Joining && name)
-
 		const player: Player = {
 			socket,
-			spectating,
+			spectating: !(this.state === GameState.Joining && name),
 			id: nanoid(ID_LENGTH),
 			name,
 			leader: !this.leader,
@@ -70,7 +68,7 @@ export default class Game {
 		}
 
 		this.listOf(player).push(player)
-		spectating ? this.sendGame(player) : this.sendGame()
+		player.spectating ? this.sendGame(player) : this.sendGame()
 
 		return player
 	}

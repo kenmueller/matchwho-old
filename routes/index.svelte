@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onMount } from 'svelte'
+
 	import { goto } from '$app/navigation'
 
 	import CODE_LENGTH from '../shared/game/code.js'
@@ -6,13 +8,11 @@
 	import Navbar from '../components/Navbar.svelte'
 
 	let input: HTMLInputElement | null = null
-	$: input?.focus()
 
 	let creating = false
 	let joining = false
 
 	let code = ''
-	$: code = code.toLowerCase()
 
 	const create = async () => {
 		try {
@@ -34,6 +34,8 @@
 			if (joining) return
 			joining = true
 
+			code = code.toLowerCase()
+
 			const response = await fetch(`/games/${code}`)
 			if (!response.ok) throw new Error(await response.text())
 
@@ -43,6 +45,8 @@
 			handleError(error)
 		}
 	}
+
+	onMount(() => input?.focus())
 </script>
 
 <svelte:head>

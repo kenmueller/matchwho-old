@@ -1,26 +1,7 @@
-@mixin -color($name, $light, $dark: null) {
-	:root {
-		--#{$name}: #{$light};
-
-		@if ($dark) {
-			@media (prefers-color-scheme: dark) {
-				--#{$name}: #{$dark};
-			}
-		}
-	}
-}
-
 $yellow: #fce49c;
 $red: #cb3837;
 
-@include -color('text', #1c1c1e, #f9f9f9);
-$text: #{var(--text)};
-
-@include -color('background', #f9f9f9, #1c1c1e);
-$background: #{var(--background)};
-
-@include -color('border', #c4c4c4, #3a3a3c);
-$border: #{var(--border)};
-
-@include -color('overlay', #f0f0f0, #262628);
-$overlay: #{var(--overlay)};
+$text: #f9f9f9;
+$background: #1c1c1e;
+$border: #3a3a3c;
+$overlay: #262628;

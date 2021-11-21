@@ -51,16 +51,16 @@
 		@media (min-width: 75rem) {
 			padding: 4rem 12rem;
 		}
+	}
 
-		&[data-spectating='true']::after {
-			content: 'spectating';
-			position: absolute;
-			top: 1rem;
-			right: 2rem;
-			font-size: 1.2rem;
-			font-weight: 800;
-			color: colors.$text;
-			opacity: 0.5;
-		}
+	[data-spectating='true']::after {
+		content: 'spectating';
+		position: absolute;
+		top: 1rem;
+		right: 2rem;
+		font-size: 1.2rem;
+		font-weight: 800;
+		color: colors.$text;
+		opacity: 0.5;
 	}
 </style>

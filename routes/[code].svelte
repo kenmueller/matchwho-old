@@ -22,7 +22,7 @@
 
 <script lang="ts">
 	import type { Load } from '@sveltejs/kit'
-	import { onDestroy } from 'svelte'
+	import { onMount, onDestroy } from 'svelte'
 
 	import { browser } from '$app/env'
 
@@ -41,7 +41,6 @@
 	export let meta: GameMeta
 
 	let input: HTMLInputElement | null = null
-	$: input?.focus()
 
 	let socket: WebSocket | null = null
 	let game: Game | null = null
@@ -49,30 +48,29 @@
 	let name = ''
 	$: joining = socket !== null && !game
 
-	$: if (browser && meta.state === GameState.Started) join()
-
-	$: socket?.addEventListener('message', ({ data }) => {
-		try {
-			const { key, value }: ServerGameData = JSON.parse(data)
-
-			switch (key) {
-				case 'game':
-					game = value
-					break
-			}
-		} catch (error) {
-			handleError(error)
-		}
-	})
-
 	const join = () => {
 		if (joining) return
 
 		socket = new WebSocket(
 			`${SOCKET_ORIGIN}/games/${code}?name=${encodeURIComponent(name)}`
 		)
+
+		socket.addEventListener('message', ({ data }) => {
+			try {
+				const { key, value }: ServerGameData = JSON.parse(data)
+
+				switch (key) {
+					case 'game':
+						game = value
+						break
+				}
+			} catch (error) {
+				handleError(error)
+			}
+		})
 	}
 
+	onMount(() => (meta.state === GameState.Started ? join() : input?.focus()))
 	onDestroy(() => socket?.close())
 </script>
 
@@ -89,7 +87,7 @@
 		{#if meta.state === GameState.Joining}
 			<form on:submit|preventDefault={join}>
 				<input placeholder="Name" bind:this={input} bind:value={name} />
-				<button aria-busy={joining} disabled={!name}> Join Game </button>
+				<button aria-busy={joining} disabled={!name}>Join Game</button>
 			</form>
 		{:else if meta.state === GameState.Completed}
 			<h1>This game has ended</h1>
