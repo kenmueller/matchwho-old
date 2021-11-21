@@ -8,7 +8,7 @@ import {
 	prerenderedMiddleware,
 	kitMiddleware
 	// @ts-ignore
-} from '../build/middlewares.js'
+} from '../../build/middlewares.js'
 
 app.set('trust proxy', 1)
 app.disable('x-powered-by')
