@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type Game from '../../../shared/game/index.js'
 	import type ClientGameData from '../../../shared/game/data/client.js'
+	import handleError from '../../../lib/error/handle.js'
 	import Message from '../States/Message.svelte'
 
 	export let game: Game
@@ -13,11 +14,16 @@
 	let answering = false
 
 	const submit = () => {
-		if (answering) return
-		answering = true
+		try {
+			if (answering) return
+			answering = true
 
-		const data: ClientGameData = { key: 'answer', value: answer }
-		socket.send(JSON.stringify(data))
+			const data: ClientGameData = { key: 'answer', value: answer }
+			socket.send(JSON.stringify(data))
+		} catch (error) {
+			answering = false
+			handleError(error)
+		}
 	}
 </script>
 

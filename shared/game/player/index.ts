@@ -1,9 +1,9 @@
 export default interface Player {
-	readonly id: string
-	readonly name: string
-	readonly leader: boolean
-	readonly points: number
+	id: string
+	name: string
+	leader: boolean
+	points: number
 
 	/** If the player has answered the current question. */
-	readonly answered: boolean
+	answered: boolean
 }

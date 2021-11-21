@@ -5,7 +5,7 @@ import shuffle from 'shuffle-array'
 import CODE_LENGTH from '../../shared/game/code.js'
 import ID_LENGTH from '../../shared/game/id.js'
 import ROUNDS from '../../shared/game/rounds.js'
-import HttpError from '../../shared/error/http.js'
+import HttpError, { HttpErrorCode } from '../../shared/error/http.js'
 import Player, { dataFromPlayer, dataFromSelf } from './player.js'
 import type ServerGameData from '../../shared/game/data/server.js'
 import type ClientGameData from '../../shared/game/data/client.js'
@@ -14,21 +14,25 @@ import GameTurnState from '../../shared/game/turn/state.js'
 import type GameMeta from '../../shared/game/meta.js'
 import type GameTurn from '../../shared/game/turn/index.js'
 import type InternalGameTurn from './turn.js'
+import onStart from './message/start.js'
+import onQuestion from './message/question.js'
+import onAnswer from './message/answer.js'
+import onMatch from './message/match.js'
 
 export default class Game {
-	private static readonly games: Record<string, Game> = {}
+	static games: Record<string, Game> = {}
 
-	readonly code = nanoid(CODE_LENGTH).toLowerCase()
+	code = nanoid(CODE_LENGTH).toLowerCase()
 
-	private readonly players: Player[] = []
-	private readonly spectators: Player[] = []
+	players: Player[] = []
+	spectators: Player[] = []
 
 	state = GameState.Joining
 
-	private round = 1
-	private index = 0
+	round = 1
+	index = 0
 
-	private turn: InternalGameTurn = {
+	turn: InternalGameTurn = {
 		state: GameTurnState.Waiting,
 		question: null,
 		answers: null,
@@ -39,9 +43,9 @@ export default class Game {
 		Game.games[this.code] = this
 	}
 
-	static readonly validCode = (code: string) => code.length === CODE_LENGTH
+	static validCode = (code: string) => code.length === CODE_LENGTH
 
-	static readonly withCode = (code: string) =>
+	static withCode = (code: string) =>
 		Object.prototype.hasOwnProperty.call(Game.games, code)
 			? Game.games[code]
 			: null
@@ -51,15 +55,15 @@ export default class Game {
 		return { state, leader: leader && leader.name }
 	}
 
-	private get leader() {
+	get leader() {
 		return this.players[0] ?? null
 	}
 
-	private get current() {
+	get current() {
 		return this.players[this.index] ?? null
 	}
 
-	private get answers() {
+	get answers() {
 		const { current } = this
 		if (!current) return null
 
@@ -70,7 +74,7 @@ export default class Game {
 		return players.every(Boolean) ? shuffle(players as string[]) : null
 	}
 
-	readonly join = (socket: WebSocket, name: string) => {
+	join = (socket: WebSocket, name: string) => {
 		const player: Player = {
 			socket,
 			spectating: !(this.state === GameState.Joining && name),
@@ -87,7 +91,7 @@ export default class Game {
 		return player
 	}
 
-	readonly leave = (player: Player) => {
+	leave = (player: Player) => {
 		const list = this.listOf(player)
 
 		const index = list.indexOf(player)
@@ -110,7 +114,7 @@ export default class Game {
 		this.sendGame()
 	}
 
-	private readonly playersChanged = () => {
+	playersChanged = () => {
 		if (this.index < this.players.length) return
 
 		if (this.round === ROUNDS) {
@@ -121,87 +125,28 @@ export default class Game {
 		}
 	}
 
-	readonly onMessage = (player: Player, message: ClientGameData) => {
+	onMessage = (player: Player, message: ClientGameData) => {
 		switch (message.key) {
 			case 'start':
-				if (this.state !== GameState.Joining)
-					throw new HttpError(1003, 'The game has already started')
-
-				if (!player.leader)
-					throw new HttpError(1003, 'You must be the leader to start the game')
-
-				this.state = GameState.Started
-
+				onStart(this, player)
 				break
-			case 'question': {
-				if (typeof message.value !== 'string')
-					throw new HttpError(1003, 'Invalid question')
-
-				const question = message.value.trim()
-				if (!question)
-					throw new HttpError(1003, 'Your question cannot be empty')
-
-				const { current } = this
-				if (!current) throw new HttpError(1003, 'The questioner does not exist')
-
-				if (player.id !== current.id)
-					throw new HttpError(1003, 'You are not allowed to ask a question')
-
-				if (this.turn.state !== GameTurnState.Waiting)
-					throw new HttpError(1003, 'Asking is not allowed at this time')
-
-				if (this.turn.question !== null)
-					throw new HttpError(1003, 'A question has already been provided')
-
-				this.turn = {
-					state: GameTurnState.Answering,
-					question,
-					answers: null,
-					matches: null
-				}
-
+			case 'question':
+				onQuestion(this, player, message.value)
 				break
-			}
-			case 'answer': {
-				if (typeof message.value !== 'string')
-					throw new HttpError(1003, 'Invalid answer')
-
-				const answer = message.value.trim()
-				if (!answer) throw new HttpError(1003, 'Your answer cannot be empty')
-
-				const { current } = this
-				if (!current) throw new HttpError(1003, 'The questioner does not exist')
-
-				if (player.id === current.id)
-					throw new HttpError(1003, 'You cannot answer your own question')
-
-				if (this.turn.state !== GameTurnState.Answering)
-					throw new HttpError(1003, 'Answering is not allowed at this time')
-
-				if (player.answer !== null)
-					throw new HttpError(1003, 'An answer has already been provided')
-
-				player.answer = answer
-				const { answers } = this
-
-				if (answers)
-					this.turn = {
-						...this.turn,
-						state: GameTurnState.Matching,
-						answers,
-						matches: {}
-					}
-
+			case 'answer':
+				onAnswer(this, player, message.value)
 				break
-			}
+			case 'match':
+				onMatch(this, player, message.value)
+				break
 			default:
-				throw new HttpError(1003, 'Invalid message')
+				throw new HttpError(HttpErrorCode.Socket, 'Invalid message')
 		}
 
 		this.sendGame()
 	}
 
-	private readonly sendGame = (...destinations: Player[]) => {
+	sendGame = (...destinations: Player[]) => {
 		const { current } = this
 
 		const turn: GameTurn = current && {
@@ -231,6 +176,6 @@ export default class Game {
 		}
 	}
 
-	private readonly listOf = (player: Player) =>
+	listOf = (player: Player) =>
 		this[player.spectating ? 'spectators' : 'players']
 }

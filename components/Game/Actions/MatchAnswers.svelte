@@ -1,19 +1,30 @@
 <script lang="ts">
 	import type Game from '../../../shared/game/index.js'
 	import type Player from '../../../shared/game/player/index.js'
+	import type ClientGameData from '../../../shared/game/data/client.js'
+	import handleError from '../../../lib/error/handle.js'
 
 	export let game: Game
 	export let socket: WebSocket
 
 	let playerLink: Player | null = null
-	let answerLink: string | null = null
+	let answerLink: number | null = null
 
 	$: players = game.players.filter(({ id }) => id !== game.turn?.player.id)
 	$: answers = game.turn?.answers ?? []
 
 	$: if (playerLink && answerLink) {
-		console.log(playerLink, answerLink)
-		playerLink = answerLink = null
+		try {
+			const data: ClientGameData = {
+				key: 'match',
+				value: { player: playerLink.id, answer: answerLink }
+			}
+
+			socket.send(JSON.stringify(data))
+			playerLink = answerLink = null
+		} catch (error) {
+			handleError(error)
+		}
 	}
 </script>
 
@@ -29,10 +40,10 @@
 		{/each}
 	</section>
 	<section data-list="answers">
-		{#each answers as answer}
+		{#each answers as answer, index (index)}
 			<p
-				on:mousedown={() => (answerLink = answer)}
-				on:mouseup={() => (answerLink = answer)}
+				on:mousedown={() => (answerLink = index)}
+				on:mouseup={() => (answerLink = index)}
 			>
 				{answer}
 			</p>

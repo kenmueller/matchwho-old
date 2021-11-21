@@ -1,5 +1,5 @@
 import socket from '../socket.js'
-import HttpError from '../../shared/error/http.js'
+import HttpError, { HttpErrorCode } from '../../shared/error/http.js'
 import closeWithError from '../error/close.js'
 import CODE_LENGTH from '../../shared/game/code.js'
 import Game from './index.js'
@@ -12,13 +12,18 @@ socket('/games/:code', (socket, req) => {
 		const name = req.query.get('name') ?? ''
 
 		if (!Game.validCode(code))
-			throw new HttpError(1003, `Game codes must be ${CODE_LENGTH} characters`)
+			throw new HttpError(
+				HttpErrorCode.Socket,
+				`Game codes must be ${CODE_LENGTH} characters`
+			)
 
 		const game = Game.withCode(code)
-		if (!game) throw new HttpError(1003, 'This game does not exist')
+
+		if (!game)
+			throw new HttpError(HttpErrorCode.Socket, 'This game does not exist')
 
 		if (game.state === GameState.Completed)
-			throw new HttpError(1003, 'This game has already ended')
+			throw new HttpError(HttpErrorCode.Socket, 'This game has already ended')
 
 		const player = game.join(socket, name)
 
@@ -35,7 +40,7 @@ socket('/games/:code', (socket, req) => {
 				)
 
 				if (typeof message?.key !== 'string')
-					throw new HttpError(1003, 'Invalid data')
+					throw new HttpError(HttpErrorCode.Socket, 'Invalid data')
 
 				game.onMessage(player, message)
 			} catch (error) {

@@ -3,6 +3,7 @@
 	import type ClientGameData from '../../../shared/game/data/client.js'
 	import GameState from '../../../shared/game/state.js'
 	import { MIN_PLAYERS } from '../../../shared/game/player/bounds.js'
+	import handleError from '../../../lib/error/handle.js'
 	import Message from './Message.svelte'
 
 	export let socket: WebSocket
@@ -12,11 +13,16 @@
 	$: loading = started && game.state === GameState.Joining
 
 	const start = () => {
-		if (loading) return
-		started = true
+		try {
+			if (loading) return
+			started = true
 
-		const data: ClientGameData = { key: 'start' }
-		socket.send(JSON.stringify(data))
+			const data: ClientGameData = { key: 'start' }
+			socket.send(JSON.stringify(data))
+		} catch (error) {
+			started = false
+			handleError(error)
+		}
 	}
 </script>
 

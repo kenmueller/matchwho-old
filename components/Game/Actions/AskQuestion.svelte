@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type ClientGameData from '../../../shared/game/data/client.js'
+	import handleError from '../../../lib/error/handle.js'
 
 	export let socket: WebSocket
 
@@ -10,11 +11,16 @@
 	let asking = false
 
 	const ask = () => {
-		if (asking) return
-		asking = true
+		try {
+			if (asking) return
+			asking = true
 
-		const data: ClientGameData = { key: 'question', value: question }
-		socket.send(JSON.stringify(data))
+			const data: ClientGameData = { key: 'question', value: question }
+			socket.send(JSON.stringify(data))
+		} catch (error) {
+			asking = false
+			handleError(error)
+		}
 	}
 </script>
 

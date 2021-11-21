@@ -4,10 +4,10 @@ import type PlayerData from '../../shared/game/player/index.js'
 import type Self from '../../shared/game/player/self.js'
 
 export default interface Player {
-	readonly socket: WebSocket
-	readonly spectating: boolean
-	readonly id: string
-	readonly name: string
+	socket: WebSocket
+	spectating: boolean
+	id: string
+	name: string
 	leader: boolean
 	points: number
 

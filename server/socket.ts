@@ -6,7 +6,7 @@ import Pattern from 'url-pattern'
 import { server } from './root.js'
 import DEV from './dev.js'
 import ORIGIN from './origin.js'
-import HttpError from '../shared/error/http.js'
+import HttpError, { HttpErrorCode } from '../shared/error/http.js'
 
 export interface SocketRequest extends IncomingMessage {
 	params: Record<string, string>
@@ -31,7 +31,9 @@ server.on('upgrade', async (req: SocketRequest, socket: Socket, head) => {
 			req.headers.origin
 		)
 
-		if (origin !== ORIGIN) throw new HttpError(1003, 'Invalid origin')
+		if (origin !== ORIGIN)
+			throw new HttpError(HttpErrorCode.Socket, 'Invalid origin')
+
 		if (DEV && pathname === '/') return
 
 		for (const [pattern, socketServer] of socketServers) {
@@ -49,7 +51,7 @@ server.on('upgrade', async (req: SocketRequest, socket: Socket, head) => {
 			return
 		}
 
-		throw new HttpError(1003, 'No matching paths')
+		throw new HttpError(HttpErrorCode.Socket, 'No matching paths')
 	} catch (error) {
 		try {
 			socket.destroy(error instanceof Error ? error : undefined)
