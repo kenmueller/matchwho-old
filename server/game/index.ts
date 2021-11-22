@@ -5,6 +5,8 @@ import shuffle from 'shuffle-array'
 import CODE_LENGTH from '../../shared/game/code.js'
 import ID_LENGTH from '../../shared/game/id.js'
 import ROUNDS from '../../shared/game/rounds.js'
+import { MAX_PLAYERS } from '../../shared/game/player/bounds.js'
+import MAX_NAME_LENGTH from '../../shared/game/name.js'
 import HttpError, { HttpErrorCode } from '../../shared/error/http.js'
 import Player, { dataFromPlayer, dataFromSelf } from './player.js'
 import type ServerGameData from '../../shared/game/data/server.js'
@@ -75,9 +77,18 @@ export default class Game {
 	}
 
 	join = (socket: WebSocket, name: string) => {
+		if (this.state === GameState.Completed)
+			throw new HttpError(HttpErrorCode.Socket, 'This game has already ended')
+
+		if (name.length > MAX_NAME_LENGTH)
+			throw new HttpError(HttpErrorCode.Socket, 'Your name is too long')
+
 		const player: Player = {
 			socket,
-			spectating: !(this.state === GameState.Joining && name),
+			spectating:
+				this.players.length >= MAX_PLAYERS ||
+				this.state === GameState.Started ||
+				!name,
 			id: nanoid(ID_LENGTH),
 			name,
 			leader: !this.leader,

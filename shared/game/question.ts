@@ -1,0 +1,3 @@
+const MAX_QUESTION_LENGTH = 200
+
+export default MAX_QUESTION_LENGTH

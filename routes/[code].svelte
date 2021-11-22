@@ -34,6 +34,7 @@
 
 	import ORIGIN from '../lib/origin/index.js'
 	import SOCKET_ORIGIN from '../lib/origin/socket.js'
+	import MAX_NAME_LENGTH from '../shared/game/name.js'
 	import type Session from '../lib/session.js'
 	import type Game from '../shared/game/index.js'
 	import type GameMeta from '../shared/game/meta.js'
@@ -93,7 +94,12 @@
 		<Navbar />
 		{#if meta.state === GameState.Joining}
 			<form on:submit|preventDefault={join}>
-				<input placeholder="Name" bind:this={input} bind:value={name} />
+				<input
+					placeholder="Name"
+					maxlength={MAX_NAME_LENGTH}
+					bind:this={input}
+					bind:value={name}
+				/>
 				<button aria-busy={joining} disabled={!name}>Join Game</button>
 			</form>
 		{:else if meta.state === GameState.Completed}

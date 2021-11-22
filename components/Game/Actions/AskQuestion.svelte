@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type ClientGameData from '../../../shared/game/data/client.js'
+	import MAX_QUESTION_LENGTH from '../../../shared/game/question.js'
 	import handleError from '../../../lib/error/handle.js'
 
 	export let socket: WebSocket
@@ -25,7 +26,12 @@
 </script>
 
 <form on:submit|preventDefault={ask}>
-	<textarea placeholder="Question" bind:this={input} bind:value={question} />
+	<textarea
+		placeholder="Question"
+		maxlength={MAX_QUESTION_LENGTH}
+		bind:this={input}
+		bind:value={question}
+	/>
 	<button aria-busy={asking} disabled={!question}>Ask Question</button>
 </form>
 

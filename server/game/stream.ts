@@ -3,13 +3,12 @@ import HttpError, { HttpErrorCode } from '../../shared/error/http.js'
 import closeWithError from '../error/close.js'
 import CODE_LENGTH from '../../shared/game/code.js'
 import Game from './index.js'
-import GameState from '../../shared/game/state.js'
 import type ClientGameData from '../../shared/game/data/client.js'
 
 socket('/games/:code', (socket, req) => {
 	try {
 		const { code } = req.params
-		const name = req.query.get('name') ?? ''
+		const name = req.query.get('name')?.trim() ?? ''
 
 		if (!Game.validCode(code))
 			throw new HttpError(
@@ -21,9 +20,6 @@ socket('/games/:code', (socket, req) => {
 
 		if (!game)
 			throw new HttpError(HttpErrorCode.Socket, 'This game does not exist')
-
-		if (game.state === GameState.Completed)
-			throw new HttpError(HttpErrorCode.Socket, 'This game has already ended')
 
 		const player = game.join(socket, name)
 

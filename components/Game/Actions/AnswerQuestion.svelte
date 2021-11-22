@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type Game from '../../../shared/game/index.js'
 	import type ClientGameData from '../../../shared/game/data/client.js'
+	import MAX_ANSWER_LENGTH from '../../../shared/game/answer.js'
 	import handleError from '../../../lib/error/handle.js'
 	import Message from '../States/Message.svelte'
 
@@ -40,7 +41,12 @@
 		<h3 data-player={game.turn?.player.name}>
 			{game.turn?.question ?? '(error)'}
 		</h3>
-		<textarea placeholder="Answer" bind:this={input} bind:value={answer} />
+		<textarea
+			placeholder="Answer"
+			maxlength={MAX_ANSWER_LENGTH}
+			bind:this={input}
+			bind:value={answer}
+		/>
 		<button aria-busy={answering} disabled={!answer}>Answer Question</button>
 	</form>
 {/if}

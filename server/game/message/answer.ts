@@ -1,5 +1,6 @@
 import HttpError, { HttpErrorCode } from '../../../shared/error/http.js'
 import GameTurnState from '../../../shared/game/turn/state.js'
+import MAX_ANSWER_LENGTH from '../../../shared/game/answer.js'
 import type Game from '../index.js'
 import type Player from '../player.js'
 
@@ -11,6 +12,9 @@ const onAnswer = (game: Game, player: Player, value: string) => {
 
 	if (!answer)
 		throw new HttpError(HttpErrorCode.Socket, 'Your answer cannot be empty')
+
+	if (answer.length > MAX_ANSWER_LENGTH)
+		throw new HttpError(HttpErrorCode.Socket, 'Your answer is too long')
 
 	const { current } = game
 
