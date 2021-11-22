@@ -41,13 +41,13 @@ const onMatch = (game: Game, sender: Player, value: MatchData) => {
 			'Matching is not allowed at this time'
 		)
 
-	matches[player.id] = answer
-
 	for (const [otherPlayer, otherAnswer] of Object.entries(matches))
 		if (otherAnswer === answer) {
 			delete matches[otherPlayer]
 			break
 		}
+
+	matches[player.id] = answer
 }
 
 export default onMatch
