@@ -1,21 +1,27 @@
 <script lang="ts" context="module">
 	export const load: Load = async ({ page, session, fetch }) => {
-		const { code } = page.params
+		try {
+			const { code } = page.params
 
-		if (browser) {
-			const response = await fetch(`${ORIGIN}/games/${code}`)
-			if (!response.ok) return { status: 307, redirect: '/' }
+			if (browser) {
+				const response = await fetch(`${ORIGIN}/games/${code}`)
+				if (!response.ok) return { status: 307, redirect: '/' }
+
+				return {
+					props: { code, meta: await response.json() }
+				}
+			}
+
+			const { gameMeta: meta }: Session = session
+			if (!meta) return { status: 307, redirect: '/' }
 
 			return {
-				props: { code, meta: await response.json() }
+				props: { code, meta }
 			}
-		}
-
-		const { gameMeta: meta }: Session = session
-		if (!meta) return { status: 307, redirect: '/' }
-
-		return {
-			props: { code, meta }
+		} catch (error) {
+			return {
+				error: error instanceof Error ? error : 'An unknown error occurred'
+			}
 		}
 	}
 </script>
