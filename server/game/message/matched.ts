@@ -32,22 +32,35 @@ const onMatched = (game: Game, player: Player) => {
 			'Not all answers have been matched.'
 		)
 
+	const { notCurrent } = game
+
+	if (!notCurrent)
+		throw new HttpError(HttpErrorCode.Socket, 'The questioner does not exist')
+
 	/** The index after the last index of the answer. */
 	const nextAnswer: Record<string, number> = {}
 
-	game.turn.correctMatches = game.notCurrent.reduce<
-		Exclude<typeof game.turn.correctMatches, null>
-	>((matches, { id, answer }) => {
-		if (!answer) return matches
+	game.turn.correct = {
+		count: notCurrent.reduce(
+			(count, { id, answer }) =>
+				count + (answers[matches[id]] === answer ? 1 : 0),
+			0
+		),
+		matches: notCurrent.reduce<Record<string, number>>(
+			(matches, { id, answer }) => {
+				if (!answer) return matches
 
-		const index = answers.indexOf(answer, nextAnswer[answer])
-		if (index < 0) return matches
+				const index = answers.indexOf(answer, nextAnswer[answer])
+				if (index < 0) return matches
 
-		matches[id] = index
-		nextAnswer[answer] = index + 1
+				matches[id] = index
+				nextAnswer[answer] = index + 1
 
-		return matches
-	}, {})
+				return matches
+			},
+			{}
+		)
+	}
 
 	player.points += Object.entries(matches).reduce((points, [id, index]) => {
 		const player = game.players.find(player => player.id === id)

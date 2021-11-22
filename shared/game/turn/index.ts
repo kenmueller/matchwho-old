@@ -1,5 +1,6 @@
 import type GameTurnState from './state.js'
 import type Player from '../player/index.js'
+import type CorrectGameTurn from './correct.js'
 
 export default interface GameTurn {
 	player: Player
@@ -18,15 +19,12 @@ export default interface GameTurn {
 	 */
 	answers: string[] | null
 
-	/**
-	 * A map of `Player` ids and answer indices.
-	 */
+	/** A map of `Player` ids and answer indices. */
 	matches: Record<string, number> | null
 
 	/**
-	 * A map of `Player` ids and answer indices.
-	 * The correct matches.
+	 * The correct state of the game.
 	 * `null` when the player has not finished matching.
 	 */
-	correctMatches: Record<string, number> | null
+	correct: CorrectGameTurn | null
 }

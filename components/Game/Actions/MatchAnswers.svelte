@@ -22,12 +22,15 @@
 	$: answers = game.turn?.answers ?? []
 	$: matches = Object.entries(game.turn?.matches ?? {})
 
-	$: correctMatches = game.turn?.correctMatches
-		? Object.entries(game.turn.correctMatches)
+	$: correct = game.turn?.correct
+		? {
+				count: game.turn.correct.count,
+				matches: Object.entries(game.turn.correct.matches)
+		  }
 		: null
 
 	$: myTurn = game.turn?.player.id === game.self?.id
-	$: disabled = !(myTurn && correctMatches === null)
+	$: disabled = !(myTurn && correct === null)
 
 	$: if (!(playerLink === null || answerLink === null)) {
 		try {
@@ -110,45 +113,48 @@
 	aria-disabled={disabled}
 	data-question={game.turn?.question ?? '(error)'}
 >
-	<section class="players">
-		<h3>Players</h3>
-		{#each players as player (player.id)}
-			<p
-				bind:this={elements[player.id]}
-				on:mousedown={setPlayerLink(player)}
-				on:mouseup={setPlayerLink(player)}
-			>
-				{player.name}
-			</p>
-		{/each}
-	</section>
-	<section class="answers">
-		<h3>Answers</h3>
-		{#each answers as answer, index (index)}
-			<p
-				bind:this={elements[index]}
-				on:mousedown={setAnswerLink(index)}
-				on:mouseup={setAnswerLink(index)}
-			>
-				{answer}
-			</p>
-		{/each}
-	</section>
+	<div
+		class="columns"
+		data-correct={correct?.count}
+		data-total={correct?.matches.length}
+	>
+		<section class="players">
+			<h3>Players</h3>
+			{#each players as player (player.id)}
+				<p
+					bind:this={elements[player.id]}
+					on:mousedown={setPlayerLink(player)}
+					on:mouseup={setPlayerLink(player)}
+				>
+					{player.name}
+				</p>
+			{/each}
+		</section>
+		<section class="answers">
+			<h3>Answers</h3>
+			{#each answers as answer, index (index)}
+				<p
+					bind:this={elements[index]}
+					on:mousedown={setAnswerLink(index)}
+					on:mouseup={setAnswerLink(index)}
+				>
+					{answer}
+				</p>
+			{/each}
+		</section>
+	</div>
 	{#if myTurn}
 		<button
-			class:next={correctMatches}
-			aria-busy={correctMatches ? loadingNext : loadingMatched}
-			disabled={!(correctMatches || isMatched)}
-			on:click={correctMatches ? next : matched}
+			aria-busy={correct ? loadingNext : loadingMatched}
+			disabled={!(correct || isMatched)}
+			on:click={correct ? next : matched}
 		>
-			{correctMatches ? 'Done' : 'Show Correct Matches'}
+			{correct ? 'Done' : 'Show Correct Matches'}
 		</button>
-	{:else if correctMatches}
-		<h4>Showing Correct Matches</h4>
 	{/if}
 </main>
 
-{#each correctMatches ?? matches as [player, answer] (player)}
+{#each correct?.matches ?? matches as [player, answer] (player)}
 	{#if player in elements && answer in elements}
 		<MatchLink
 			from={elements[player]}
@@ -166,19 +172,14 @@
 	@use 'sass:math';
 	@use 'shared/colors';
 
-	$vertical-spacing: 2rem;
-
 	main {
 		grid-area: main;
 		justify-self: center;
 		align-self: center;
-		display: grid;
+		display: flex;
 		position: relative;
-		grid:
-			'players answers' auto
-			'info info' auto /
-			auto auto;
-		gap: 0 15rem;
+		flex-direction: column;
+		align-items: center;
 
 		&::before {
 			content: attr(data-question);
@@ -197,18 +198,36 @@
 		pointer-events: none;
 	}
 
+	.columns {
+		display: flex;
+		position: relative;
+	}
+
+	[data-correct][data-total]::after {
+		content: 'Showing Correct Answers (' attr(data-correct) '/' attr(data-total)
+			')';
+		position: absolute;
+		top: 100%;
+		left: 50%;
+		margin-top: 1rem;
+		white-space: nowrap;
+		text-align: center;
+		font-weight: 700;
+		color: colors.$yellow;
+		transform: translateX(-50%);
+	}
+
 	section {
 		display: flex;
 		flex-direction: column;
 	}
 
 	.players {
-		grid-area: players;
+		margin-right: 15rem;
 		align-items: flex-end;
 	}
 
 	.answers {
-		grid-area: answers;
 		align-items: flex-start;
 	}
 
@@ -240,14 +259,8 @@
 		}
 	}
 
-	button,
-	h4 {
-		grid-area: info;
-		justify-self: center;
-		margin-top: $vertical-spacing;
-	}
-
 	button {
+		margin-top: 2.5rem;
 		padding: 0.4rem 2rem;
 		font-size: 1.1rem;
 		font-weight: 700;
@@ -270,35 +283,5 @@
 		&:disabled {
 			opacity: 0.5;
 		}
-	}
-
-	.next {
-		$message-line-height: 2ch;
-		$message-spacing: 1rem;
-
-		position: relative;
-		margin-top: calc(
-			#{math.div($vertical-spacing, 2) + $message-spacing} + #{$message-line-height}
-		);
-
-		&::before {
-			content: 'Showing Correct Answers';
-			position: absolute;
-			bottom: 100%;
-			left: 50%;
-			margin-bottom: $message-spacing;
-			white-space: nowrap;
-			line-height: $message-line-height;
-			text-align: center;
-			transform: translateX(-50%);
-		}
-	}
-
-	h4 {
-		margin-top: math.div($vertical-spacing, 2);
-		text-align: center;
-		font-size: 1.1rem;
-		font-weight: 700;
-		color: colors.$yellow;
 	}
 </style>

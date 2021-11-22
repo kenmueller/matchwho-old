@@ -18,7 +18,7 @@ const onNext = (game: Game, player: Player) => {
 			'Matching is not allowed at this time'
 		)
 
-	if (!game.turn.correctMatches)
+	if (!game.turn.correct)
 		throw new HttpError(
 			HttpErrorCode.Socket,
 			'You must have seen the correct matches before continuing'

@@ -44,7 +44,7 @@ const onQuestion = (game: Game, player: Player, value: string) => {
 		question,
 		answers: null,
 		matches: null,
-		correctMatches: null
+		correct: null
 	}
 }
 

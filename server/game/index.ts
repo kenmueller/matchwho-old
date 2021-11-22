@@ -42,7 +42,7 @@ export default class Game {
 		question: null,
 		answers: null,
 		matches: null,
-		correctMatches: null
+		correct: null
 	}
 
 	constructor() {
@@ -146,12 +146,14 @@ export default class Game {
 	}
 
 	resetTurn = () => {
+		for (const player of this.players) player.answer = null
+
 		this.turn = {
 			state: GameTurnState.Waiting,
 			question: null,
 			answers: null,
 			matches: null,
-			correctMatches: null
+			correct: null
 		}
 	}
 
