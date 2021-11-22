@@ -19,7 +19,11 @@
 					case GameTurnState.Answering:
 						return myTurn ? 'Should be any time now...' : 'Answer time!'
 					case GameTurnState.Matching:
-						return myTurn
+						return game.turn.correctMatches
+							? `${
+									myTurn ? "You've" : `${game.turn.player.name} has`
+							  } finished matching`
+							: myTurn
 							? 'Start matching!'
 							: `${game.turn.player.name} is matching`
 					default:

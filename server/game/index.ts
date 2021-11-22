@@ -21,6 +21,8 @@ import onQuestion from './message/question.js'
 import onAnswer from './message/answer.js'
 import onMatch from './message/match.js'
 import onUnmatch from './message/unmatch.js'
+import onMatched from './message/matched.js'
+import onNext from './message/next.js'
 
 export default class Game {
 	static games: Record<string, Game> = {}
@@ -39,7 +41,8 @@ export default class Game {
 		state: GameTurnState.Waiting,
 		question: null,
 		answers: null,
-		matches: null
+		matches: null,
+		correctMatches: null
 	}
 
 	constructor() {
@@ -66,15 +69,24 @@ export default class Game {
 		return this.players[this.index] ?? null
 	}
 
-	get answers() {
+	get notCurrent() {
 		const { current } = this
-		if (!current) return null
+		return current && this.players.filter(({ id }) => id !== current.id)
+	}
 
-		const players = this.players
-			.filter(({ id }) => id !== current.id)
-			.map(({ answer }) => answer)
+	get answers() {
+		const players = this.notCurrent?.map(({ answer }) => answer)
+		return players?.every(Boolean) ? shuffle(players as string[]) : null
+	}
 
-		return players.every(Boolean) ? shuffle(players as string[]) : null
+	/** If all answers are matched. */
+	get matched() {
+		const { answers, matches } = this.turn
+
+		return (
+			!(answers === null || matches === null) &&
+			answers.length === Object.keys(matches).length
+		)
 	}
 
 	join = (socket: WebSocket, name: string) => {
@@ -112,28 +124,34 @@ export default class Game {
 		list.splice(index, 1)
 
 		if (player.spectating) return
+
 		if (index < this.index) this.index--
+		if (index === this.index) this.resetTurn()
 
-		if (index === this.index)
-			this.turn = {
-				state: GameTurnState.Waiting,
-				question: null,
-				answers: null,
-				matches: null
-			}
+		if (this.index >= this.players.length) {
+			this.nextRound()
+			this.resetTurn()
+		}
 
-		this.playersChanged()
 		this.sendGame()
 	}
 
-	playersChanged = () => {
-		if (this.index < this.players.length) return
-
+	nextRound = () => {
 		if (this.round === ROUNDS) {
 			this.state = GameState.Completed
 		} else {
 			this.round++
 			this.index = 0
+		}
+	}
+
+	resetTurn = () => {
+		this.turn = {
+			state: GameTurnState.Waiting,
+			question: null,
+			answers: null,
+			matches: null,
+			correctMatches: null
 		}
 	}
 
@@ -153,6 +171,12 @@ export default class Game {
 				break
 			case 'unmatch':
 				onUnmatch(this, player, message.value)
+				break
+			case 'matched':
+				onMatched(this, player)
+				break
+			case 'next':
+				onNext(this, player)
 				break
 			default:
 				throw new HttpError(HttpErrorCode.Socket, 'Invalid message')

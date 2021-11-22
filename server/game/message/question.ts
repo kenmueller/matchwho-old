@@ -43,7 +43,8 @@ const onQuestion = (game: Game, player: Player, value: string) => {
 		state: GameTurnState.Answering,
 		question,
 		answers: null,
-		matches: null
+		matches: null,
+		correctMatches: null
 	}
 }
 

@@ -22,4 +22,11 @@ export default interface GameTurn {
 	 * A map of `Player` ids and answer indices.
 	 */
 	matches: Record<string, number> | null
+
+	/**
+	 * A map of `Player` ids and answer indices.
+	 * The correct matches.
+	 * `null` when the player has not finished matching.
+	 */
+	correctMatches: Record<string, number> | null
 }

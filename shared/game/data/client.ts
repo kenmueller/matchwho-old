@@ -16,4 +16,10 @@ type ClientGameData =
 	/** Remove a match for a player id. */
 	| { key: 'unmatch'; value: string }
 
+	/** Done matching. */
+	| { key: 'matched' }
+
+	/** Done with the current turn. */
+	| { key: 'next' }
+
 export default ClientGameData

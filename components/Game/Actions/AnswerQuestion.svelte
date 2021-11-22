@@ -119,13 +119,14 @@
 		border-radius: 1rem;
 		transition: background 0.15s, border-color 0.15s, opacity 0.15s;
 
-		&[aria-busy='false']:not(:disabled):hover {
+		&:hover {
 			background: transparent;
 			border-color: colors.$yellow;
 		}
 
-		&[aria-busy='true'] {
-			cursor: default;
+		&[aria-busy='true'],
+		&:disabled {
+			pointer-events: none;
 		}
 
 		&:disabled {
