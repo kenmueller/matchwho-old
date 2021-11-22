@@ -55,28 +55,35 @@
 	const resetLink = () => {
 		playerLink = answerLink = null
 	}
+
+	$: myTurn = game.turn?.player.id === game.self?.id
+
+	// prettier-ignore
+	const ifTurn = <Value,>(value: Value) => (myTurn ? value : undefined)
 </script>
 
-<svelte:window on:mouseup={resetLink} />
+<svelte:window on:mouseup={ifTurn(resetLink)} />
 
-<main data-dragging={dragging}>
-	<section data-list="players">
+<main data-question={game.turn?.question ?? '(error)'} data-dragging={dragging}>
+	<section class="players">
+		<h3>Players</h3>
 		{#each players as player (player.id)}
 			<p
 				bind:this={elements[player.id]}
-				on:mousedown={setPlayerLink(player)}
-				on:mouseup={setPlayerLink(player)}
+				on:mousedown={ifTurn(setPlayerLink(player))}
+				on:mouseup={ifTurn(setPlayerLink(player))}
 			>
 				{player.name}
 			</p>
 		{/each}
 	</section>
-	<section data-list="answers">
+	<section class="answers">
+		<h3>Answers</h3>
 		{#each answers as answer, index (index)}
 			<p
 				bind:this={elements[index]}
-				on:mousedown={setAnswerLink(index)}
-				on:mouseup={setAnswerLink(index)}
+				on:mousedown={ifTurn(setAnswerLink(index))}
+				on:mouseup={ifTurn(setAnswerLink(index))}
 			>
 				{answer}
 			</p>
@@ -100,35 +107,42 @@
 		justify-self: center;
 		align-self: center;
 		display: grid;
+		position: relative;
 		grid: 1fr / auto auto;
 		gap: 15rem;
+
+		&::before {
+			content: attr(data-question);
+			position: absolute;
+			bottom: 100%;
+			left: 0;
+			margin-bottom: 2rem;
+			font-size: 1.5rem;
+			font-weight: 700;
+			color: colors.$text;
+			opacity: 0.5;
+		}
 	}
 
 	section {
 		display: flex;
-		position: relative;
 		flex-direction: column;
-
-		&::before {
-			content: attr(data-list);
-			position: absolute;
-			bottom: 100%;
-			left: 0;
-			margin-bottom: 1rem;
-			white-space: nowrap;
-			text-transform: capitalize;
-			font-size: 1.5rem;
-			font-weight: 700;
-			color: colors.$text;
-		}
 	}
 
-	[data-list='players'] {
+	.players {
 		align-items: flex-end;
 	}
 
-	[data-list='answers'] {
+	.answers {
 		align-items: flex-start;
+	}
+
+	h3 {
+		margin-bottom: 1rem;
+		white-space: nowrap;
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: colors.$text;
 	}
 
 	p {
