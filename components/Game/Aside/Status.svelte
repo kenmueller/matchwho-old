@@ -2,6 +2,7 @@
 	import type Game from '../../../shared/game/index.js'
 	import GameState from '../../../shared/game/state.js'
 	import GameTurnState from '../../../shared/game/turn/state.js'
+	import ROUNDS from '../../../shared/game/rounds.js'
 	import { MAX_PLAYERS } from '../../../shared/game/player/bounds.js'
 
 	export let game: Game
@@ -19,7 +20,7 @@
 					case GameTurnState.Answering:
 						return myTurn ? 'Should be any time now...' : 'Answer time!'
 					case GameTurnState.Matching:
-						return game.turn.correctMatches
+						return game.turn.correct
 							? `${
 									myTurn ? "You've" : `${game.turn.player.name} has`
 							  } finished matching`
@@ -39,15 +40,30 @@
 	<title>{status} | Match Who</title>
 </svelte:head>
 
-<h1>{status}</h1>
+<h1
+	class:started={game.state === GameState.Started}
+	data-round={game.round}
+	data-rounds={ROUNDS}
+>
+	{status}
+</h1>
 
 <style lang="scss">
 	@use 'shared/colors';
 
 	h1 {
 		grid-area: status;
+		position: relative;
 		font-size: 3rem;
 		font-weight: 800;
 		color: colors.$text;
+	}
+
+	.started::before {
+		content: 'Round ' attr(data-round) '/' attr(data-rounds);
+		position: absolute;
+		bottom: 100%;
+		left: 0;
+		font-size: 1.2rem;
 	}
 </style>
