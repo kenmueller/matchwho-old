@@ -2,13 +2,16 @@
 	import type Game from '../../../shared/game/index.js'
 	import type Player from '../../../shared/game/player/index.js'
 	import type ClientGameData from '../../../shared/game/data/client.js'
+	import type Point from '../../../lib/point.js'
 	import handleError from '../../../lib/error/handle.js'
-	import Link from './Link.svelte'
+	import MatchLink from '../Link/MatchLink.svelte'
+	import MouseLink from '../Link/MouseLink.svelte'
 
 	export let game: Game
 	export let socket: WebSocket
 
 	let elements: Record<string | number, HTMLElement> = {}
+	let point: Point | null = null
 
 	let playerLink: string | null = null
 	let answerLink: number | null = null
@@ -17,6 +20,8 @@
 	$: answers = game.turn?.answers ?? []
 
 	$: matches = Object.entries(game.turn?.matches ?? {})
+
+	$: dragging = (playerLink === null) !== (answerLink === null)
 
 	$: if (!(playerLink === null || answerLink === null)) {
 		try {
@@ -32,14 +37,19 @@
 		}
 	}
 
-	const setPlayerLink = (player: Player) => (event: MouseEvent) => {
+	const setPoint = (event: MouseEvent) => {
 		event.stopPropagation()
-		playerLink = player.id
+		point = { x: event.clientX, y: event.clientY }
+	}
+
+	const setPlayerLink = (player: Player) => (event: MouseEvent) => {
+		setPoint(event)
+		playerLink === null ? (playerLink = player.id) : resetLink()
 	}
 
 	const setAnswerLink = (index: number) => (event: MouseEvent) => {
-		event.stopPropagation()
-		answerLink = index
+		setPoint(event)
+		answerLink === null ? (answerLink = index) : resetLink()
 	}
 
 	const resetLink = () => {
@@ -49,13 +59,10 @@
 
 <svelte:window on:mouseup={resetLink} />
 
-<main>
+<main data-dragging={dragging}>
 	<section data-list="players">
 		{#each players as player (player.id)}
 			<p
-				aria-selected={playerLink === null
-					? undefined
-					: player.id === playerLink}
 				bind:this={elements[player.id]}
 				on:mousedown={setPlayerLink(player)}
 				on:mouseup={setPlayerLink(player)}
@@ -67,7 +74,6 @@
 	<section data-list="answers">
 		{#each answers as answer, index (index)}
 			<p
-				aria-selected={answerLink === null ? undefined : index === answerLink}
 				bind:this={elements[index]}
 				on:mousedown={setAnswerLink(index)}
 				on:mouseup={setAnswerLink(index)}
@@ -78,9 +84,12 @@
 	</section>
 	{#each matches as [player, answer] (player)}
 		{#if player in elements && answer in elements}
-			<Link from={elements[player]} to={elements[answer]} />
+			<MatchLink from={elements[player]} to={elements[answer]} />
 		{/if}
 	{/each}
+	{#if point && dragging}
+		<MouseLink from={point} />
+	{/if}
 </main>
 
 <style lang="scss">
@@ -133,13 +142,12 @@
 		border-radius: 0.5rem;
 		transition: opacity 0.15s;
 
+		[data-dragging='true'] & {
+			cursor: unset;
+		}
+
 		& + & {
 			margin-top: 2rem;
 		}
-	}
-
-	[aria-selected='false'] {
-		pointer-events: none;
-		opacity: 0.5;
 	}
 </style>
