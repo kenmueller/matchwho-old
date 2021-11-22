@@ -13,4 +13,7 @@ type ClientGameData =
 	/** Create a match between a player id and an answer index. */
 	| { key: 'match'; value: MatchData }
 
+	/** Remove a match for a player id. */
+	| { key: 'unmatch'; value: string }
+
 export default ClientGameData

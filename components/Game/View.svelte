@@ -12,8 +12,7 @@
 </script>
 
 <div
-	class="root"
-	data-spectating={!game.self}
+	class:spectating={!game.self}
 	use:closeMessage={game.state === GameState.Started
 		? 'You will lose all your progress if you exit the game now.'
 		: null}
@@ -32,7 +31,7 @@
 <style lang="scss">
 	@use 'shared/colors';
 
-	.root {
+	div {
 		display: grid;
 		grid:
 			'status status' auto
@@ -53,7 +52,7 @@
 		}
 	}
 
-	[data-spectating='true']::after {
+	.spectating::after {
 		content: 'spectating';
 		position: absolute;
 		top: 1rem;

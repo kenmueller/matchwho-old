@@ -8,6 +8,8 @@
 	export let from: HTMLElement
 	export let to: HTMLElement
 
+	export let onClick: ((event: MouseEvent) => void) | undefined = undefined
+
 	let updateId = 0
 
 	$: fromPoint = ((): Point => {
@@ -37,4 +39,4 @@
 
 <svelte:window on:resize={update} />
 
-<RawLink from={fromPoint} {angle} {distance} />
+<RawLink from={fromPoint} {angle} {distance} {onClick} />

@@ -10,10 +10,10 @@
 <aside>
 	{#each game.players as player (player.id)}
 		<div
-			data-self={game.self?.id === player.id}
-			data-turn={game.state === GameState.Started &&
+			class:self={game.self?.id === player.id}
+			class:turn={game.state === GameState.Started &&
 				game.turn?.player.id === player.id}
-			data-done={player.answered}
+			class:done={player.answered}
 		>
 			<p class="name">
 				{player.name}
@@ -53,11 +53,11 @@
 		}
 	}
 
-	[data-turn='true'] {
+	.turn {
 		color: colors.$yellow;
 	}
 
-	[data-done='true'] {
+	.done {
 		color: colors.$blue;
 	}
 
@@ -68,7 +68,7 @@
 	}
 
 	.name {
-		[data-self='true'] &::after {
+		.self &::after {
 			content: '(you)';
 			margin-left: 0.3em;
 			white-space: nowrap;

@@ -56,6 +56,15 @@
 		playerLink = answerLink = null
 	}
 
+	const unmatch = (player: string) => {
+		try {
+			const data: ClientGameData = { key: 'unmatch', value: player }
+			socket.send(JSON.stringify(data))
+		} catch (error) {
+			handleError(error)
+		}
+	}
+
 	$: myTurn = game.turn?.player.id === game.self?.id
 
 	// prettier-ignore
@@ -64,7 +73,10 @@
 
 <svelte:window on:mouseup={ifTurn(resetLink)} />
 
-<main data-question={game.turn?.question ?? '(error)'} data-dragging={dragging}>
+<main
+	aria-disabled={!myTurn || dragging}
+	data-question={game.turn?.question ?? '(error)'}
+>
 	<section class="players">
 		<h3>Players</h3>
 		{#each players as player (player.id)}
@@ -91,7 +103,11 @@
 	</section>
 	{#each matches as [player, answer] (player)}
 		{#if player in elements && answer in elements}
-			<MatchLink from={elements[player]} to={elements[answer]} />
+			<MatchLink
+				from={elements[player]}
+				to={elements[answer]}
+				onClick={ifTurn(() => unmatch(player))}
+			/>
 		{/if}
 	{/each}
 	{#if point && dragging}
@@ -156,7 +172,7 @@
 		border-radius: 0.5rem;
 		transition: opacity 0.15s;
 
-		[data-dragging='true'] & {
+		[aria-disabled='true'] & {
 			cursor: unset;
 		}
 

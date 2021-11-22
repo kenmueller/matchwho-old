@@ -20,6 +20,7 @@ import onStart from './message/start.js'
 import onQuestion from './message/question.js'
 import onAnswer from './message/answer.js'
 import onMatch from './message/match.js'
+import onUnmatch from './message/unmatch.js'
 
 export default class Game {
 	static games: Record<string, Game> = {}
@@ -149,6 +150,9 @@ export default class Game {
 				break
 			case 'match':
 				onMatch(this, player, message.value)
+				break
+			case 'unmatch':
+				onUnmatch(this, player, message.value)
 				break
 			default:
 				throw new HttpError(HttpErrorCode.Socket, 'Invalid message')
