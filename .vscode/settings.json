@@ -1,4 +1,10 @@
 {
+	"files.insertFinalNewline": true,
+	"files.trimFinalNewlines": true,
+	"html.format.endWithNewline": true,
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"javascript.preferences.importModuleSpecifierEnding": "js",
-	"typescript.preferences.importModuleSpecifierEnding": "js"
+	"typescript.preferences.importModuleSpecifierEnding": "js",
+	"svelte.enable-ts-plugin": true
 }
