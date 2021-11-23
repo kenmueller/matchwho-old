@@ -220,7 +220,7 @@ export default class Game {
 	}
 
 	sendGame = (...destinations: Player[]) => {
-		const { leader: gameLeader, current } = this
+		const { code, state, round, leader: gameLeader, current } = this
 
 		const turn: GameTurn = current && {
 			...this.turn,
@@ -240,8 +240,9 @@ export default class Game {
 			const data: ServerGameData = {
 				key: 'game',
 				value: {
-					state: this.state,
-					round: this.round,
+					code,
+					state,
+					round,
 					turn,
 					results,
 					self: player.spectating ? null : dataFromSelf(player),

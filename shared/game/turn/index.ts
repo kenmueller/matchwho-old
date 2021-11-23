@@ -19,7 +19,7 @@ export default interface GameTurn {
 	 */
 	answers: string[] | null
 
-	/** A map of `Player` ids and answer indices. */
+	/** A map of player ids and answer indices. */
 	matches: Record<string, number> | null
 
 	/**

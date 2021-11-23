@@ -6,6 +6,6 @@ export default interface GameMeta {
 	/** The leader of the game. */
 	leader: string | null
 
-	/** The next game id. */
+	/** The next game code. */
 	next: string | null
 }

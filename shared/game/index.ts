@@ -5,6 +5,8 @@ import type Player from './player/index.js'
 import type Self from './player/self.js'
 
 export default interface Game {
+	code: string
+
 	state: GameState
 	round: number
 

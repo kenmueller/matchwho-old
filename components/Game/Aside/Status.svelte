@@ -41,9 +41,9 @@
 </svelte:head>
 
 <h1
-	class:started={game.state === GameState.Started}
-	data-round={game.round}
-	data-rounds={ROUNDS}
+	data-code={game.state === GameState.Joining ? game.code : undefined}
+	data-round={game.state === GameState.Started ? game.round : undefined}
+	data-rounds={game.state === GameState.Started ? ROUNDS : undefined}
 >
 	{status}
 </h1>
@@ -65,21 +65,28 @@
 		@media (min-width: 50rem) {
 			font-size: 3rem;
 		}
+
+		&::before {
+			position: absolute;
+			bottom: 100%;
+			left: 0;
+			font-size: 0.8rem;
+
+			@media (min-width: 25rem) {
+				font-size: 1rem;
+			}
+
+			@media (min-width: 50rem) {
+				font-size: 1.2rem;
+			}
+		}
 	}
 
-	.started::before {
+	[data-code]::before {
+		content: 'Game code: ' attr(data-code);
+	}
+
+	[data-round][data-rounds]::before {
 		content: 'Round ' attr(data-round) '/' attr(data-rounds);
-		position: absolute;
-		bottom: 100%;
-		left: 0;
-		font-size: 0.8rem;
-
-		@media (min-width: 25rem) {
-			font-size: 1rem;
-		}
-
-		@media (min-width: 50rem) {
-			font-size: 1.2rem;
-		}
 	}
 </style>
