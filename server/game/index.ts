@@ -141,7 +141,7 @@ export default class Game {
 
 		if (this.state === GameState.Started) {
 			if (this.players.length < MIN_PLAYERS) {
-				this.state = GameState.Completed
+				this.complete()
 			} else {
 				if (index < this.index) this.index--
 				if (index === this.index) this.resetTurn()
@@ -158,12 +158,7 @@ export default class Game {
 
 	nextRound = () => {
 		if (this.round === ROUNDS) {
-			this.state = GameState.Completed
-
-			this.results.players = [...this.players]
-				.sort((a, b) => b.points - a.points)
-				.slice(0, 3)
-				.map(dataFromPlayer)
+			this.complete()
 		} else {
 			this.round++
 			this.index = 0
@@ -180,6 +175,15 @@ export default class Game {
 			matches: null,
 			correct: null
 		}
+	}
+
+	complete = () => {
+		this.state = GameState.Completed
+
+		this.results.players = [...this.players]
+			.sort((a, b) => b.points - a.points)
+			.slice(0, 3)
+			.map(dataFromPlayer)
 	}
 
 	onMessage = (player: Player, message: ClientGameData) => {
