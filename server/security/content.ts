@@ -8,6 +8,7 @@ const CONTENT_SECURITY_POLICY = getCSP({
 		'default-src': [SELF],
 		'connect-src': [SELF, SOCKET_ORIGIN],
 		'style-src': [SELF, INLINE],
+		'script-src': [SELF, INLINE],
 		'base-uri': [SELF],
 		'upgrade-insecure-requests': !DEV
 	}
