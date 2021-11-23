@@ -40,7 +40,7 @@ const onAnswer = (game: Game, player: Player, value: string) => {
 		)
 
 	player.answer = answer
-	const { answers } = game
+	const { answers, question } = game
 
 	if (answers)
 		game.turn = {
@@ -49,6 +49,12 @@ const onAnswer = (game: Game, player: Player, value: string) => {
 			answers,
 			matches: {}
 		}
+
+	if (question)
+		question.answers.push({
+			name: player.name,
+			value: player.answer
+		})
 }
 
 export default onAnswer

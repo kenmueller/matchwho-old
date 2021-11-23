@@ -10,16 +10,21 @@
 
 	export let socket: WebSocket
 	export let game: Game
+
+	$: running = game.state !== GameState.Completed
 </script>
 
 <div
+	class:running
 	class:spectating={!game.self}
 	use:closeMessage={game.state === GameState.Started
 		? 'You will lose all your progress if you exit the game now.'
 		: null}
 >
 	<Status {game} />
-	<Players {game} />
+	{#if running}
+		<Players {game} />
+	{/if}
 	{#if game.state === GameState.Joining}
 		<Joining {socket} {game} />
 	{:else if game.state === GameState.Started}
@@ -48,10 +53,6 @@
 		}
 
 		@media (min-width: 50rem) {
-			grid:
-				'status status' auto
-				'players main' 1fr /
-				15rem 1fr;
 			padding: 2rem 4rem;
 		}
 
@@ -62,6 +63,15 @@
 
 		@media (min-width: 75rem) {
 			padding: 4rem 12rem;
+		}
+	}
+
+	.running {
+		@media (min-width: 50rem) {
+			grid:
+				'status status' auto
+				'players main' 1fr /
+				15rem 1fr;
 		}
 	}
 

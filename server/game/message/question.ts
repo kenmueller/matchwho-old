@@ -46,6 +46,8 @@ const onQuestion = (game: Game, player: Player, value: string) => {
 		matches: null,
 		correct: null
 	}
+
+	game.results.questions.push({ name: question, answers: [] })
 }
 
 export default onQuestion

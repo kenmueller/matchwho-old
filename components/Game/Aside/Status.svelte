@@ -31,7 +31,7 @@
 						return "Oops! Something isn't right"
 				}
 			case GameState.Completed:
-				return 'Completed'
+				return 'Game over'
 		}
 	})()
 </script>
