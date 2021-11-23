@@ -5,11 +5,10 @@ import adapter from '@sveltejs/adapter-node'
 const app = {
 	name: 'app',
 	configureServer: async server => {
-		const { setDevServer } = await import('./server-build/server/dev/server.js')
-		setDevServer(server.httpServer)
-
-		const app = (await import('./server-build/server/app.js')).default
-		server.middlewares.use(app)
+		global.server = server.httpServer
+		server.middlewares.use(
+			(await import('./server-build/server/app.js')).default
+		)
 	}
 }
 
