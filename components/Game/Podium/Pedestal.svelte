@@ -50,7 +50,7 @@
 		white-space: nowrap;
 		text-align: center;
 		font-size: 1.5rem;
-		border-bottom: 0.125rem solid currentColor;
+		border-bottom: 0.125rem solid colors.$border;
 	}
 
 	.info,

@@ -55,8 +55,13 @@
 	}
 
 	p {
+		display: none;
 		font-size: 1.1rem;
 		font-weight: 700;
 		color: colors.$text;
+
+		@media (min-width: 40.625rem) {
+			display: block;
+		}
 	}
 </style>

@@ -16,18 +16,36 @@
 <style lang="scss">
 	@use 'shared/colors';
 
+	$horizontal-min-width: 35.625rem;
+
 	section {
 		display: flex;
-		justify-content: space-between;
+		flex-direction: column;
 		align-items: center;
 		max-width: 50rem;
 		width: 100%;
 		margin: 0 auto;
-		padding: 4rem 0;
+
+		@media (min-width: $horizontal-min-width) {
+			flex-direction: row;
+			justify-content: space-between;
+			padding: 4rem 0;
+		}
+
+		> :global(* + *) {
+			margin-top: 2rem;
+
+			@media (min-width: $horizontal-min-width) {
+				margin-top: 0;
+			}
+		}
 
 		> :global(:nth-child(2)) {
 			color: colors.$yellow;
-			transform: translateY(3rem);
+
+			@media (min-width: $horizontal-min-width) {
+				transform: translateY(3rem);
+			}
 		}
 	}
 </style>
