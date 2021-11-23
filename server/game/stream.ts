@@ -1,5 +1,6 @@
 import socket from '../socket.js'
 import HttpError, { HttpErrorCode } from '../../shared/error/http.js'
+import keepAlive from '../socket/keepAlive.js'
 import closeWithError from '../error/close.js'
 import CODE_LENGTH from '../../shared/game/code.js'
 import Game from './index.js'
@@ -22,6 +23,8 @@ socket('/games/:code', (socket, req) => {
 			throw new HttpError(HttpErrorCode.Socket, 'This game does not exist')
 
 		const player = game.join(socket, name)
+
+		keepAlive(socket)
 
 		socket.on('message', (data, isBinary) => {
 			try {
