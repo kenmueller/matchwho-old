@@ -1,8 +1,8 @@
-import DEV from './dev.js'
+import fromEnvironment from './environment/from.js'
+import DEV from './dev/index.js'
 import PORT from './port.js'
 
-const ORIGIN = DEV
-	? `http://localhost:${PORT}`
-	: 'https://matchwho.herokuapp.com'
+const PRODUCTION_ORIGIN = fromEnvironment('VITE_ORIGIN')
+const ORIGIN = DEV ? `http://localhost:${PORT}` : PRODUCTION_ORIGIN
 
 export default ORIGIN

@@ -6,12 +6,20 @@
 npm i
 ```
 
+## Load environment variables
+
+```bash
+npm run env
+```
+
 ## Start dev server
 
 > Must restart dev server when you edit the server code
 
+> Must use heroku to load environment variables
+
 ```bash
-npm run dev
+heroku local dev
 ```
 
 ## Build
@@ -22,6 +30,8 @@ npm run build
 
 ## Start
 
+> Must use heroku to load environment variables
+
 ```bash
-npm start
+heroku local web
 ```

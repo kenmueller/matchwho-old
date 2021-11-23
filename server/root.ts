@@ -1,9 +1,7 @@
 import express from 'express'
-import { Server, createServer } from 'http'
+import { createServer } from 'http'
 
-interface GlobalServer {
-	server?: Server
-}
+import devServer from './dev/server.js'
 
 export const app = express()
-export const server = (global as GlobalServer).server ?? createServer(app)
+export const server = devServer ?? createServer(app)

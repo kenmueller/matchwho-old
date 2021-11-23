@@ -3,6 +3,7 @@
 	"version": "1.0.0",
 	"type": "module",
 	"scripts": {
+		"env": "heroku config -s -a matchwho > .env",
 		"lint": "eslint .",
 		"format": "prettier --write .",
 		"dev": "npm run server:build && svelte-kit dev",
