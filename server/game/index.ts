@@ -5,7 +5,7 @@ import shuffle from 'shuffle-array'
 import CODE_LENGTH from '../../shared/game/code.js'
 import ID_LENGTH from '../../shared/game/id.js'
 import ROUNDS from '../../shared/game/rounds.js'
-import { MAX_PLAYERS } from '../../shared/game/player/bounds.js'
+import { MIN_PLAYERS, MAX_PLAYERS } from '../../shared/game/player/bounds.js'
 import MAX_NAME_LENGTH from '../../shared/game/name.js'
 import HttpError, { HttpErrorCode } from '../../shared/error/http.js'
 import Player, { dataFromPlayer, dataFromSelf } from './player.js'
@@ -49,6 +49,7 @@ export default class Game {
 
 	results: GameResults = {
 		next: null,
+		players: null,
 		questions: []
 	}
 
@@ -106,18 +107,16 @@ export default class Game {
 	}
 
 	join = (socket: WebSocket, name: string) => {
-		if (this.state === GameState.Completed)
-			throw new HttpError(HttpErrorCode.Socket, 'This game has already ended')
-
 		if (name.length > MAX_NAME_LENGTH)
 			throw new HttpError(HttpErrorCode.Socket, 'Your name is too long')
 
 		const player: Player = {
 			socket,
-			spectating:
-				this.players.length >= MAX_PLAYERS ||
-				this.state === GameState.Started ||
-				!name,
+			spectating: !(
+				this.players.length < MAX_PLAYERS &&
+				this.state === GameState.Joining &&
+				name
+			),
 			id: nanoid(ID_LENGTH),
 			name,
 			points: 0,
@@ -140,12 +139,18 @@ export default class Game {
 
 		if (player.spectating) return
 
-		if (index < this.index) this.index--
-		if (index === this.index) this.resetTurn()
+		if (this.state === GameState.Started) {
+			if (this.players.length < MIN_PLAYERS) {
+				this.state = GameState.Completed
+			} else {
+				if (index < this.index) this.index--
+				if (index === this.index) this.resetTurn()
 
-		if (this.index >= this.players.length) {
-			this.nextRound()
-			this.resetTurn()
+				if (this.index >= this.players.length) {
+					this.nextRound()
+					this.resetTurn()
+				}
+			}
 		}
 
 		this.sendGame()
@@ -154,6 +159,11 @@ export default class Game {
 	nextRound = () => {
 		if (this.round === ROUNDS) {
 			this.state = GameState.Completed
+
+			this.results.players = [...this.players]
+				.sort((a, b) => b.points - a.points)
+				.slice(0, 3)
+				.map(dataFromPlayer)
 		} else {
 			this.round++
 			this.index = 0

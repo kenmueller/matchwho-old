@@ -31,8 +31,9 @@
 	import getMeta from '../lib/meta/get.js'
 	import ErrorWithPayload from '../shared/error/payload.js'
 	import handleError from '../lib/error/handle.js'
-	import WithNavbar from '../components/Navigation/WithNavbar.svelte'
 	import GameView from '../components/Game/View.svelte'
+	import WithNavbar from '../components/Navigation/WithNavbar.svelte'
+	import Meta from '../components/Game/Meta.svelte'
 
 	export let code: string
 	export let meta: GameMeta
@@ -73,29 +74,27 @@
 		if (next !== null) window.location.href = `/${next}`
 	}
 
-	onMount(() => meta.state === GameState.Started && join())
+	onMount(() => meta.state === GameState.Joining || join())
 	onDestroy(() => socket?.close())
 </script>
 
-<svelte:head>
-	<meta name="description" content="Match Who" />
-	<title>Join {meta.leader ?? 'Game'} | Match Who</title>
-</svelte:head>
-
 {#if socket && game}
 	<GameView {socket} {game} />
-{:else if meta.state === GameState.Joining}
-	<WithNavbar>
-		<form on:submit|preventDefault={join}>
-			<input
-				placeholder="Name"
-				maxlength={MAX_NAME_LENGTH}
-				bind:this={input}
-				bind:value={name}
-			/>
-			<button aria-busy={joining} disabled={!name}>Join Game</button>
-		</form>
-	</WithNavbar>
+{:else}
+	<Meta {meta} />
+	{#if meta.state === GameState.Joining}
+		<WithNavbar>
+			<form on:submit|preventDefault={join}>
+				<input
+					placeholder="Name"
+					maxlength={MAX_NAME_LENGTH}
+					bind:this={input}
+					bind:value={name}
+				/>
+				<button aria-busy={joining} disabled={!name}>Join Game</button>
+			</form>
+		</WithNavbar>
+	{/if}
 {/if}
 
 <style lang="scss">
@@ -106,6 +105,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		margin: auto;
 	}
 
 	input {

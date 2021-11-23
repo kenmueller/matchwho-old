@@ -85,6 +85,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		margin: auto;
 
 		@media (min-width: $horizontal-min-width) {
 			flex-direction: row;

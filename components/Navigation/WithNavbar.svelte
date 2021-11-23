@@ -25,6 +25,8 @@
 	}
 
 	.content {
+		display: flex;
+		flex-direction: column;
 		overflow-y: auto;
 	}
 </style>

@@ -44,6 +44,7 @@
 		<textarea
 			placeholder="Answer"
 			maxlength={MAX_ANSWER_LENGTH}
+			disabled={!game.self}
 			bind:this={input}
 			bind:value={answer}
 		/>
@@ -102,6 +103,7 @@
 		border-radius: 0.8rem;
 		transition: background 0.15s;
 
+		&:disabled,
 		&:hover,
 		&:focus {
 			background: transparentize(colors.$yellow, 0.9);

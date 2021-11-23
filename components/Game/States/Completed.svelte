@@ -4,7 +4,7 @@
 
 	export let game: Game
 
-	$: players = [...game.players].sort((a, b) => b.points - a.points)
+	$: players = game.results?.players ?? []
 	$: questions = game.results?.questions ?? []
 </script>
 
