@@ -12,11 +12,12 @@
 		"start": "node server-build/server"
 	},
 	"dependencies": {
+		"csp-header": "^5.0.0",
 		"express": "^4.17.1",
 		"nanoid": "^3.1.30",
 		"shuffle-array": "^1.0.1",
 		"url-pattern": "^1.0.3",
-		"ws": "^8.2.3"
+		"ws": "^8.3.0"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-node": "next",

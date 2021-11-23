@@ -5,7 +5,7 @@ import Pattern from 'url-pattern'
 
 import { server } from './root.js'
 import DEV from './dev/index.js'
-import ORIGIN from './origin.js'
+import ORIGIN from './origin/index.js'
 import HttpError, { HttpErrorCode } from '../shared/error/http.js'
 
 export interface SocketRequest extends IncomingMessage {

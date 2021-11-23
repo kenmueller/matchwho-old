@@ -1,6 +1,6 @@
 import { app } from './root.js'
 
-import security from './security.js'
+import security from './security/index.js'
 import createGame from './game/create.js'
 import gamePage from './game/page.js'
 import gameMeta from './game/meta.js'
