@@ -2,11 +2,13 @@
 	import type Game from '../../shared/game/index.js'
 	import GameState from '../../shared/game/state.js'
 	import closeMessage from '../../lib/close/message.js'
+	import WithNavbar from '../Navigation/WithNavbar.svelte'
 	import Status from './Aside/Status.svelte'
 	import Players from './Aside/Players.svelte'
 	import Joining from './States/Joining.svelte'
 	import Started from './States/Started.svelte'
 	import Completed from './States/Completed.svelte'
+	import Next from './Next.svelte'
 
 	export let socket: WebSocket
 	export let game: Game
@@ -14,25 +16,30 @@
 	$: running = game.state !== GameState.Completed
 </script>
 
-<div
-	class:running
-	class:spectating={!game.self}
-	use:closeMessage={game.state === GameState.Started
-		? 'You will lose all your progress if you exit the game now.'
-		: null}
->
-	<Status {game} />
-	{#if running}
-		<Players {game} />
+<WithNavbar visible={!running}>
+	<div
+		class:running
+		class:spectating={!game.self}
+		use:closeMessage={game.state === GameState.Started
+			? 'You will lose all your progress if you exit the game now.'
+			: null}
+	>
+		<Status {game} />
+		{#if running}
+			<Players {game} />
+		{/if}
+		{#if game.state === GameState.Joining}
+			<Joining {socket} {game} />
+		{:else if game.state === GameState.Started}
+			<Started {socket} {game} />
+		{:else if game.state === GameState.Completed}
+			<Completed {game} />
+		{/if}
+	</div>
+	{#if !running}
+		<Next slot="items" {socket} {game} />
 	{/if}
-	{#if game.state === GameState.Joining}
-		<Joining {socket} {game} />
-	{:else if game.state === GameState.Started}
-		<Started {socket} {game} />
-	{:else if game.state === GameState.Completed}
-		<Completed {socket} {game} />
-	{/if}
-</div>
+</WithNavbar>
 
 <style lang="scss">
 	@use 'shared/colors';

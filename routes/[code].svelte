@@ -41,7 +41,7 @@
 	import type ServerGameData from '../shared/game/data/server.js'
 	import GameState from '../shared/game/state.js'
 	import handleError from '../lib/error/handle.js'
-	import Navbar from '../components/Navbar.svelte'
+	import WithNavbar from '../components/Navigation/WithNavbar.svelte'
 	import GameView from '../components/Game/View.svelte'
 
 	export let code: string
@@ -89,33 +89,22 @@
 
 {#if socket && game}
 	<GameView {socket} {game} />
-{:else if meta.state !== GameState.Started}
-	<div class="root">
-		<Navbar />
-		{#if meta.state === GameState.Joining}
-			<form on:submit|preventDefault={join}>
-				<input
-					placeholder="Name"
-					maxlength={MAX_NAME_LENGTH}
-					bind:this={input}
-					bind:value={name}
-				/>
-				<button aria-busy={joining} disabled={!name}>Join Game</button>
-			</form>
-		{:else if meta.state === GameState.Completed}
-			<h1>This game has ended</h1>
-		{/if}
-	</div>
+{:else if meta.state === GameState.Joining}
+	<WithNavbar>
+		<form on:submit|preventDefault={join}>
+			<input
+				placeholder="Name"
+				maxlength={MAX_NAME_LENGTH}
+				bind:this={input}
+				bind:value={name}
+			/>
+			<button aria-busy={joining} disabled={!name}>Join Game</button>
+		</form>
+	</WithNavbar>
 {/if}
 
 <style lang="scss">
 	@use 'shared/colors';
-
-	.root {
-		display: grid;
-		grid: auto 1fr / 1fr;
-		height: 100%;
-	}
 
 	form {
 		display: flex;
@@ -163,14 +152,5 @@
 		&:disabled {
 			opacity: 0.5;
 		}
-	}
-
-	h1 {
-		justify-self: center;
-		align-self: center;
-		text-align: center;
-		font-size: 2rem;
-		font-weight: 800;
-		color: colors.$text;
 	}
 </style>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Match from '../icons/Match.svelte'
+	import Match from '../../icons/Match.svelte'
 </script>
 
 <nav>
@@ -7,6 +7,7 @@
 		<Match />
 		Match Who
 	</a>
+	<slot />
 </nav>
 
 <style lang="scss">

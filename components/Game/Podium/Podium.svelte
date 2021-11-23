@@ -22,6 +22,7 @@
 		align-items: center;
 		max-width: 50rem;
 		width: 100%;
+		margin: 0 auto;
 		padding: 4rem 0;
 
 		> :global(:nth-child(2)) {

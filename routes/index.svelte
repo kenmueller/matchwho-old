@@ -3,7 +3,7 @@
 
 	import CODE_LENGTH from '../shared/game/code.js'
 	import handleError from '../lib/error/handle.js'
-	import Navbar from '../components/Navbar.svelte'
+	import WithNavbar from '../components/Navigation/WithNavbar.svelte'
 
 	let input: HTMLInputElement | null = null
 	$: input?.focus()
@@ -50,8 +50,7 @@
 	<title>Match Who</title>
 </svelte:head>
 
-<div class="root">
-	<Navbar />
+<WithNavbar>
 	<main>
 		<button class="create" aria-busy={creating} on:click={create}>
 			Create Game
@@ -73,19 +72,13 @@
 			</button>
 		</form>
 	</main>
-</div>
+</WithNavbar>
 
 <style lang="scss">
 	@use 'sass:math';
 	@use 'shared/colors';
 
 	$horizontal-min-width: 31.25rem;
-
-	.root {
-		display: grid;
-		grid: auto 1fr / 1fr;
-		height: 100%;
-	}
 
 	main {
 		display: flex;
