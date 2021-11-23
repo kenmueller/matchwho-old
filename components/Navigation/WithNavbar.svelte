@@ -5,20 +5,26 @@
 </script>
 
 {#if visible}
-	<div>
+	<div class="root">
 		<Navbar>
 			<slot name="items" />
 		</Navbar>
-		<slot />
+		<div class="content">
+			<slot />
+		</div>
 	</div>
 {:else}
 	<slot />
 {/if}
 
 <style lang="scss">
-	div {
+	.root {
 		display: grid;
 		grid: auto 1fr / 1fr;
 		height: 100%;
+	}
+
+	.content {
+		overflow-y: auto;
 	}
 </style>
