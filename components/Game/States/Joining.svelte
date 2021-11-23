@@ -9,6 +9,9 @@
 	export let socket: WebSocket
 	export let game: Game
 
+	$: leader = game.leader
+	$: isLeader = leader && leader.id === game.self?.id
+
 	let started = false
 	$: loading = started && game.state === GameState.Joining
 
@@ -26,7 +29,7 @@
 	}
 </script>
 
-{#if game.self?.leader}
+{#if isLeader}
 	<button
 		aria-busy={loading}
 		data-min-players={MIN_PLAYERS}
@@ -36,7 +39,9 @@
 		Start
 	</button>
 {:else}
-	<Message>The leader must start the game</Message>
+	<Message>
+		Waiting {leader ? `for ${leader.name} ` : ''}to start the game
+	</Message>
 {/if}
 
 <style lang="scss">

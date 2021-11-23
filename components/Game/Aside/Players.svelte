@@ -17,7 +17,7 @@
 		>
 			<p class="name">
 				{player.name}
-				{#if player.leader}
+				{#if player.id === game.leader?.id}
 					<Leader />
 				{/if}
 			</p>

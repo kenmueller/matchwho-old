@@ -23,6 +23,7 @@ import onAnswer from './message/answer.js'
 import onMatch from './message/match.js'
 import onUnmatch from './message/unmatch.js'
 import onMatched from './message/matched.js'
+import onDone from './message/done.js'
 import onNext from './message/next.js'
 
 export default class Game {
@@ -63,8 +64,13 @@ export default class Game {
 			: null
 
 	get meta(): GameMeta {
-		const { state, leader } = this
-		return { state, leader: leader && leader.name }
+		const { state, leader, results } = this
+
+		return {
+			state,
+			leader: leader && leader.name,
+			next: results.next
+		}
 	}
 
 	get leader() {
@@ -114,7 +120,6 @@ export default class Game {
 				!name,
 			id: nanoid(ID_LENGTH),
 			name,
-			leader: !this.leader,
 			points: 0,
 			answer: null
 		}
@@ -187,6 +192,9 @@ export default class Game {
 			case 'matched':
 				onMatched(this, player)
 				break
+			case 'done':
+				onDone(this, player)
+				break
 			case 'next':
 				onNext(this, player)
 				break
@@ -198,7 +206,7 @@ export default class Game {
 	}
 
 	sendGame = (...destinations: Player[]) => {
-		const { current } = this
+		const { leader: gameLeader, current } = this
 
 		const turn: GameTurn = current && {
 			...this.turn,
@@ -207,6 +215,7 @@ export default class Game {
 
 		const results = this.state === GameState.Completed ? this.results : null
 
+		const leader = gameLeader && dataFromPlayer(gameLeader)
 		const players = this.players.map(dataFromPlayer)
 
 		destinations = destinations.length
@@ -222,6 +231,7 @@ export default class Game {
 					turn,
 					results,
 					self: player.spectating ? null : dataFromSelf(player),
+					leader,
 					players
 				}
 			}

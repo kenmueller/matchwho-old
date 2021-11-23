@@ -1,31 +1,22 @@
 import HttpError, { HttpErrorCode } from '../../../shared/error/http.js'
-import type Game from '../index.js'
+import GameState from '../../../shared/game/state.js'
+import Game from '../index.js'
 import type Player from '../player.js'
-import GameTurnState from '../../../shared/game/turn/state.js'
 
 const onNext = (game: Game, player: Player) => {
-	const { current } = game
+	if (game.state !== GameState.Completed)
+		throw new HttpError(HttpErrorCode.Socket, 'The game has not been completed')
 
-	if (!current)
-		throw new HttpError(HttpErrorCode.Socket, 'The questioner does not exist')
+	if (game.results.next !== null)
+		throw new HttpError(HttpErrorCode.Socket, 'There is already a next game')
 
-	if (player.id !== current.id)
-		throw new HttpError(HttpErrorCode.Socket, 'You must be the one matching')
-
-	if (game.turn.state !== GameTurnState.Matching)
+	if (player.id !== game.leader?.id)
 		throw new HttpError(
 			HttpErrorCode.Socket,
-			'Matching is not allowed at this time'
+			'You must be the leader to create the next game'
 		)
 
-	if (!game.turn.correct)
-		throw new HttpError(
-			HttpErrorCode.Socket,
-			'You must have seen the correct matches before continuing'
-		)
-
-	if (++game.index >= game.players.length) game.nextRound()
-	game.resetTurn()
+	game.results.next = new Game().code
 }
 
 export default onNext

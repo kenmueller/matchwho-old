@@ -90,17 +90,17 @@
 		}
 	}
 
-	let loadingNext = false
+	let loadingDone = false
 
-	const next = () => {
+	const done = () => {
 		try {
-			if (loadingNext) return
-			loadingNext = true
+			if (loadingDone) return
+			loadingDone = true
 
-			const data: ClientGameData = { key: 'next' }
+			const data: ClientGameData = { key: 'done' }
 			socket.send(JSON.stringify(data))
 		} catch (error) {
-			loadingNext = false
+			loadingDone = false
 			handleError(error)
 		}
 	}
@@ -145,9 +145,9 @@
 	</div>
 	{#if myTurn}
 		<button
-			aria-busy={correct ? loadingNext : loadingMatched}
+			aria-busy={correct ? loadingDone : loadingMatched}
 			disabled={!(correct || isMatched)}
-			on:click={correct ? next : matched}
+			on:click={correct ? done : matched}
 		>
 			{correct ? 'Done' : 'Show Correct Matches'}
 		</button>

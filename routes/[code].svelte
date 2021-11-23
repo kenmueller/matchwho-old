@@ -2,26 +2,18 @@
 	export const load: Load = async ({ page, session, fetch }) => {
 		try {
 			const { code } = page.params
+			const meta = await getMeta(code, { session, fetch })
 
-			if (browser) {
-				const response = await fetch(`${ORIGIN}/games/${code}`)
-				if (!response.ok) return { status: 307, redirect: '/' }
-
-				return {
-					props: { code, meta: await response.json() }
-				}
-			}
-
-			const { gameMeta: meta }: Session = session
-			if (!meta) return { status: 307, redirect: '/' }
+			if (meta.next !== null) return { status: 301, redirect: `/${meta.next}` }
 
 			return {
 				props: { code, meta }
 			}
 		} catch (error) {
-			return {
-				error: error instanceof Error ? error : 'An unknown error occurred'
-			}
+			if (error instanceof ErrorWithPayload) return error.payload
+			if (error instanceof Error) return { error }
+
+			return { error: 'An unknown error occurred' }
 		}
 	}
 </script>
@@ -30,16 +22,14 @@
 	import type { Load } from '@sveltejs/kit'
 	import { onMount, onDestroy } from 'svelte'
 
-	import { browser } from '$app/env'
-
-	import ORIGIN from '../lib/origin/index.js'
 	import SOCKET_ORIGIN from '../lib/origin/socket.js'
 	import MAX_NAME_LENGTH from '../shared/game/name.js'
-	import type Session from '../lib/session.js'
 	import type Game from '../shared/game/index.js'
 	import type GameMeta from '../shared/game/meta.js'
 	import type ServerGameData from '../shared/game/data/server.js'
 	import GameState from '../shared/game/state.js'
+	import getMeta from '../lib/meta/get.js'
+	import ErrorWithPayload from '../shared/error/payload.js'
 	import handleError from '../lib/error/handle.js'
 	import WithNavbar from '../components/Navigation/WithNavbar.svelte'
 	import GameView from '../components/Game/View.svelte'
@@ -76,6 +66,11 @@
 				handleError(error)
 			}
 		})
+	}
+
+	$: {
+		const next = game?.results?.next ?? null
+		if (next !== null) window.location.href = `/${next}`
 	}
 
 	onMount(() => meta.state === GameState.Started && join())

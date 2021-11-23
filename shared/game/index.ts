@@ -20,5 +20,8 @@ export default interface Game {
 	 */
 	self: Self | null
 
+	/** The leader of the game. */
+	leader: Player | null
+
 	players: Player[]
 }

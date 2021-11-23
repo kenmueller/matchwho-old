@@ -20,6 +20,9 @@ type ClientGameData =
 	| { key: 'matched' }
 
 	/** Done with the current turn. */
+	| { key: 'done' }
+
+	/** Create a new game. */
 	| { key: 'next' }
 
 export default ClientGameData

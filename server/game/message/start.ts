@@ -14,7 +14,7 @@ const onStart = (game: Game, player: Player) => {
 	if (game.state !== GameState.Joining)
 		throw new HttpError(HttpErrorCode.Socket, 'The game has already started')
 
-	if (!player.leader)
+	if (player.id !== game.leader?.id)
 		throw new HttpError(
 			HttpErrorCode.Socket,
 			'You must be the leader to start the game'

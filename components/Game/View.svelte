@@ -36,9 +36,11 @@
 			<Completed {game} />
 		{/if}
 	</div>
-	{#if !running}
-		<Next slot="items" {socket} {game} />
-	{/if}
+	<svelte:fragment slot="items">
+		{#if !running}
+			<Next {socket} {game} />
+		{/if}
+	</svelte:fragment>
 </WithNavbar>
 
 <style lang="scss">

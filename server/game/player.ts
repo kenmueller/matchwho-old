@@ -8,7 +8,6 @@ export default interface Player {
 	spectating: boolean
 	id: string
 	name: string
-	leader: boolean
 	points: number
 
 	/** Answer to the current question. */
@@ -18,7 +17,6 @@ export default interface Player {
 export const dataFromPlayer = (player: Player): PlayerData => ({
 	id: player.id,
 	name: player.name,
-	leader: player.leader,
 	points: player.points,
 	answered: player.answer !== null
 })
@@ -26,7 +24,6 @@ export const dataFromPlayer = (player: Player): PlayerData => ({
 export const dataFromSelf = (player: Player): Self => ({
 	id: player.id,
 	name: player.name,
-	leader: player.leader,
 	points: player.points,
 	answer: player.answer
 })
