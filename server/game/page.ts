@@ -20,8 +20,7 @@ router.get('/:code', (req, res, next) => {
 		didError = true
 		sendError(res, error)
 	} finally {
-		if (didError) return
-		next()
+		if (!didError) next()
 	}
 })
 
