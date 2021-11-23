@@ -6,6 +6,7 @@
 	import Players from './Aside/Players.svelte'
 	import Joining from './States/Joining.svelte'
 	import Started from './States/Started.svelte'
+	import Completed from './States/Completed.svelte'
 
 	export let socket: WebSocket
 	export let game: Game
@@ -24,7 +25,7 @@
 	{:else if game.state === GameState.Started}
 		<Started {socket} {game} />
 	{:else if game.state === GameState.Completed}
-		<h3 style="grid-area: main;">Completed</h3>
+		<Completed {socket} {game} />
 	{/if}
 </div>
 
@@ -34,13 +35,25 @@
 	div {
 		display: grid;
 		grid:
-			'status status' auto
-			'players main' 1fr /
-			15rem 1fr;
+			'status' auto
+			'main' 1fr /
+			1fr;
 		position: relative;
 		height: 100%;
 		gap: 2rem 3rem;
-		padding: 2rem 4rem;
+		padding: 2rem 1rem;
+
+		@media (min-width: 31.25rem) {
+			padding: 2rem;
+		}
+
+		@media (min-width: 50rem) {
+			grid:
+				'status status' auto
+				'players main' 1fr /
+				15rem 1fr;
+			padding: 2rem 4rem;
+		}
 
 		@media (min-width: 68.75rem) {
 			gap: 3rem 4rem;

@@ -34,6 +34,11 @@
 
 	aside {
 		grid-area: players;
+		display: none;
+
+		@media (min-width: 50rem) {
+			display: block;
+		}
 	}
 
 	div {

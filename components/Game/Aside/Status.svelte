@@ -54,9 +54,17 @@
 	h1 {
 		grid-area: status;
 		position: relative;
-		font-size: 3rem;
+		font-size: 1.4rem;
 		font-weight: 800;
 		color: colors.$text;
+
+		@media (min-width: 25rem) {
+			font-size: 2rem;
+		}
+
+		@media (min-width: 50rem) {
+			font-size: 3rem;
+		}
 	}
 
 	.started::before {
@@ -64,6 +72,14 @@
 		position: absolute;
 		bottom: 100%;
 		left: 0;
-		font-size: 1.2rem;
+		font-size: 0.8rem;
+
+		@media (min-width: 25rem) {
+			font-size: 1rem;
+		}
+
+		@media (min-width: 50rem) {
+			font-size: 1.2rem;
+		}
 	}
 </style>

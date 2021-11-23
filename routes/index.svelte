@@ -79,6 +79,8 @@
 	@use 'sass:math';
 	@use 'shared/colors';
 
+	$horizontal-min-width: 31.25rem;
+
 	.root {
 		display: grid;
 		grid: auto 1fr / 1fr;
@@ -87,8 +89,13 @@
 
 	main {
 		display: flex;
+		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+
+		@media (min-width: $horizontal-min-width) {
+			flex-direction: row;
+		}
 	}
 
 	.create,
@@ -121,14 +128,20 @@
 	}
 
 	hr {
-		$width: 0.125rem;
+		$thickness: 0.125rem;
 
 		max-height: 8rem;
-		height: 100%;
-		width: $width;
-		margin: 0 2rem;
+		width: 90%;
+		height: $thickness;
+		margin: 2rem 0;
 		background: colors.$border;
-		border-radius: math.div($width, 2);
+		border-radius: math.div($thickness, 2);
+
+		@media (min-width: $horizontal-min-width) {
+			width: $thickness;
+			height: 100%;
+			margin: 0 2rem;
+		}
 	}
 
 	form {

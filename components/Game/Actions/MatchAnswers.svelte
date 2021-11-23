@@ -223,8 +223,20 @@
 	}
 
 	.players {
-		margin-right: 15rem;
 		align-items: flex-end;
+		margin-right: 4rem;
+
+		@media (min-width: 31.25rem) {
+			margin-right: 7rem;
+		}
+
+		@media (min-width: 35.625rem) {
+			margin-right: 10rem;
+		}
+
+		@media (min-width: 65.625rem) {
+			margin-right: 15rem;
+		}
 	}
 
 	.answers {
@@ -261,14 +273,19 @@
 
 	button {
 		margin-top: 2.5rem;
-		padding: 0.4rem 2rem;
-		font-size: 1.1rem;
+		padding: 0.4rem 1rem;
+		font-size: 1rem;
 		font-weight: 700;
 		color: colors.$yellow;
 		background: transparentize(colors.$yellow, 0.6);
 		border: 0.125rem solid transparent;
 		border-radius: 1rem;
 		transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+
+		@media (min-width: 35.625rem) {
+			padding: 0.4rem 2rem;
+			font-size: 1.1rem;
+		}
 
 		&:hover {
 			background: transparent;
