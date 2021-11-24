@@ -94,11 +94,12 @@ export default class Game {
 
 	/** If all answers are matched. */
 	get matched() {
-		const { answers, matches } = this.turn
+		const players = this.notCurrent
+		const { matches } = this.turn
 
 		return (
-			!(answers === null || matches === null) &&
-			answers.length === Object.keys(matches).length
+			!(players === null || matches === null) &&
+			players.length <= Object.keys(matches).length
 		)
 	}
 
