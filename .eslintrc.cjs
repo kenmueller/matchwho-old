@@ -23,6 +23,7 @@ module.exports = {
 		'jsx-quotes': ['error', 'prefer-double'],
 		'no-unused-vars': 'off',
 		'@typescript-eslint/no-unused-vars': 'error',
+		'@typescript-eslint/no-unsafe-call': 'off',
 		'@typescript-eslint/ban-ts-comment': 'off'
 	},
 	globals: {
