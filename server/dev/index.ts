@@ -1,6 +1,7 @@
 import fromEnvironment from '../environment/from.js'
 import log from '../log/value.js'
 
-const DEV = log('DEV', fromEnvironment('NODE_ENV') === 'development')
+const ENV = log('ENV', fromEnvironment('NODE_ENV'))
+const DEV = log('DEV', ENV === 'development')
 
 export default DEV
