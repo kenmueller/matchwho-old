@@ -34,9 +34,9 @@ socket('/games/:code', (socket, req) => {
 						'You cannot interact with the game while spectating'
 					)
 
-				const message: ClientGameData | null = JSON.parse(
+				const message = JSON.parse(
 					data.toString(isBinary ? 'binary' : 'utf8')
-				)
+				) as ClientGameData | null
 
 				if (typeof message?.key !== 'string')
 					throw new HttpError(HttpErrorCode.Socket, 'Invalid data')
@@ -48,7 +48,11 @@ socket('/games/:code', (socket, req) => {
 		})
 
 		socket.on('close', () => {
-			game.leave(player)
+			try {
+				game.leave(player)
+			} catch (error) {
+				console.error(error)
+			}
 		})
 	} catch (error) {
 		closeWithError(socket, error)

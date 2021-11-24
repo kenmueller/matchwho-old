@@ -23,7 +23,7 @@ const getMeta = async (
 		return (await response.json()) as GameMeta
 	}
 
-	const { gameMeta: meta }: Session = session
+	const { gameMeta: meta } = session as Session
 
 	if (!meta)
 		throw new ErrorWithPayload<LoadOutput>('Session does not contain meta', {

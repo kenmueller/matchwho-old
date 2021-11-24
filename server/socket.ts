@@ -24,7 +24,7 @@ const socket = (path: string, listener: SocketListener) => {
 	socketServers.set(new Pattern(path), socketServer)
 }
 
-server.on('upgrade', async (req: SocketRequest, socket: Socket, head) => {
+const upgrade = async (req: SocketRequest, socket: Socket, head: Buffer) => {
 	try {
 		const { origin, pathname, searchParams } = new URL(
 			req.url ?? '',
@@ -37,7 +37,7 @@ server.on('upgrade', async (req: SocketRequest, socket: Socket, head) => {
 		if (DEV && pathname === '/') return
 
 		for (const [pattern, socketServer] of socketServers) {
-			const params: Record<string, string> | null = pattern.match(pathname)
+			const params = pattern.match(pathname) as Record<string, string> | null
 			if (!params) continue
 
 			req.params = params
@@ -53,12 +53,12 @@ server.on('upgrade', async (req: SocketRequest, socket: Socket, head) => {
 
 		throw new HttpError(HttpErrorCode.Socket, 'No matching paths')
 	} catch (error) {
-		try {
-			socket.destroy(error instanceof Error ? error : undefined)
-		} catch (error) {
-			console.error(error)
-		}
+		socket.destroy(error instanceof Error ? error : undefined)
 	}
+}
+
+server.on('upgrade', (req, socket, head) => {
+	upgrade(req as SocketRequest, socket as Socket, head).catch(console.error)
 })
 
 export default socket

@@ -2,15 +2,20 @@ import { Router } from 'express'
 
 import ORIGIN from '../origin/index.js'
 import CONTENT_SECURITY_POLICY from './content.js'
+import HttpError from '../../shared/error/http.js'
 import sendError from '../error/send.js'
 
 const router = Router()
 
 router.use((req, res, next) => {
 	try {
-		;`${req.protocol}://${req.get('host')}` === ORIGIN
-			? next()
-			: res.redirect(301, new URL(req.url, ORIGIN).href)
+		const host = req.get('host')
+		if (!host) throw new HttpError(400, 'Unable to get host')
+
+		const origin = `${req.protocol}://${host}`
+		if (origin === ORIGIN) return next()
+
+		res.redirect(301, new URL(req.url, ORIGIN).href)
 	} catch (error) {
 		sendError(res, error)
 	}

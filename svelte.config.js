@@ -1,3 +1,7 @@
+/* eslint @typescript-eslint/no-unsafe-assignment: off */
+/* eslint @typescript-eslint/no-unsafe-argument: off */
+/* eslint @typescript-eslint/no-unsafe-call: off */
+
 import preprocess from 'svelte-preprocess'
 import adapter from '@sveltejs/adapter-node'
 
