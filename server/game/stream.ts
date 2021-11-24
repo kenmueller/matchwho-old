@@ -1,6 +1,6 @@
 import socket from '../socket.js'
 import HttpError, { HttpErrorCode } from '../../shared/error/http.js'
-import keepAlive from '../socket/keepAlive.js'
+import keepAlive from '../socket/alive.js'
 import closeWithError from '../error/close.js'
 import CODE_LENGTH from '../../shared/game/code.js'
 import Game from './index.js'
