@@ -16,7 +16,9 @@
 	let playerLink: string | null = null
 	let answerLink: number | null = null
 
-	$: players = game.players.filter(({ id }) => id !== game.turn?.player.id)
+	$: current = game.turn && game.turn.player
+
+	$: players = game.players.filter(({ id }) => id !== current?.id)
 	$: dragging = (playerLink === null) !== (answerLink === null)
 
 	$: answers = game.turn?.answers ?? []
@@ -29,7 +31,7 @@
 		  }
 		: null
 
-	$: myTurn = game.turn?.player.id === game.self?.id
+	$: myTurn = current && current.id === game.self?.id
 	$: disabled = !(myTurn && correct === null)
 
 	$: if (!(playerLink === null || answerLink === null)) {
@@ -115,6 +117,7 @@
 >
 	<div
 		class="columns"
+		data-current={disabled ? current?.name : undefined}
 		data-correct={correct?.count}
 		data-total={correct?.matches.length}
 	>
@@ -180,13 +183,14 @@
 		position: relative;
 		flex-direction: column;
 		align-items: center;
+		padding: 2rem 0;
 
 		&::before {
 			content: attr(data-question);
 			position: absolute;
 			bottom: 100%;
 			left: 0;
-			margin-bottom: 2rem;
+			margin-bottom: -0.5rem;
 			font-size: 1.5rem;
 			font-weight: 700;
 			color: colors.$text;
@@ -194,27 +198,34 @@
 		}
 	}
 
-	[aria-disabled='true'] section {
-		pointer-events: none;
-	}
-
 	.columns {
 		display: flex;
 		position: relative;
+
+		[aria-disabled='true'] & {
+			pointer-events: none;
+		}
+
+		&::after {
+			position: absolute;
+			top: 100%;
+			left: 50%;
+			margin-top: 1rem;
+			white-space: nowrap;
+			text-align: center;
+			font-weight: 700;
+			color: colors.$yellow;
+			transform: translateX(-50%);
+		}
+	}
+
+	[data-current]::after {
+		content: 'Waiting for ' attr(data-current) ' to finish matching';
 	}
 
 	[data-correct][data-total]::after {
-		content: 'Showing Correct Answers (' attr(data-correct) '/' attr(data-total)
+		content: 'Showing correct answers (' attr(data-correct) '/' attr(data-total)
 			')';
-		position: absolute;
-		top: 100%;
-		left: 50%;
-		margin-top: 1rem;
-		white-space: nowrap;
-		text-align: center;
-		font-weight: 700;
-		color: colors.$yellow;
-		transform: translateX(-50%);
 	}
 
 	section {
