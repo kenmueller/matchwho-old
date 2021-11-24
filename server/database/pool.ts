@@ -1,8 +1,8 @@
-import { Pool } from 'pg'
+import pg from 'pg'
 
 import fromEnvironment from '../environment/from.js'
 
-const pool = new Pool({
+const pool = new pg.Pool({
 	connectionString: fromEnvironment('DATABASE_URL'),
 	ssl: { rejectUnauthorized: false }
 })

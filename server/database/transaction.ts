@@ -1,5 +1,9 @@
 import type { PoolClient } from 'pg'
 
+import BEGIN from './query/begin.js'
+import COMMIT from './query/commit.js'
+import ROLLBACK from './query/rollback.js'
+
 const useTransaction = async <Result>(
 	client: PoolClient,
 	transform: () => Promise<Result> | Result
@@ -7,11 +11,11 @@ const useTransaction = async <Result>(
 	let result: Result | undefined
 
 	try {
-		await client.query('BEGIN')
+		await client.query(BEGIN)
 		result = await transform()
-		await client.query('COMMIT')
+		await client.query(COMMIT)
 	} catch (error) {
-		await client.query('ROLLBACK')
+		await client.query(ROLLBACK)
 		throw error
 	}
 

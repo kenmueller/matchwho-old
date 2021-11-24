@@ -66,12 +66,10 @@ export default class Game {
 			: null
 
 	get meta(): GameMeta {
-		const { state, leader, results } = this
-
 		return {
-			state,
-			leader: leader && leader.name,
-			next: results.next
+			state: this.state,
+			leader: this.leader?.name ?? null,
+			next: this.results.next
 		}
 	}
 
@@ -81,6 +79,10 @@ export default class Game {
 
 	get current() {
 		return this.players[this.index] ?? null
+	}
+
+	get question() {
+		return this.results.questions[this.results.questions.length - 1] ?? null
 	}
 
 	get notCurrent() {
@@ -104,8 +106,12 @@ export default class Game {
 		)
 	}
 
-	get question() {
-		return this.results.questions[this.results.questions.length - 1] ?? null
+	/** Includes only the top 3 players. */
+	get slimResults(): GameResults {
+		return {
+			...this.results,
+			players: this.results.players?.slice(0, 3) ?? null
+		}
 	}
 
 	join = (socket: WebSocket, name: string) => {
@@ -184,7 +190,6 @@ export default class Game {
 
 		this.results.players = [...this.players]
 			.sort((a, b) => b.points - a.points)
-			.slice(0, 3)
 			.map(dataFromPlayer)
 
 		createGameInDatabase(this).catch(console.error)
@@ -231,7 +236,7 @@ export default class Game {
 			player: dataFromPlayer(current)
 		}
 
-		const results = this.state === GameState.Completed ? this.results : null
+		const results = this.state === GameState.Completed ? this.slimResults : null
 
 		const leader = gameLeader && dataFromPlayer(gameLeader)
 		const players = this.players.map(dataFromPlayer)
