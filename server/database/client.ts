@@ -1,6 +1,7 @@
 import type { PoolClient } from 'pg'
 
 import pool from './pool.js'
+import logError from '../log/error.js'
 
 const useClient = async <Result>(
 	transform: (client: PoolClient) => Promise<Result> | Result
@@ -12,7 +13,7 @@ const useClient = async <Result>(
 		return await transform(client)
 	} catch (error) {
 		transformError = error
-		throw error
+		throw logError('Attempted using client', error)
 	} finally {
 		client.release(
 			transformError instanceof Error

@@ -4,20 +4,34 @@ import ORIGIN from '../origin/index.js'
 import CONTENT_SECURITY_POLICY from './content.js'
 import HttpError from '../../shared/error/http.js'
 import sendError from '../error/send.js'
+import log from '../log/value.js'
+import logError from '../log/error.js'
 
 const router = Router()
 
 router.use((req, res, next) => {
 	try {
 		const host = req.get('host')
-		if (!host) throw new HttpError(400, 'Unable to get host')
+
+		if (!host)
+			throw logError(
+				'Running origin precheck',
+				new HttpError(400, 'Unable to get host')
+			)
 
 		const origin = `${req.protocol}://${host}`
 		if (origin === ORIGIN) return next()
 
-		res.redirect(301, new URL(req.url, ORIGIN).href)
+		res.redirect(
+			301,
+			log(
+				'Origin precheck',
+				new URL(req.url, ORIGIN).href,
+				`redirecting from ${origin}`
+			)
+		)
 	} catch (error) {
-		sendError(res, error)
+		sendError(res, logError('Attempted origin precheck', error))
 	}
 })
 
@@ -37,7 +51,7 @@ router.use((_req, res, next) => {
 
 		next()
 	} catch (error) {
-		sendError(res, error)
+		sendError(res, logError('Setting headers', error))
 	}
 })
 

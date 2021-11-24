@@ -7,6 +7,8 @@ import { server } from './root.js'
 import DEV from './dev/index.js'
 import ORIGIN from './origin/index.js'
 import HttpError, { HttpErrorCode } from '../shared/error/http.js'
+import log from './log/value.js'
+import logError from './log/error.js'
 
 export interface SocketRequest extends IncomingMessage {
 	params: Record<string, string>
@@ -22,6 +24,8 @@ const socket = (path: string, listener: SocketListener) => {
 	socketServer.on('connection', listener)
 
 	socketServers.set(new Pattern(path), socketServer)
+
+	log('Created socket route', path)
 }
 
 const upgrade = async (req: SocketRequest, socket: Socket, head: Buffer) => {
@@ -31,10 +35,23 @@ const upgrade = async (req: SocketRequest, socket: Socket, head: Buffer) => {
 			req.headers.origin
 		)
 
-		if (origin !== ORIGIN)
-			throw new HttpError(HttpErrorCode.Socket, 'Invalid origin')
+		log('Receiving upgrade request', {
+			origin,
+			pathname,
+			searchParams: searchParams.toString()
+		})
 
-		if (DEV && pathname === '/') return
+		if (origin !== ORIGIN)
+			throw logError(
+				'Receiving upgrade request',
+				new HttpError(HttpErrorCode.Socket, 'Invalid origin'),
+				origin
+			)
+
+		if (DEV && pathname === '/') {
+			log('Skipping upgrade request', pathname)
+			return
+		}
 
 		for (const [pattern, socketServer] of socketServers) {
 			const params = pattern.match(pathname) as Record<string, string> | null
@@ -48,17 +65,31 @@ const upgrade = async (req: SocketRequest, socket: Socket, head: Buffer) => {
 			})
 
 			socketServer.emit('connection', client, req)
+			log('Found socket server', pathname)
+
 			return
 		}
 
-		throw new HttpError(HttpErrorCode.Socket, 'No matching paths')
+		throw logError(
+			'Receiving upgrade request',
+			new HttpError(HttpErrorCode.Socket, 'No matching paths'),
+			pathname
+		)
 	} catch (error) {
+		logError(
+			'Attempted to handle upgrade request',
+			error,
+			req.url ?? 'unknown url'
+		)
+
 		socket.destroy(error instanceof Error ? error : undefined)
 	}
 }
 
 server.on('upgrade', (req, socket, head) => {
-	upgrade(req as SocketRequest, socket as Socket, head).catch(console.error)
+	upgrade(req as SocketRequest, socket as Socket, head).catch(error => {
+		logError('Failed upgrade request', error, req.url ?? 'unknown url')
+	})
 })
 
 export default socket

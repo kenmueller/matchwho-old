@@ -4,9 +4,15 @@ import type Game from '../index.js'
 import useClient from '../../database/client.js'
 import useTransaction from '../../database/transaction.js'
 import insert from '../../database/query/insert.js'
+import log from '../../log/value.js'
 
-const createGameInDatabase = (game: Game) =>
-	useClient(client => useTransaction(client, () => insertAll(game, client)))
+const createGameInDatabase = (game: Game) => {
+	log('Creating game in database', game.code)
+
+	return useClient(client =>
+		useTransaction(client, () => insertAll(game, client))
+	)
+}
 
 const insertAll = async (game: Game, client: PoolClient) => {
 	await insertGame(game, client)

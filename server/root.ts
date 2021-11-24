@@ -1,9 +1,14 @@
 import express from 'express'
 import { Server, createServer } from 'http'
 
+import log from './log/value.js'
+
 interface GlobalServer {
-	server?: Server
+	devServer?: Server
 }
 
+const { devServer } = global as GlobalServer
+log('Dev server exists', Boolean(devServer))
+
 export const app = express()
-export const server = (global as GlobalServer).server ?? createServer(app)
+export const server = devServer ?? createServer(app)

@@ -26,6 +26,8 @@ import onUnmatch from './message/unmatch.js'
 import onMatched from './message/matched.js'
 import onDone from './message/done.js'
 import onNext from './message/next.js'
+import log from '../log/value.js'
+import logError from '../log/error.js'
 
 export default class Game {
 	static games: Record<string, Game> = {}
@@ -56,9 +58,11 @@ export default class Game {
 
 	constructor() {
 		Game.games[this.code] = this
+		log('Created game', this.code)
 	}
 
-	static validCode = (code: string) => code.length === CODE_LENGTH
+	static validCode = (code: string) =>
+		log('Valid code', code.length === CODE_LENGTH, code)
 
 	static withCode = (code: string) =>
 		Object.prototype.hasOwnProperty.call(Game.games, code)
@@ -66,19 +70,23 @@ export default class Game {
 			: null
 
 	get meta(): GameMeta {
-		return {
-			state: this.state,
-			leader: this.leader?.name ?? null,
-			next: this.results.next
-		}
+		return log(
+			'Game meta',
+			{
+				state: this.state,
+				leader: this.leader?.name ?? null,
+				next: this.results.next
+			},
+			this.code
+		)
 	}
 
 	get leader() {
-		return this.players[0] ?? null
+		return log('Leader', this.players[0] ?? null, this.code)
 	}
 
 	get current() {
-		return this.players[this.index] ?? null
+		return log('Current player', this.players[this.index] ?? null, this.code)
 	}
 
 	get question() {
@@ -116,7 +124,11 @@ export default class Game {
 
 	join = (socket: WebSocket, name: string) => {
 		if (name.length > MAX_NAME_LENGTH)
-			throw new HttpError(HttpErrorCode.Socket, 'Your name is too long')
+			throw logError(
+				'Attempted to join game',
+				new HttpError(HttpErrorCode.Socket, 'Your name is too long'),
+				this.code
+			)
 
 		const player: Player = {
 			socket,
@@ -131,6 +143,8 @@ export default class Game {
 			answer: null
 		}
 
+		log('Joining game', { id: player.id, name: player.name }, this.code)
+
 		this.listOf(player).push(player)
 		player.spectating ? this.sendGame(player) : this.sendGame()
 
@@ -138,6 +152,8 @@ export default class Game {
 	}
 
 	leave = (player: Player) => {
+		log('Leaving game', { id: player.id, name: player.name }, this.code)
+
 		const list = this.listOf(player)
 
 		const index = list.indexOf(player)
@@ -192,7 +208,9 @@ export default class Game {
 			.sort((a, b) => b.points - a.points)
 			.map(dataFromPlayer)
 
-		createGameInDatabase(this).catch(console.error)
+		createGameInDatabase(this).catch(error => {
+			logError('Attempted to create game in database', error, this.code)
+		})
 	}
 
 	onMessage = (player: Player, message: ClientGameData) => {
@@ -222,7 +240,14 @@ export default class Game {
 				onNext(this, player)
 				break
 			default:
-				throw new HttpError(HttpErrorCode.Socket, 'Invalid message')
+				throw logError(
+					'Received message',
+					new HttpError(
+						HttpErrorCode.Socket,
+						`Invalid message ${JSON.stringify(message)}`
+					),
+					this.code
+				)
 		}
 
 		this.sendGame()
@@ -262,6 +287,8 @@ export default class Game {
 
 			player.socket.send(JSON.stringify(data))
 		}
+
+		log(`Sent game to ${destinations.length} players`, state, code)
 	}
 
 	listOf = (player: Player) =>

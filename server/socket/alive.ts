@@ -1,6 +1,7 @@
 import type WebSocket from 'ws'
 
 import close from './close.js'
+import log from '../log/value.js'
 
 const PING_INTERVAL = 5000
 
@@ -17,7 +18,7 @@ const keepAlive = (socket: WebSocket) => {
 	})
 
 	socket.on('close', () => {
-		clearInterval(interval)
+		clearInterval(log('Clearing socket keepalive interval', interval))
 	})
 }
 

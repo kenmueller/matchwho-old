@@ -3,40 +3,58 @@ import GameTurnState from '../../../shared/game/turn/state.js'
 import MAX_ANSWER_LENGTH from '../../../shared/game/answer.js'
 import type Game from '../index.js'
 import type Player from '../player.js'
+import type GameResultsAnswer from '../../../shared/game/results/answer.js'
+import log from '../../log/value.js'
+import logError from '../../log/error.js'
 
 const onAnswer = (game: Game, player: Player, value: string) => {
 	if (typeof value !== 'string')
-		throw new HttpError(HttpErrorCode.Socket, 'Invalid answer')
+		throw logError(
+			'Receiving answer',
+			new HttpError(HttpErrorCode.Socket, 'Invalid answer')
+		)
 
 	const answer = value.trim()
 
 	if (!answer)
-		throw new HttpError(HttpErrorCode.Socket, 'Your answer cannot be empty')
+		throw logError(
+			'Receiving answer',
+			new HttpError(HttpErrorCode.Socket, 'Your answer cannot be empty')
+		)
 
 	if (answer.length > MAX_ANSWER_LENGTH)
-		throw new HttpError(HttpErrorCode.Socket, 'Your answer is too long')
+		throw logError(
+			'Receiving answer',
+			new HttpError(HttpErrorCode.Socket, 'Your answer is too long')
+		)
 
 	const { current } = game
 
 	if (!current)
-		throw new HttpError(HttpErrorCode.Socket, 'The questioner does not exist')
+		throw logError(
+			'Receiving answer',
+			new HttpError(HttpErrorCode.Socket, 'The questioner does not exist')
+		)
 
 	if (player.id === current.id)
-		throw new HttpError(
-			HttpErrorCode.Socket,
-			'You cannot answer your own question'
+		throw logError(
+			'Receiving answer',
+			new HttpError(HttpErrorCode.Socket, 'You cannot answer your own question')
 		)
 
 	if (game.turn.state !== GameTurnState.Answering)
-		throw new HttpError(
-			HttpErrorCode.Socket,
-			'Answering is not allowed at this time'
+		throw logError(
+			'Receiving answer',
+			new HttpError(
+				HttpErrorCode.Socket,
+				'Answering is not allowed at this time'
+			)
 		)
 
 	if (player.answer !== null)
-		throw new HttpError(
-			HttpErrorCode.Socket,
-			'An answer has already been provided'
+		throw logError(
+			'Receiving answer',
+			new HttpError(HttpErrorCode.Socket, 'An answer has already been provided')
 		)
 
 	player.answer = answer
@@ -50,11 +68,19 @@ const onAnswer = (game: Game, player: Player, value: string) => {
 			matches: {}
 		}
 
-	if (question)
-		question.answers.push({
+	if (question) {
+		const answer: GameResultsAnswer = {
 			name: player.name,
 			value: player.answer
+		}
+
+		question.answers.push(answer)
+
+		log('Received answer', {
+			question: question.name,
+			...answer
 		})
+	}
 }
 
 export default onAnswer

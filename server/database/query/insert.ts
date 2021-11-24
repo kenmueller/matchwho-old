@@ -1,5 +1,7 @@
 import format from 'pg-format'
 
+import log from '../../log/value.js'
+
 export type InsertValue = string | number
 
 export type InsertOptions = { table: string; columns: string[] } & (
@@ -8,11 +10,14 @@ export type InsertOptions = { table: string; columns: string[] } & (
 )
 
 const insert = (options: InsertOptions) =>
-	format(
-		`INSERT INTO %I (%I) VALUES ${'values' in options ? '(%L)' : '%L'}`,
-		options.table,
-		options.columns,
-		'values' in options ? options.values : options.rows
+	log(
+		'Insert operation',
+		format(
+			`INSERT INTO %I (%I) VALUES ${'values' in options ? '(%L)' : '%L'}`,
+			options.table,
+			options.columns,
+			'values' in options ? options.values : options.rows
+		)
 	)
 
 export default insert
