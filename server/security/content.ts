@@ -1,6 +1,6 @@
 import { getCSP, SELF, INLINE } from 'csp-header'
 
-import DEV from '../dev/index.js'
+import DEV from '../dev.js'
 import SOCKET_ORIGIN from '../origin/socket.js'
 import log from '../log/value.js'
 

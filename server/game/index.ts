@@ -122,6 +122,9 @@ export default class Game {
 		}
 	}
 
+	listOf = (player: Player) =>
+		this[player.spectating ? 'spectators' : 'players']
+
 	join = (socket: WebSocket, name: string) => {
 		if (name.length > MAX_NAME_LENGTH)
 			throw logError(
@@ -290,7 +293,4 @@ export default class Game {
 
 		log(`Sent game to ${destinations.length} players`, state, code)
 	}
-
-	listOf = (player: Player) =>
-		this[player.spectating ? 'spectators' : 'players']
 }

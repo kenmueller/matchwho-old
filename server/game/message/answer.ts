@@ -3,7 +3,6 @@ import GameTurnState from '../../../shared/game/turn/state.js'
 import MAX_ANSWER_LENGTH from '../../../shared/game/answer.js'
 import type Game from '../index.js'
 import type Player from '../player.js'
-import type GameResultsAnswer from '../../../shared/game/results/answer.js'
 import log from '../../log/value.js'
 import logError from '../../log/error.js'
 
@@ -68,19 +67,17 @@ const onAnswer = (game: Game, player: Player, value: string) => {
 			matches: {}
 		}
 
-	if (question) {
-		const answer: GameResultsAnswer = {
-			name: player.name,
-			value: player.answer
-		}
+	if (!question) return
 
-		question.answers.push(answer)
+	question.answers.push({
+		name: player.name,
+		answer: player.answer
+	})
 
-		log('Received answer', {
-			question: question.name,
-			...answer
-		})
-	}
+	log('Received answer', {
+		question: { player: question.name, question: question.question },
+		answer: { player: player.name, answer: player.answer }
+	})
 }
 
 export default onAnswer

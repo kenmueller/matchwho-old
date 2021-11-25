@@ -1,7 +1,9 @@
 import HttpError, { HttpErrorCode } from '../../../shared/error/http.js'
 import GameState from '../../../shared/game/state.js'
+import type ServerGameData from '../../../shared/game/data/server.js'
 import Game from '../index.js'
 import type Player from '../player.js'
+import setNextInDatabase from '../database/next.js'
 import log from '../../log/value.js'
 import logError from '../../log/error.js'
 
@@ -28,6 +30,18 @@ const onNext = (game: Game, player: Player) => {
 		)
 
 	game.results.next = log('Next game', new Game().code)
+
+	const data = JSON.stringify({
+		key: 'next',
+		value: game.results.next
+	} as ServerGameData)
+
+	for (const player of [...game.players, ...game.spectators])
+		player.socket.send(data)
+
+	setNextInDatabase(game).catch(error => {
+		logError('Attempted to set game.next in database', error, game.code)
+	})
 }
 
 export default onNext

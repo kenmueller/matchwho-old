@@ -11,13 +11,14 @@
 <main>
 	<Podium {players} />
 	<h2>Questions</h2>
-	{#each questions as question}
+	{#each questions as { name, question, answers }}
 		<section>
-			<h3>{question.name}</h3>
-			{#each question.answers as answer}
+			<p>{name}</p>
+			<h3>{question}</h3>
+			{#each answers as { name, answer }}
 				<p>
-					<span>{answer.name}:</span>
-					{answer.value}
+					<span>{name}:</span>
+					{answer}
 				</p>
 			{/each}
 		</section>

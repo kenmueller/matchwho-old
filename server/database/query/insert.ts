@@ -1,12 +1,11 @@
 import format from 'pg-format'
 
+import type QueryValue from './value.js'
 import log from '../../log/value.js'
 
-export type InsertValue = string | number
-
 export type InsertOptions = { table: string; columns: string[] } & (
-	| { values: InsertValue[] }
-	| { rows: InsertValue[][] }
+	| { values: QueryValue[] }
+	| { rows: QueryValue[][] }
 )
 
 const insert = (options: InsertOptions) =>

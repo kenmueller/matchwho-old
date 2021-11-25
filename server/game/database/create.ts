@@ -55,11 +55,12 @@ const insertQuestions = (game: Game, client: PoolClient) =>
 	client.query(
 		insert({
 			table: 'questions',
-			columns: ['game_code', 'index', 'name'],
-			rows: game.results.questions.map(({ name }, index) => [
+			columns: ['game_code', 'index', 'name', 'question'],
+			rows: game.results.questions.map(({ name, question }, index) => [
 				game.code,
 				index,
-				name
+				name,
+				question
 			])
 		})
 	)
@@ -68,14 +69,14 @@ const insertAnswers = (game: Game, client: PoolClient) =>
 	client.query(
 		insert({
 			table: 'answers',
-			columns: ['game_code', 'question_index', 'index', 'name', 'value'],
+			columns: ['game_code', 'question_index', 'index', 'name', 'answer'],
 			rows: game.results.questions.flatMap(({ answers }, questionIndex) =>
-				answers.map(({ name, value }, index) => [
+				answers.map(({ name, answer }, index) => [
 					game.code,
 					questionIndex,
 					index,
 					name,
-					value
+					answer
 				])
 			)
 		})

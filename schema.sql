@@ -35,7 +35,8 @@ CREATE TABLE IF NOT EXISTS players (
 CREATE TABLE IF NOT EXISTS questions (
 	game_code GAME_CODE NOT NULL REFERENCES games(code) ON DELETE CASCADE,
 	index INDEX NOT NULL,
-	name QUESTION NOT NULL,
+	name PLAYER_NAME NOT NULL,
+	question QUESTION NOT NULL,
 	PRIMARY KEY (game_code, index)
 );
 
@@ -44,7 +45,7 @@ CREATE TABLE IF NOT EXISTS answers (
 	question_index INDEX NOT NULL,
 	index INDEX NOT NULL,
 	name PLAYER_NAME NOT NULL,
-	value ANSWER NOT NULL,
+	answer ANSWER NOT NULL,
 	FOREIGN KEY (game_code, question_index) REFERENCES questions(game_code, index) ON DELETE CASCADE,
 	PRIMARY KEY (game_code, question_index, index)
 );

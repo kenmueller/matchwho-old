@@ -1,5 +1,5 @@
 import fromEnvironment from '../environment/from.js'
-import DEV from '../dev/index.js'
+import DEV from '../dev.js'
 import PORT from '../port.js'
 import log from '../log/value.js'
 

@@ -2,5 +2,5 @@ export default interface GameResultsAnswer {
 	/** Player name. */
 	name: string
 
-	value: string
+	answer: string
 }

@@ -67,10 +67,8 @@ const onQuestion = (game: Game, player: Player, value: string) => {
 		correct: null
 	}
 
-	game.results.questions.push({
-		name: log('Received question', question),
-		answers: []
-	})
+	game.results.questions.push({ name: player.name, question, answers: [] })
+	log('Received question', { player: player.name, question })
 }
 
 export default onQuestion

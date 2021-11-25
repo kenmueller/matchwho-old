@@ -56,22 +56,20 @@
 
 		socket.addEventListener('message', ({ data }) => {
 			try {
-				const { key, value }: ServerGameData = JSON.parse(data)
+				const message: ServerGameData = JSON.parse(data)
 
-				switch (key) {
+				switch (message.key) {
 					case 'game':
-						game = value
+						game = message.value
+						break
+					case 'next':
+						window.location.href = `/${message.value}`
 						break
 				}
 			} catch (error) {
 				handleError(error)
 			}
 		})
-	}
-
-	$: {
-		const next = game?.results?.next ?? null
-		if (next !== null) window.location.href = `/${next}`
 	}
 
 	onMount(() => meta.state === GameState.Joining || join())

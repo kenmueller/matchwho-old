@@ -4,7 +4,7 @@ import type { Socket } from 'net'
 import Pattern from 'url-pattern'
 
 import { server } from './root.js'
-import DEV from './dev/index.js'
+import DEV from './dev.js'
 import ORIGIN from './origin/index.js'
 import HttpError, { HttpErrorCode } from '../shared/error/http.js'
 import log from './log/value.js'
