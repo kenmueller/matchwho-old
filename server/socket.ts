@@ -49,7 +49,7 @@ const upgrade = async (req: SocketRequest, socket: Socket, head: Buffer) => {
 			)
 
 		if (DEV && pathname === '/') {
-			log('Skipping upgrade request', pathname)
+			log('Skipping upgrade request', pathname, 'dev')
 			return
 		}
 

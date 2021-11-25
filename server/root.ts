@@ -3,11 +3,11 @@ import { Server, createServer } from 'http'
 
 import log from './log/value.js'
 
-interface GlobalServer {
+interface WithDevServer {
 	devServer?: Server
 }
 
-const { devServer } = global as GlobalServer
+const { devServer } = global as WithDevServer
 log('Dev server exists', Boolean(devServer))
 
 export const app = express()

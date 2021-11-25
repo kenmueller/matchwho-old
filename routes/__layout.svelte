@@ -1,10 +1,14 @@
 <script lang="ts">
+	import MEASUREMENT_ID from '../lib/measurement.js'
 	import icon from '../shared/icon.svg'
+	import Analytics from '../components/Analytics.svelte'
 </script>
 
 <svelte:head>
 	<link rel="icon" href={icon} />
 </svelte:head>
+
+<Analytics id={MEASUREMENT_ID} />
 
 <slot />
 

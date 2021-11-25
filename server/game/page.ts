@@ -1,15 +1,24 @@
 import { Router } from 'express'
 
+import DEV from '../dev/index.js'
 import HttpError from '../../shared/error/http.js'
 import sendError from '../error/send.js'
 import Game from './index.js'
 import log from '../log/value.js'
 import logError from '../log/error.js'
 
+const VITE_PING = '__vite_ping'
+
 const router = Router()
 
 router.get('/:code', (req, res, next) => {
 	const { code } = req.params
+
+	if (DEV && code === VITE_PING) {
+		log('Skipping intercepting game page request', VITE_PING, 'dev')
+		return
+	}
+
 	let didError = false
 
 	try {
