@@ -9,7 +9,7 @@ import gamePage from './game/page.js'
 import gameMeta from './game/meta.js'
 import './game/stream.js'
 
-if (!DEV) app.use(compression())
+if (!DEV) app.use(compression({ threshold: 0 }))
 
 app.use(security)
 app.use(createGame)
