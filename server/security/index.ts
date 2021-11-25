@@ -19,15 +19,15 @@ router.use((req, res, next) => {
 				new HttpError(400, 'Unable to get host')
 			)
 
-		const origin = `${req.protocol}://${host}`
-		if (origin === ORIGIN) return next()
+		const origin = new URL(req.url, `${req.protocol}://${host}`)
+		if (origin.origin === ORIGIN.origin) return next()
 
 		res.redirect(
 			301,
 			log(
 				'Origin precheck',
 				new URL(req.url, ORIGIN).href,
-				`redirecting from ${origin}`
+				`redirecting from ${origin.href}`
 			)
 		)
 	} catch (error) {
@@ -38,7 +38,7 @@ router.use((req, res, next) => {
 router.use((_req, res, next) => {
 	try {
 		res.header('content-security-policy', CONTENT_SECURITY_POLICY)
-		res.header('access-control-allow-origin', ORIGIN)
+		res.header('access-control-allow-origin', ORIGIN.href)
 		res.header('expect-ct', '0')
 		res.header('referrer-policy', 'no-referrer')
 		res.header('strict-transport-security', 'max-age=15552000')

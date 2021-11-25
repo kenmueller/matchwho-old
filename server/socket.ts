@@ -10,6 +10,8 @@ import HttpError, { HttpErrorCode } from '../shared/error/http.js'
 import log from './log/value.js'
 import logError from './log/error.js'
 
+type URLParams = Record<string, string>
+
 export interface SocketRequest extends IncomingMessage {
 	params: Record<string, string>
 	query: URLSearchParams
@@ -30,42 +32,34 @@ const socket = (path: string, listener: SocketListener) => {
 
 const upgrade = async (req: SocketRequest, socket: Socket, head: Buffer) => {
 	try {
-		const { origin, pathname, searchParams } = new URL(
-			req.url ?? '',
-			req.headers.origin
-		)
+		const origin = new URL(req.url ?? '', req.headers.origin)
+		log('Receiving upgrade request', origin.href)
 
-		log('Receiving upgrade request', {
-			origin,
-			pathname,
-			searchParams: searchParams.toString()
-		})
-
-		if (origin !== ORIGIN)
+		if (origin.origin !== ORIGIN.origin)
 			throw logError(
 				'Receiving upgrade request',
 				new HttpError(HttpErrorCode.Socket, 'Invalid origin'),
-				origin
+				origin.origin
 			)
 
-		if (DEV && pathname === '/') {
-			log('Skipping upgrade request', pathname, 'dev')
+		if (DEV && origin.pathname === '/') {
+			log('Skipping upgrade request', origin.pathname, 'dev')
 			return
 		}
 
 		for (const [pattern, socketServer] of socketServers) {
-			const params = pattern.match(pathname) as Record<string, string> | null
+			const params = pattern.match(origin.pathname) as URLParams | null
 			if (!params) continue
 
 			req.params = params
-			req.query = searchParams
+			req.query = origin.searchParams
 
 			const client = await new Promise<WebSocket>(resolve => {
 				socketServer.handleUpgrade(req, socket, head, resolve)
 			})
 
 			socketServer.emit('connection', client, req)
-			log('Found socket server', pathname)
+			log('Found socket server', origin.pathname)
 
 			return
 		}
@@ -73,22 +67,17 @@ const upgrade = async (req: SocketRequest, socket: Socket, head: Buffer) => {
 		throw logError(
 			'Receiving upgrade request',
 			new HttpError(HttpErrorCode.Socket, 'No matching paths'),
-			pathname
+			origin.pathname
 		)
 	} catch (error) {
-		logError(
-			'Attempted to handle upgrade request',
-			error,
-			req.url ?? 'unknown url'
-		)
-
+		logError('Attempted to handle upgrade request', error, req.url)
 		socket.destroy(error instanceof Error ? error : undefined)
 	}
 }
 
 server.on('upgrade', (req, socket, head) => {
 	upgrade(req as SocketRequest, socket as Socket, head).catch(error => {
-		logError('Failed upgrade request', error, req.url ?? 'unknown url')
+		logError('Failed upgrade request', error, req.url)
 	})
 })
 

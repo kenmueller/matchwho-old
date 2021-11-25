@@ -1,17 +1,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 
-	import { dev } from '$app/env'
+	import ORIGIN from '../lib/origin/index.js'
 
 	interface WithDataLayer {
 		dataLayer?: unknown[][]
 	}
 
-	const BASE_URL = `http${dev ? '' : 's'}://www.googletagmanager.com`
+	const BASE_URL = new URL(`${ORIGIN.protocol}//www.googletagmanager.com`)
 
 	export let id: string
 
-	$: url = `${BASE_URL}/gtag/js?id=${id}`
+	$: url = new URL(`/gtag/js?id=${encodeURIComponent(id)}`, BASE_URL)
 
 	const gtag = ((...options) => {
 		;(window as WithDataLayer).dataLayer?.push(options)
@@ -26,7 +26,7 @@
 </script>
 
 <svelte:head>
-	<link rel="preconnect" href={BASE_URL} />
-	<link rel="preload" href={url} as="script" />
-	<script async src={url}></script>
+	<link rel="preconnect" href={BASE_URL.href} />
+	<link rel="preload" href={url.href} as="script" />
+	<script async src={url.href}></script>
 </svelte:head>

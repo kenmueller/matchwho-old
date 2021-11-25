@@ -12,7 +12,7 @@ const getMeta = async (
 	{ session, fetch }: Pick<LoadInput, 'session' | 'fetch'>
 ) => {
 	if (browser) {
-		const response = await fetch(`${ORIGIN}/games/${code}`)
+		const response = await fetch(new URL(`/games/${code}`, ORIGIN).href)
 
 		if (!response.ok)
 			throw new ErrorWithPayload<LoadOutput>('Error fetching meta', {

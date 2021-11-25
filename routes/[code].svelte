@@ -51,7 +51,7 @@
 		if (joining) return
 
 		socket = new WebSocket(
-			`${SOCKET_ORIGIN}/games/${code}?name=${encodeURIComponent(name)}`
+			new URL(`/games/${code}?name=${encodeURIComponent(name)}`, SOCKET_ORIGIN)
 		)
 
 		socket.addEventListener('message', ({ data }) => {
