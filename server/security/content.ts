@@ -11,7 +11,11 @@ const CONTENT_SECURITY_POLICY = log(
 			'default-src': [SELF],
 			'connect-src': [SELF, SOCKET_ORIGIN],
 			'style-src': [SELF, INLINE],
-			'script-src': [SELF, INLINE, 'www.googletagmanager.com/gtag/js'],
+			'script-src': [
+				SELF,
+				INLINE,
+				`${DEV ? '' : 'https://'}www.googletagmanager.com/gtag/js`
+			],
 			'base-uri': [SELF],
 			'upgrade-insecure-requests': !DEV
 		}

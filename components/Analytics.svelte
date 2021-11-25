@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 
+	import { dev } from '$app/env'
+
 	interface WithDataLayer {
 		dataLayer?: unknown[][]
 	}
 
-	const BASE_URL = 'https://www.googletagmanager.com'
+	const BASE_URL = `http${dev ? '' : 's'}://www.googletagmanager.com`
 
 	export let id: string
 
@@ -25,6 +27,6 @@
 
 <svelte:head>
 	<link rel="preconnect" href={BASE_URL} />
-	<link rel="preload" href={url} />
+	<link rel="preload" href={url} as="script" />
 	<script async src={url}></script>
 </svelte:head>
