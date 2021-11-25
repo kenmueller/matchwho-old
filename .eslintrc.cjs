@@ -16,7 +16,6 @@ module.exports = {
 	},
 	rules: {
 		strict: ['error', 'never'],
-		eqeqeq: ['error', 'always'],
 		semi: ['error', 'never'],
 		indent: ['error', 'tab', { SwitchCase: 1 }],
 		quotes: ['error', 'single', { avoidEscape: true }],

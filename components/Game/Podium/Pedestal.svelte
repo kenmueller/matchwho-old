@@ -5,7 +5,7 @@
 	export let players: Player[]
 	export let index: number
 
-	$: player = players[index] ?? null
+	$: player = players[index]
 </script>
 
 <article>

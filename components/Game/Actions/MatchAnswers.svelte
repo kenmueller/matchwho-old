@@ -24,15 +24,13 @@
 	$: answers = game.turn?.answers ?? []
 	$: matches = Object.entries(game.turn?.matches ?? {})
 
-	$: correct = game.turn?.correct
-		? {
-				count: game.turn.correct.count,
-				matches: Object.entries(game.turn.correct.matches)
-		  }
-		: null
+	$: correct = game.turn?.correct && {
+		count: game.turn.correct.count,
+		matches: Object.entries(game.turn.correct.matches)
+	}
 
 	$: myTurn = current && current.id === game.self?.id
-	$: disabled = !(myTurn && correct === null)
+	$: disabled = !(myTurn && correct == null)
 
 	$: if (!(playerLink === null || answerLink === null)) {
 		try {

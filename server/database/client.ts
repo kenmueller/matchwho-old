@@ -16,9 +16,7 @@ const useClient = async <Result>(
 		throw logError('Attempted using client', error)
 	} finally {
 		client.release(
-			transformError instanceof Error
-				? transformError
-				: transformError !== undefined
+			transformError instanceof Error ? transformError : transformError != null
 		)
 	}
 }
