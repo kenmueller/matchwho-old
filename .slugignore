@@ -1,16 +1,7 @@
 *.DS_Store
 /.svelte-kit/
 /.vscode/
-/components/
-/icons/
-/lib/
-/public/
-/routes/
-/server/
-/shared/
-/tsconfig*
-/*.[jt]s
-/*.sql
+/schema.sql
 /README.md
 /.git*
 /.npm*
