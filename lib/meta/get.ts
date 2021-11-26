@@ -2,6 +2,7 @@ import type { LoadInput, LoadOutput } from '@sveltejs/kit'
 
 import { browser } from '$app/env'
 
+import { HttpErrorCode } from '../../shared/error/http.js'
 import ErrorWithPayload from '../../shared/error/payload.js'
 import type Session from '../session.js'
 import type GameMeta from '../../shared/game/meta.js'
@@ -16,7 +17,7 @@ const getMeta = async (
 
 		if (!response.ok)
 			throw new ErrorWithPayload<LoadOutput>('Error fetching meta', {
-				status: 307,
+				status: HttpErrorCode.TemporaryRedirect,
 				redirect: '/'
 			})
 
@@ -27,7 +28,7 @@ const getMeta = async (
 
 	if (!meta)
 		throw new ErrorWithPayload<LoadOutput>('Session does not contain meta', {
-			status: 307,
+			status: HttpErrorCode.TemporaryRedirect,
 			redirect: '/'
 		})
 

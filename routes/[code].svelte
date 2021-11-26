@@ -4,8 +4,6 @@
 			const { code } = page.params
 			const meta = await getMeta(code, { session, fetch })
 
-			if (meta.next !== null) return { status: 301, redirect: `/${meta.next}` }
-
 			return {
 				props: { code, meta }
 			}
@@ -25,6 +23,7 @@
 	import SOCKET_ORIGIN from '../lib/origin/socket.js'
 	import MAX_NAME_LENGTH from '../shared/game/name.js'
 	import type Game from '../shared/game/index.js'
+	import type SavedGame from '../shared/game/saved/index.js'
 	import type GameMeta from '../shared/game/meta.js'
 	import type ServerGameData from '../shared/game/data/server.js'
 	import GameState from '../shared/game/state.js'
@@ -34,9 +33,10 @@
 	import GameView from '../components/Game/View.svelte'
 	import WithNavbar from '../components/Navigation/WithNavbar.svelte'
 	import Meta from '../components/Game/Meta.svelte'
+	import SavedGameView from '../components/Game/Saved.svelte'
 
 	export let code: string
-	export let meta: GameMeta
+	export let meta: GameMeta | SavedGame
 
 	let input: HTMLInputElement | null = null
 	$: input?.focus()
@@ -72,13 +72,13 @@
 		})
 	}
 
-	onMount(() => meta.state === GameState.Joining || join())
+	onMount(() => 'state' in meta && (meta.state === GameState.Joining || join()))
 	onDestroy(() => socket?.close())
 </script>
 
 {#if socket && game}
 	<GameView {socket} {game} />
-{:else}
+{:else if 'state' in meta}
 	<Meta {meta} />
 	{#if meta.state === GameState.Joining}
 		<WithNavbar>
@@ -93,6 +93,8 @@
 			</form>
 		</WithNavbar>
 	{/if}
+{:else}
+	<SavedGameView game={meta} />
 {/if}
 
 <style lang="scss">

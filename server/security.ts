@@ -1,7 +1,7 @@
 import { Router } from 'express'
 
 import ORIGIN from './origin/index.js'
-import HttpError from '../shared/error/http.js'
+import HttpError, { HttpErrorCode } from '../shared/error/http.js'
 import sendError from './error/send.js'
 import log from './log/value.js'
 import logError from './log/error.js'
@@ -15,14 +15,14 @@ router.use((req, res, next) => {
 		if (!host)
 			throw logError(
 				'Running origin precheck',
-				new HttpError(400, 'Unable to get host')
+				new HttpError(HttpErrorCode.BadRequest, 'Unable to get host')
 			)
 
 		const origin = new URL(req.url, `${req.protocol}://${host}`)
 		if (origin.origin === ORIGIN.origin) return next()
 
 		res.redirect(
-			301,
+			HttpErrorCode.PermanentRedirect,
 			log(
 				'Origin precheck',
 				new URL(req.url, ORIGIN).href,

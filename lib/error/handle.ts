@@ -1,8 +1,8 @@
-const DEFAULT_ERROR = new Error('An unknown error occurred')
+const DEFAULT_ERROR = 'An unknown error occurred'
 
-const handleError = (error: unknown = DEFAULT_ERROR) => {
+const handleError = (error: unknown = new Error(DEFAULT_ERROR)) => {
 	console.error(error)
-	alert(error instanceof Error ? error.message : DEFAULT_ERROR.message)
+	alert(error instanceof Error ? error.message : DEFAULT_ERROR)
 }
 
 export default handleError

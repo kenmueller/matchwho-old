@@ -1,10 +1,12 @@
 import type { Handle } from '@sveltejs/kit'
 
-import type Locals from '../locals.js'
 import getContentSecurityPolicy from '../security/content.js'
 import insertNonce from '../security/insert.js'
 
-const handle: Handle<Locals, unknown> = async ({ request, resolve }) => {
+const handle: Handle<Record<string, never>, unknown> = async ({
+	request,
+	resolve
+}) => {
 	const response = await resolve(request)
 	const security = getContentSecurityPolicy()
 

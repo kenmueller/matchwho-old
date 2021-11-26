@@ -1,7 +1,8 @@
 import { Router } from 'express'
 
-import HttpError from '../../shared/error/http.js'
+import HttpError, { HttpErrorCode } from '../../shared/error/http.js'
 import sendError from '../error/send.js'
+import { GAME_META_HEADER } from '../../shared/game/meta.js'
 import Game from './index.js'
 import getSavedGame from './saved/get.js'
 import log from '../log/value.js'
@@ -24,16 +25,22 @@ router.get('/:code', async (req, res, next) => {
 		if (!Game.validCode(code)) {
 			logError(
 				'Intercepting game page request',
-				new HttpError(400, 'Invalid game code, redirecting'),
+				new HttpError(
+					HttpErrorCode.BadRequest,
+					'Invalid game code, redirecting'
+				),
 				code
 			)
 
-			return res.redirect(301, '/')
+			return res.redirect(HttpErrorCode.PermanentRedirect, '/')
 		}
 
 		const game = Game.withCode(code)
 
-		if (!game) {
+		if (game) {
+			log('Setting game meta header as game.meta', game.code)
+			req.headers[GAME_META_HEADER] = JSON.stringify(game.meta)
+		} else {
 			log(
 				'Intercepting game page request',
 				'Game not running, searching in database',
@@ -45,20 +52,19 @@ router.get('/:code', async (req, res, next) => {
 			if (!game) {
 				logError(
 					'Intercepting game page request',
-					new HttpError(404, 'Game not found in database, redirecting'),
+					new HttpError(
+						HttpErrorCode.NotFound,
+						'Game not found in database, redirecting'
+					),
 					code
 				)
 
-				return res.redirect(307, '/')
+				return res.redirect(HttpErrorCode.TemporaryRedirect, '/')
 			}
 
-			log('Sending game from database', game.code)
-			return res.send(game)
+			log('Setting game meta header as saved game', game.code)
+			req.headers[GAME_META_HEADER] = JSON.stringify(game)
 		}
-
-		req.headers['x-game-meta'] = JSON.stringify(
-			log('Setting game meta header', game.meta, game.code)
-		)
 
 		next()
 	} catch (error) {
