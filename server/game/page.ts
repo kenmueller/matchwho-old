@@ -1,6 +1,5 @@
 import { Router } from 'express'
 
-import ORIGIN from '../origin/index.js'
 import HttpError from '../../shared/error/http.js'
 import sendError from '../error/send.js'
 import Game from './index.js'
@@ -27,7 +26,7 @@ router.get('/:code', (req, res, next) => {
 				code
 			)
 
-			return res.redirect(301, ORIGIN.href)
+			return res.redirect(301, '/')
 		}
 
 		const game = Game.withCode(code)
