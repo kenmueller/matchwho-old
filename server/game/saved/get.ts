@@ -26,7 +26,7 @@ const getSavedGame = (code: string) => {
 
 	return pool.connect(async connection => {
 		const games = await connection.any<SavedGame>(
-			sql`SELECT next, completed
+			sql`SELECT next
 				FROM games
 				WHERE code = ${code}`
 		)

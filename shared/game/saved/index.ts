@@ -7,9 +7,6 @@ export default interface SavedGame {
 	/** Next game code. */
 	next: string | null
 
-	/** Milliseconds since epoch. */
-	completed: number
-
 	/**
 	 * Includes only the top players.
 	 * Sorted from top to bottom by points.
