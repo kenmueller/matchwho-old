@@ -1,14 +1,14 @@
 <script lang="ts">
-	import type Player from '../../../shared/game/player/index.js'
+	import type SavedPlayer from '../../../shared/game/saved/player.js'
 	import Point from '../../../icons/Point.svelte'
 
-	export let players: Player[]
+	export let players: SavedPlayer[]
 	export let index: number
 
 	$: player = players[index]
 </script>
 
-<article>
+<article aria-hidden={!player}>
 	<p class="name">
 		{#if player}
 			{player.name}
@@ -42,6 +42,10 @@
 		width: 8rem;
 		font-weight: 700;
 		color: colors.$text;
+	}
+
+	[aria-hidden='true'] {
+		user-select: none;
 	}
 
 	.name {

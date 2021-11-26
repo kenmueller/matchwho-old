@@ -33,7 +33,10 @@
 		{:else if game.state === GameState.Started}
 			<Started {socket} {game} />
 		{:else if game.state === GameState.Completed}
-			<Completed {game} />
+			<Completed
+				players={game.results?.players ?? []}
+				questions={game.results?.questions ?? []}
+			/>
 		{/if}
 	</div>
 	<svelte:fragment slot="items">

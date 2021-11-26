@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type Player from '../../../shared/game/player/index.js'
+	import type SavedPlayer from '../../../shared/game/saved/player.js'
 	import Pedestal from './Pedestal.svelte'
 
 	const INDICES = [1, 0, 2]
 
-	export let players: Player[]
+	export let players: SavedPlayer[]
 </script>
 
 <section>

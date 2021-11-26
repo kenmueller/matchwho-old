@@ -3,14 +3,16 @@
 	import type ClientGameData from '../../shared/game/data/client.js'
 	import handleError from '../../lib/error/handle.js'
 
-	export let socket: WebSocket
+	export let socket: WebSocket | null
 	export let game: Game
+
+	$: next = game.results?.next ?? null
 
 	let starting = false
 
 	const start = () => {
 		try {
-			if (starting) return
+			if (!socket || starting) return
 			starting = true
 
 			const data: ClientGameData = { key: 'next' }
@@ -27,6 +29,8 @@
 
 {#if isLeader}
 	<button aria-busy={starting} on:click={start}>Start next game</button>
+{:else if next !== null}
+	<a rel="external" href="/{next}">View next game</a>
 {:else}
 	<p>Waiting {leader ? `for ${leader.name} ` : ''}to start the next game</p>
 {/if}
@@ -34,7 +38,8 @@
 <style lang="scss">
 	@use 'shared/colors';
 
-	button {
+	button,
+	a {
 		padding: 0.4rem 0.8rem;
 		font-size: 1.1rem;
 		font-weight: 700;
@@ -48,10 +53,14 @@
 			background: transparent;
 			border-color: colors.$yellow;
 		}
+	}
 
-		&[aria-busy='true'] {
-			pointer-events: none;
-		}
+	[aria-busy='true'] {
+		pointer-events: none;
+	}
+
+	a {
+		text-decoration: none;
 	}
 
 	p {

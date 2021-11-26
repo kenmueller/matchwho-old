@@ -1,11 +1,10 @@
 <script lang="ts">
-	import type Game from '../../../shared/game/index.js'
+	import type SavedPlayer from '../../../shared/game/saved/player.js'
+	import type SavedQuestion from '../../../shared/game/saved/question.js'
 	import Podium from '../Podium/Podium.svelte'
 
-	export let game: Game
-
-	$: players = game.results?.players ?? []
-	$: questions = game.results?.questions ?? []
+	export let players: SavedPlayer[]
+	export let questions: SavedQuestion[]
 </script>
 
 <main>

@@ -1,6 +1,3 @@
-export default interface SavedAnswer {
-	/** Player name. */
-	name: string
+import type SavedAnswer from '../results/answer.js'
 
-	answer: string
-}
+export default SavedAnswer
