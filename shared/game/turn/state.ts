@@ -1,4 +1,4 @@
-const enum GameTurnState {
+enum GameTurnState {
 	/** The user has not thought of a question yet. */
 	Waiting,
 

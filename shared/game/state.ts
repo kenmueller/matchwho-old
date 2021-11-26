@@ -1,4 +1,4 @@
-const enum GameState {
+enum GameState {
 	/** Game has not started yet. */
 	Joining,
 

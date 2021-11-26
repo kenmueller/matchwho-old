@@ -4,7 +4,7 @@ export default class HttpError extends Error {
 	}
 }
 
-export const enum HttpErrorCode {
+export enum HttpErrorCode {
 	BadRequest = 400,
 	NotFound = 404,
 	Socket = 1003
