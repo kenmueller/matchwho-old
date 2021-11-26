@@ -1,3 +1,3 @@
-export default interface Locals {
-	nonce?: string
-}
+type Locals = Record<string, never>
+
+export default Locals
