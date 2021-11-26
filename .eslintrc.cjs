@@ -17,7 +17,6 @@ module.exports = {
 	rules: {
 		strict: ['error', 'never'],
 		semi: ['error', 'never'],
-		indent: ['error', 'tab', { SwitchCase: 1 }],
 		quotes: ['error', 'single', { avoidEscape: true }],
 		'jsx-quotes': ['error', 'prefer-double'],
 		'no-unused-vars': 'off',
