@@ -1,5 +1,6 @@
 import { Router } from 'express'
 
+import ORIGIN from '../origin/index.js'
 import HttpError from '../../shared/error/http.js'
 import sendError from '../error/send.js'
 import Game from './index.js'
@@ -18,16 +19,15 @@ router.get('/:code', (req, res, next) => {
 		return
 	}
 
-	let didError = false
-
 	try {
 		if (!Game.validCode(code)) {
 			logError(
 				'Intercepting game page request',
-				new HttpError(400, 'Invalid game code'),
+				new HttpError(400, 'Invalid game code, redirecting'),
 				code
 			)
-			return
+
+			return res.redirect(301, ORIGIN.href)
 		}
 
 		const game = Game.withCode(code)
@@ -38,24 +38,20 @@ router.get('/:code', (req, res, next) => {
 				new HttpError(404, 'Game not found'),
 				code
 			)
-			return
+
+			return next()
 		}
 
 		req.headers['x-game-meta'] = JSON.stringify(
 			log('Setting game meta header', game.meta, game.code)
 		)
-	} catch (error) {
-		didError = true
 
+		next()
+	} catch (error) {
 		sendError(
 			res,
-			logError('Error intercepting game page request', error, code)
+			logError('Attempted intercepting game page request', error, code)
 		)
-	} finally {
-		if (!didError) {
-			log('Intercepted game page request', code)
-			next()
-		}
 	}
 })
 
