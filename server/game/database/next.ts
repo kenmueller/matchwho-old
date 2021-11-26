@@ -12,7 +12,9 @@ const setNextInDatabase = async (game: Game) => {
 
 	await pool.connect(async connection => {
 		await connection.query(
-			sql`UPDATE games SET next = ${next} WHERE code = ${game.code}`
+			sql`UPDATE games
+				SET next = ${next}
+				WHERE code = ${game.code}`
 		)
 	})
 }

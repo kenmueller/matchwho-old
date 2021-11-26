@@ -5,6 +5,7 @@ import shuffle from 'shuffle-array'
 import CODE_LENGTH from '../../shared/game/code.js'
 import ID_LENGTH from '../../shared/game/id.js'
 import ROUNDS from '../../shared/game/rounds.js'
+import TOP_PLAYERS from '../../shared/game/player/top.js'
 import { MIN_PLAYERS, MAX_PLAYERS } from '../../shared/game/player/bounds.js'
 import MAX_NAME_LENGTH from '../../shared/game/name.js'
 import HttpError, { HttpErrorCode } from '../../shared/error/http.js'
@@ -114,11 +115,11 @@ export default class Game {
 		)
 	}
 
-	/** Includes only the top 3 players. */
+	/** Includes only the top players. */
 	get slimResults(): GameResults {
 		return {
 			...this.results,
-			players: this.results.players?.slice(0, 3) ?? null
+			players: this.results.players?.slice(0, TOP_PLAYERS) ?? null
 		}
 	}
 
