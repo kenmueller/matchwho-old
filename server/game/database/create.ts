@@ -1,85 +1,81 @@
-import type { PoolClient } from 'pg'
+import { DatabaseTransactionConnectionType, sql } from 'slonik'
 
 import type Game from '../index.js'
-import useClient from '../../database/client.js'
-import useTransaction from '../../database/transaction.js'
-import insert from '../../database/query/insert.js'
+import pool from '../../pool.js'
 import log from '../../log/value.js'
 
-const createGameInDatabase = (game: Game) => {
+const createGameInDatabase = async (game: Game) => {
 	log('Creating game in database', game.code)
 
-	return useClient(client =>
-		useTransaction(client, () => insertAll(game, client))
-	)
+	await pool.connect(async connection => {
+		await connection.transaction(async connection => {
+			await connection.query(
+				sql`INSERT INTO games (code) VALUES (${game.code})`
+			)
+
+			await createBranches(game, connection)
+		})
+	})
 }
 
-const insertAll = async (game: Game, client: PoolClient) => {
-	await insertGame(game, client)
-
+const createBranches = async (
+	game: Game,
+	connection: DatabaseTransactionConnectionType
+) => {
 	await Promise.all([
-		insertPlayers(game, client),
-		insertQuestionsAndAnswers(game, client)
+		createPlayers(game, connection),
+		createResults(game, connection)
 	])
 }
 
-const insertGame = (game: Game, client: PoolClient) =>
-	client.query(
-		insert({ table: 'games', columns: ['code'], values: [game.code] })
-	)
-
-const insertPlayers = (game: Game, client: PoolClient) => {
+const createPlayers = async (
+	game: Game,
+	connection: DatabaseTransactionConnectionType
+) => {
 	const { players } = game.results
 	if (!players) return
 
-	return client.query(
-		insert({
-			table: 'players',
-			columns: ['game_code', 'id', 'name', 'points'],
-			rows: players.map(player => [
-				game.code,
-				player.id,
-				player.name,
-				player.points
-			])
-		})
+	await connection.query(
+		sql`INSERT INTO players (game_code, id, name, points) VALUES ${sql.join(
+			players.map(
+				({ id, name, points }) =>
+					sql`(${sql.join([game.code, id, name, points], sql`, `)})`
+			),
+			sql`, `
+		)}`
 	)
 }
 
-const insertQuestionsAndAnswers = async (game: Game, client: PoolClient) => {
-	await insertQuestions(game, client)
-	await insertAnswers(game, client)
+const createResults = async (
+	game: Game,
+	connection: DatabaseTransactionConnectionType
+) => {
+	const { questions } = game.results
+
+	await connection.query(
+		sql`INSERT INTO questions (game_code, index, name, question) VALUES ${sql.join(
+			questions.map(
+				({ name, question }, index) =>
+					sql`(${sql.join([game.code, index, name, question], sql`, `)})`
+			),
+			sql`, `
+		)}`
+	)
+
+	await connection.query(
+		sql`INSERT INTO answers (game_code, question_index, index, name, answer) VALUES ${sql.join(
+			questions.flatMap(({ answers }, questionIndex) =>
+				answers.map(
+					({ name, answer }, index) =>
+						sql`(${sql.join(
+							[game.code, questionIndex, index, name, answer],
+							sql`, `
+						)})`
+				)
+			),
+			sql`, `
+		)}`
+	)
 }
-
-const insertQuestions = (game: Game, client: PoolClient) =>
-	client.query(
-		insert({
-			table: 'questions',
-			columns: ['game_code', 'index', 'name', 'question'],
-			rows: game.results.questions.map(({ name, question }, index) => [
-				game.code,
-				index,
-				name,
-				question
-			])
-		})
-	)
-
-const insertAnswers = (game: Game, client: PoolClient) =>
-	client.query(
-		insert({
-			table: 'answers',
-			columns: ['game_code', 'question_index', 'index', 'name', 'answer'],
-			rows: game.results.questions.flatMap(({ answers }, questionIndex) =>
-				answers.map(({ name, answer }, index) => [
-					game.code,
-					questionIndex,
-					index,
-					name,
-					answer
-				])
-			)
-		})
-	)
 
 export default createGameInDatabase

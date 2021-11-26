@@ -13,10 +13,10 @@
 	<h2>Questions</h2>
 	{#each questions as { name, question, answers }}
 		<section>
-			<p>{name}</p>
+			<p class="asked">{name} asked</p>
 			<h3>{question}</h3>
 			{#each answers as { name, answer }}
-				<p>
+				<p class="answer">
 					<span>{name}:</span>
 					{answer}
 				</p>
@@ -44,6 +44,9 @@
 		margin-top: 1.5rem;
 	}
 
+	.asked {
+	}
+
 	h3 {
 		max-width: max-content;
 		margin-bottom: 0.5rem;
@@ -53,8 +56,10 @@
 		border-bottom: 0.125rem solid colors.$border;
 	}
 
-	p + p {
-		margin-top: 0.5rem;
+	.answer {
+		& + & {
+			margin-top: 0.5rem;
+		}
 	}
 
 	span {

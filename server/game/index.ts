@@ -82,11 +82,11 @@ export default class Game {
 	}
 
 	get leader() {
-		return log('Leader', this.players[0] ?? null, this.code)
+		return this.players[0] ?? null
 	}
 
 	get current() {
-		return log('Current player', this.players[this.index] ?? null, this.code)
+		return this.players[this.index] ?? null
 	}
 
 	get question() {

@@ -1,23 +1,20 @@
+import { sql } from 'slonik'
+
 import type Game from '../index.js'
-import useClient from '../../database/client.js'
-import update from '../../database/query/update.js'
+import pool from '../../pool.js'
 import log from '../../log/value.js'
 
 const setNextInDatabase = async (game: Game) => {
-	const next = game.results.next
+	const { next } = game.results
 	if (!next) return
 
 	log('Setting game.next in database', next, game.code)
 
-	await useClient(client =>
-		client.query(
-			update({
-				table: 'games',
-				columns: { next },
-				where: ['code = %L', game.code]
-			})
+	await pool.connect(async connection => {
+		await connection.query(
+			sql`UPDATE games SET next = ${next} WHERE code = ${game.code}`
 		)
-	)
+	})
 }
 
 export default setNextInDatabase
