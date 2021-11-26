@@ -13,6 +13,7 @@ const handle: Handle<Locals, unknown> = async ({ request, resolve }) => {
 		headers: {
 			...response.headers,
 			'content-security-policy': security.value,
+			'cache-control': 'no-store',
 			'expect-ct': '0',
 			'referrer-policy': 'no-referrer',
 			'strict-transport-security': 'max-age=15552000',
