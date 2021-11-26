@@ -1,4 +1,5 @@
 import type PlayerFromDatabase from './player.js'
+import type QuestionFromDatabase from './question.js'
 
 export default interface GameFromDatabase {
 	code: string
@@ -14,4 +15,6 @@ export default interface GameFromDatabase {
 	 * Sorted from top to bottom by points.
 	 */
 	players: PlayerFromDatabase[]
+
+	questions: QuestionFromDatabase[]
 }
