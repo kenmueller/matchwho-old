@@ -164,20 +164,30 @@ export default class Game {
 
 		list.splice(index, 1)
 
-		if (player.spectating) return
+		switch (this.state) {
+			case GameState.Started:
+				if (player.spectating) return
 
-		if (this.state === GameState.Started) {
-			if (this.players.length < MIN_PLAYERS) {
-				this.complete()
-			} else {
-				if (index < this.index) this.index--
-				if (index === this.index) this.resetTurn()
+				if (this.players.length < MIN_PLAYERS) {
+					this.complete()
+				} else {
+					if (index < this.index) this.index--
+					if (index === this.index) this.resetTurn()
 
-				if (this.index >= this.players.length) {
-					this.nextRound()
-					this.resetTurn()
+					if (this.index >= this.players.length) {
+						this.nextRound()
+						this.resetTurn()
+					}
 				}
-			}
+
+				break
+			case GameState.Completed:
+				if (this.players.length || this.spectators.length) break
+
+				delete Game.games[this.code]
+				log('Deleted game', this.code)
+
+				return
 		}
 
 		this.sendGame()
