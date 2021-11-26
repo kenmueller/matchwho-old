@@ -1,9 +1,5 @@
-**/*.DS_Store
-node_modules/
-functions/
-build/
-server-build/
-.svelte-kit/
-.vercel/
-.vercel_build_output/
-.env
+*.DS_Store
+/.svelte-kit/
+/build/
+/node_modules/
+/server-build/

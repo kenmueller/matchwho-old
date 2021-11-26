@@ -3,7 +3,7 @@ import compression from 'compression'
 import DEV from './dev.js'
 import { app } from './root.js'
 
-import security from './security/index.js'
+import security from './security.js'
 import createGame from './game/create.js'
 import gamePage from './game/page.js'
 import gameMeta from './game/meta.js'
