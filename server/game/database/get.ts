@@ -1,17 +1,32 @@
 import { sql } from 'slonik'
+import Cache from 'node-cache'
 
 import type GameFromDatabase from './index.js'
 import type AnswerFromDatabase from './answer.js'
 import TOP_PLAYERS from '../../../shared/game/player/top.js'
 import pool from '../../pool.js'
 import log from '../../log/value.js'
+import logError from '../../log/error.js'
 
 interface RawAnswerFromDatabase extends AnswerFromDatabase {
 	question_index: number
 }
 
+const cache = new Cache({
+	stdTTL: 10 * 60,
+	checkperiod: 10 * 60,
+	useClones: false
+})
+
 const getGameFromDatabase = (code: string) => {
 	log('Fetching game from database', code)
+
+	const cachedGame = cache.get<GameFromDatabase>(code)
+
+	if (cachedGame) {
+		log('Found game in cache', cachedGame.code)
+		return cachedGame
+	}
 
 	return pool.connect(async connection => {
 		const games = await connection.any<GameFromDatabase>(
@@ -51,6 +66,9 @@ const getGameFromDatabase = (code: string) => {
 			const question = game.questions[question_index]
 			question && (question.answers ??= []).push(answer)
 		}
+
+		if (!cache.set(game.code, game))
+			logError('Attempted to cache game', game.code)
 
 		return game
 	})
