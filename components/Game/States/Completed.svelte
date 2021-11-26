@@ -45,11 +45,13 @@
 	}
 
 	.asked {
+		font-weight: 700;
+		opacity: 0.5;
 	}
 
 	h3 {
 		max-width: max-content;
-		margin-bottom: 0.5rem;
+		margin: 0.1rem 0 0.5rem;
 		padding: 0 1rem 0.5rem 0;
 		font-size: 1.5rem;
 		font-weight: 700;
