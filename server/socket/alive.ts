@@ -18,7 +18,8 @@ const keepAlive = (socket: WebSocket) => {
 	})
 
 	socket.on('close', () => {
-		clearInterval(log('Clearing socket keepalive interval', interval))
+		log('Clearing socket keepalive interval', socket.readyState)
+		clearInterval(interval)
 	})
 }
 
