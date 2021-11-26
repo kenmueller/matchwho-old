@@ -11,8 +11,13 @@ export interface ContentSecurityPolicy {
 	value: string
 }
 
-const ANALYTICS_URL = new URL(
+const ANALYTICS_SCRIPT = new URL(
 	'/gtag/js',
+	`${ORIGIN.protocol}//www.googletagmanager.com`
+)
+
+const ANALYTICS_IMAGE = new URL(
+	'/a',
 	`${ORIGIN.protocol}//www.googletagmanager.com`
 )
 
@@ -26,7 +31,8 @@ const getContentSecurityPolicy = (): ContentSecurityPolicy => {
 				'default-src': [SELF],
 				'connect-src': [SELF, SOCKET_ORIGIN.href],
 				'style-src': [SELF, ...(dev ? [INLINE] : [])],
-				'script-src': [SELF, nonce(nonceId), ANALYTICS_URL.href],
+				'script-src': [SELF, nonce(nonceId), ANALYTICS_SCRIPT.href],
+				'img-src': [SELF, ANALYTICS_IMAGE.href],
 				'base-uri': [SELF],
 				'upgrade-insecure-requests': !dev
 			}
