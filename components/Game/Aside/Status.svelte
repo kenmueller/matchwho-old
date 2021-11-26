@@ -4,6 +4,8 @@
 	import GameTurnState from '../../../shared/game/turn/state.js'
 	import ROUNDS from '../../../shared/game/rounds.js'
 	import { MAX_PLAYERS } from '../../../shared/game/player/bounds.js'
+	import MetaTitle from '../../Meta/Title.svelte'
+	import MetaDescription from '../../Meta/Description.svelte'
 
 	export let game: Game
 
@@ -36,9 +38,8 @@
 	})()
 </script>
 
-<svelte:head>
-	<title>{status} | Match Who</title>
-</svelte:head>
+<MetaTitle value={`${status} | Match Who`} />
+<MetaDescription />
 
 <h1
 	data-code={game.state === GameState.Joining ? game.code : undefined}

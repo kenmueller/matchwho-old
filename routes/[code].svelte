@@ -30,9 +30,10 @@
 	import getMeta from '../lib/meta/get.js'
 	import ErrorWithPayload from '../shared/error/payload.js'
 	import handleError from '../lib/error/handle.js'
+	import MetaImage from '../components/Meta/Image.svelte'
 	import GameView from '../components/Game/View.svelte'
 	import WithNavbar from '../components/Navigation/WithNavbar.svelte'
-	import Meta from '../components/Game/Meta.svelte'
+	import MetaView from '../components/Game/Meta.svelte'
 	import SavedGameView from '../components/Game/Saved.svelte'
 
 	export let code: string
@@ -76,10 +77,12 @@
 	onDestroy(() => socket?.close())
 </script>
 
+<MetaImage />
+
 {#if socket && game}
 	<GameView {socket} {game} />
 {:else if 'state' in meta}
-	<Meta {meta} />
+	<MetaView {meta} />
 	{#if meta.state === GameState.Joining}
 		<WithNavbar>
 			<form on:submit|preventDefault={join}>

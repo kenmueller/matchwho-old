@@ -1,14 +1,21 @@
 <script lang="ts">
 	import type SavedGame from '../../shared/game/saved/index.js'
+	import MetaTitle from '../Meta/Title.svelte'
+	import MetaDescription from '../Meta/Description.svelte'
 	import WithNavbar from '../Navigation/WithNavbar.svelte'
 	import Completed from './States/Completed.svelte'
+
+	const TITLE = 'Game Results'
 
 	export let game: SavedGame
 </script>
 
+<MetaTitle value={`${TITLE} | Match Who`} />
+<MetaDescription />
+
 <WithNavbar>
 	<div>
-		<h1>Game Results</h1>
+		<h1>{TITLE}</h1>
 		<Completed players={game.players} questions={game.questions} />
 	</div>
 	<svelte:fragment slot="items">

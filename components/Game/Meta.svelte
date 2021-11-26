@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type GameMeta from '../../shared/game/meta.js'
 	import GameState from '../../shared/game/state.js'
+	import MetaTitle from '../Meta/Title.svelte'
+	import MetaDescription from '../Meta/Description.svelte'
 
 	export let meta: GameMeta
 
@@ -16,7 +18,5 @@
 	})()
 </script>
 
-<svelte:head>
-	<meta name="description" content="Match Who" />
-	<title>{status} | Match Who</title>
-</svelte:head>
+<MetaTitle value={`${status} | Match Who`} />
+<MetaDescription />

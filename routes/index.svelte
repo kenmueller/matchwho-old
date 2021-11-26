@@ -3,6 +3,9 @@
 
 	import CODE_LENGTH from '../shared/game/code.js'
 	import handleError from '../lib/error/handle.js'
+	import MetaImage from '../components/Meta/Image.svelte'
+	import MetaTitle from '../components/Meta/Title.svelte'
+	import MetaDescription from '../components/Meta/Description.svelte'
 	import WithNavbar from '../components/Navigation/WithNavbar.svelte'
 
 	let input: HTMLInputElement | null = null
@@ -46,9 +49,9 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Match Who</title>
-</svelte:head>
+<MetaImage />
+<MetaTitle />
+<MetaDescription />
 
 <WithNavbar>
 	<main>
