@@ -18,7 +18,7 @@ import type GameMeta from '../../shared/game/meta.js'
 import type GameTurn from '../../shared/game/turn/index.js'
 import type InternalGameTurn from './turn.js'
 import type GameResults from '../../shared/game/results/index.js'
-import createGameInDatabase from './database/create.js'
+import saveGame from './saved/create.js'
 import onStart from './message/start.js'
 import onQuestion from './message/question.js'
 import onAnswer from './message/answer.js'
@@ -222,8 +222,8 @@ export default class Game {
 			.sort((a, b) => b.points - a.points)
 			.map(dataFromPlayer)
 
-		createGameInDatabase(this).catch(error => {
-			logError('Attempted to create game in database', error, this.code)
+		saveGame(this).catch(error => {
+			logError('Attempted to save game in database', error, this.code)
 		})
 	}
 

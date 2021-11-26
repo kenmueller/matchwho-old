@@ -4,7 +4,7 @@ import type Game from '../index.js'
 import pool from '../../pool.js'
 import log from '../../log/value.js'
 
-const setNextInDatabase = async (game: Game) => {
+const saveGameNext = async (game: Game) => {
 	const { next } = game.results
 	if (!next) return
 
@@ -19,4 +19,4 @@ const setNextInDatabase = async (game: Game) => {
 	})
 }
 
-export default setNextInDatabase
+export default saveGameNext

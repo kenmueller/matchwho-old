@@ -4,7 +4,7 @@ import type Game from '../index.js'
 import pool from '../../pool.js'
 import log from '../../log/value.js'
 
-const createGameInDatabase = async (game: Game) => {
+const saveGame = async (game: Game) => {
 	log('Creating game in database', game.code)
 
 	await pool.connect(async connection => {
@@ -15,22 +15,22 @@ const createGameInDatabase = async (game: Game) => {
 					VALUES (${game.code})`
 			)
 
-			await createBranches(game, connection)
+			await saveBranches(game, connection)
 		})
 	})
 }
 
-const createBranches = async (
+const saveBranches = async (
 	game: Game,
 	connection: DatabaseTransactionConnectionType
 ) => {
 	await Promise.all([
-		createPlayers(game, connection),
-		createResults(game, connection)
+		savePlayers(game, connection),
+		saveResults(game, connection)
 	])
 }
 
-const createPlayers = async (
+const savePlayers = async (
 	game: Game,
 	connection: DatabaseTransactionConnectionType
 ) => {
@@ -50,7 +50,7 @@ const createPlayers = async (
 	)
 }
 
-const createResults = async (
+const saveResults = async (
 	game: Game,
 	connection: DatabaseTransactionConnectionType
 ) => {
@@ -86,4 +86,4 @@ const createResults = async (
 	)
 }
 
-export default createGameInDatabase
+export default saveGame

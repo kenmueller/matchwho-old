@@ -3,7 +3,7 @@ import { Router } from 'express'
 import HttpError from '../../shared/error/http.js'
 import sendError from '../error/send.js'
 import Game from './index.js'
-import getGameFromDatabase from './database/get.js'
+import getSavedGame from './saved/get.js'
 import log from '../log/value.js'
 import logError from '../log/error.js'
 
@@ -40,7 +40,7 @@ router.get('/:code', async (req, res, next) => {
 				code
 			)
 
-			const game = await getGameFromDatabase(code)
+			const game = await getSavedGame(code)
 
 			if (!game) {
 				logError(

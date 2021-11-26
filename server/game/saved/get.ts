@@ -1,16 +1,12 @@
 import { sql } from 'slonik'
 import Cache from 'node-cache'
 
-import type GameFromDatabase from './index.js'
-import type AnswerFromDatabase from './answer.js'
+import type SavedGame from '../../../shared/game/saved/index.js'
+import type RawSavedAnswer from './answer.js'
 import TOP_PLAYERS from '../../../shared/game/player/top.js'
 import pool from '../../pool.js'
 import log from '../../log/value.js'
 import logError from '../../log/error.js'
-
-interface RawAnswerFromDatabase extends AnswerFromDatabase {
-	question_index: number
-}
 
 const cache = new Cache({
 	stdTTL: 10 * 60,
@@ -18,10 +14,10 @@ const cache = new Cache({
 	useClones: false
 })
 
-const getGameFromDatabase = (code: string) => {
+const getSavedGame = (code: string) => {
 	log('Fetching game from database', code)
 
-	const cachedGame = cache.get<GameFromDatabase>(code)
+	const cachedGame = cache.get<SavedGame>(code)
 
 	if (cachedGame) {
 		log('Found game in cache', cachedGame.code)
@@ -29,7 +25,7 @@ const getGameFromDatabase = (code: string) => {
 	}
 
 	return pool.connect(async connection => {
-		const games = await connection.any<GameFromDatabase>(
+		const games = await connection.any<SavedGame>(
 			sql`SELECT next, completed
 				FROM games
 				WHERE code = ${code}`
@@ -55,7 +51,7 @@ const getGameFromDatabase = (code: string) => {
 				ORDER BY index`
 		)) as typeof game.questions
 
-		const answers = await connection.any<RawAnswerFromDatabase>(
+		const answers = await connection.any<RawSavedAnswer>(
 			sql`SELECT question_index, name, answer
 				FROM answers
 				WHERE game_code = ${game.code}
@@ -74,4 +70,4 @@ const getGameFromDatabase = (code: string) => {
 	})
 }
 
-export default getGameFromDatabase
+export default getSavedGame

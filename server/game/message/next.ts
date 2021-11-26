@@ -3,7 +3,7 @@ import GameState from '../../../shared/game/state.js'
 import type ServerGameData from '../../../shared/game/data/server.js'
 import Game from '../index.js'
 import type Player from '../player.js'
-import setNextInDatabase from '../database/next.js'
+import saveGameNext from '../saved/next.js'
 import log from '../../log/value.js'
 import logError from '../../log/error.js'
 
@@ -39,7 +39,7 @@ const onNext = (game: Game, player: Player) => {
 	for (const player of [...game.players, ...game.spectators])
 		player.socket.send(data)
 
-	setNextInDatabase(game).catch(error => {
+	saveGameNext(game).catch(error => {
 		logError('Attempted to set game.next in database', error, game.code)
 	})
 }
