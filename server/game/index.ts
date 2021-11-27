@@ -19,6 +19,7 @@ import type GameTurn from '../../shared/game/turn/index.js'
 import type InternalGameTurn from './turn.js'
 import type GameResults from '../../shared/game/results/index.js'
 import type SavedGame from '../../shared/game/saved/index.js'
+import savedGameExists from './saved/exists.js'
 import saveGame from './saved/create.js'
 import onStart from './message/start.js'
 import onQuestion from './message/question.js'
@@ -66,10 +67,18 @@ export default class Game {
 	static validCode = (code: string) =>
 		log('Valid code', code.length === CODE_LENGTH, code)
 
+	static hasCode = (code: string) =>
+		log<boolean>(
+			'Has code',
+			Object.prototype.hasOwnProperty.call(Game.games, code),
+			code
+		)
+
 	static withCode = (code: string) =>
-		Object.prototype.hasOwnProperty.call(Game.games, code)
-			? Game.games[code]
-			: null
+		this.hasCode(code) ? Game.games[code] : null
+
+	static exists = async (code: string) =>
+		Game.hasCode(code) || (await savedGameExists(code))
 
 	get meta(): GameMeta {
 		return log(

@@ -38,8 +38,11 @@
 
 			code = code.toLowerCase()
 
-			const response = await fetch(`/games/${code}`)
+			const response = await fetch(`/games/${code}/exists`)
 			if (!response.ok) throw new Error(await response.text())
+
+			const exists: boolean = await response.json()
+			if (!exists) throw new Error('Game not found')
 
 			await goto(`/${code}`)
 		} catch (error) {
