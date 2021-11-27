@@ -1,5 +1,6 @@
 import { sql } from 'slonik'
 
+import Game from '../index.js'
 import type SavedGame from '../../../shared/game/saved/index.js'
 import type RawSavedAnswer from './answer.js'
 import TOP_PLAYERS from '../../../shared/game/player/top.js'
@@ -7,18 +8,22 @@ import pool from '../../pool.js'
 import fromCache from '../../cache/from.js'
 import cacheGame from './cache.js'
 import log from '../../log/value.js'
+import saveGameNext from './next.js'
 
 const getSavedGame = async (code: string) => {
 	log('Fetching game from database', code)
 
-	const cachedGame = await fromCache<SavedGame>(code)
+	let game: SavedGame | null = null
+	let cached = false
 
-	if (cachedGame) {
-		log('Found game in cache', cachedGame.code)
-		return cachedGame
+	game = await fromCache<SavedGame>(code)
+
+	if (game) {
+		log('Found game in cache', game.code)
+		cached = true
 	}
 
-	const game = await pool.connect(async connection => {
+	game = await pool.connect(async connection => {
 		const games = await connection.any<SavedGame>(
 			sql`SELECT next
 				FROM games
@@ -60,7 +65,21 @@ const getSavedGame = async (code: string) => {
 		return game
 	})
 
-	if (game) void cacheGame(game)
+	if (!game) return
+
+	if (game.next !== null && !(await Game.exists(game.next))) {
+		log('game.next no longer exists, deleting', game.next, game.code)
+
+		// game.next no longer exists
+		game.next = null
+
+		// Caches the game automatically
+		await saveGameNext(game)
+	} else if (!cached) {
+		// Game was retrieved from the database
+		void cacheGame(game)
+	}
+
 	return game
 }
 

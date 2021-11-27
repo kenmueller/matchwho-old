@@ -39,9 +39,13 @@ const onNext = (game: Game, player: Player) => {
 	for (const player of [...game.players, ...game.spectators])
 		player.socket.send(data)
 
-	saveGameNext(game).catch(error => {
-		logError('Attempted to set game.next in database', error, game.code)
-	})
+	saveGameNext(game.saved)
+		.then(() => {
+			log('Set game.next in database', game.results.next, game.code)
+		})
+		.catch(error => {
+			logError('Attempted to set game.next in database', error, game.code)
+		})
 }
 
 export default onNext
