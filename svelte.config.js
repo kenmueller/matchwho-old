@@ -22,9 +22,7 @@ const config = {
 		immutable: true
 	},
 	kit: {
-		adapter: adapter({
-			precompress: true
-		}),
+		adapter: adapter(),
 		files: {
 			assets: 'public',
 			hooks: 'lib/hooks',
