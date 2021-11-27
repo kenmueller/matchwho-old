@@ -2,6 +2,7 @@ import { sql } from 'slonik'
 
 import type Game from '../index.js'
 import pool from '../../pool.js'
+import cacheGame from './cache.js'
 import log from '../../log/value.js'
 
 const saveGameNext = async (game: Game) => {
@@ -17,6 +18,8 @@ const saveGameNext = async (game: Game) => {
 				WHERE code = ${game.code}`
 		)
 	})
+
+	void cacheGame(game.saved)
 }
 
 export default saveGameNext

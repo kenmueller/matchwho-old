@@ -1,30 +1,24 @@
 import { sql } from 'slonik'
-import Cache from 'node-cache'
 
 import type SavedGame from '../../../shared/game/saved/index.js'
 import type RawSavedAnswer from './answer.js'
 import TOP_PLAYERS from '../../../shared/game/player/top.js'
 import pool from '../../pool.js'
+import fromCache from '../../cache/from.js'
+import cacheGame from './cache.js'
 import log from '../../log/value.js'
-import logError from '../../log/error.js'
 
-const cache = new Cache({
-	stdTTL: 10 * 60,
-	checkperiod: 10 * 60,
-	useClones: false
-})
-
-const getSavedGame = (code: string) => {
+const getSavedGame = async (code: string) => {
 	log('Fetching game from database', code)
 
-	const cachedGame = cache.get<SavedGame>(code)
+	const cachedGame = await fromCache<SavedGame>(code)
 
 	if (cachedGame) {
 		log('Found game in cache', cachedGame.code)
 		return cachedGame
 	}
 
-	return pool.connect(async connection => {
+	const game = await pool.connect(async connection => {
 		const games = await connection.any<SavedGame>(
 			sql`SELECT next
 				FROM games
@@ -63,11 +57,11 @@ const getSavedGame = (code: string) => {
 			question && (question.answers ??= []).push(answer)
 		}
 
-		if (!cache.set(game.code, game))
-			logError('Attempted to cache game', game.code)
-
 		return game
 	})
+
+	if (game) void cacheGame(game)
+	return game
 }
 
 export default getSavedGame

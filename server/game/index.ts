@@ -18,6 +18,7 @@ import type GameMeta from '../../shared/game/meta.js'
 import type GameTurn from '../../shared/game/turn/index.js'
 import type InternalGameTurn from './turn.js'
 import type GameResults from '../../shared/game/results/index.js'
+import type SavedGame from '../../shared/game/saved/index.js'
 import saveGame from './saved/create.js'
 import onStart from './message/start.js'
 import onQuestion from './message/question.js'
@@ -120,6 +121,19 @@ export default class Game {
 		return {
 			...this.results,
 			players: this.results.players?.slice(0, TOP_PLAYERS) ?? null
+		}
+	}
+
+	get saved(): SavedGame {
+		const { code, slimResults: results } = this
+		const { next, players, questions } = results
+
+		return {
+			code,
+			next,
+			players:
+				players?.map(({ id, name, points }) => ({ id, name, points })) ?? [],
+			questions
 		}
 	}
 
