@@ -47,6 +47,9 @@ const config = {
 						replacement: '$1'
 					}
 				]
+			},
+			build: {
+				assetsInlineLimit: 0
 			}
 		}
 	}
