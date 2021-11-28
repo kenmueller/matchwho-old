@@ -8,7 +8,7 @@ import getSavedGame from './saved/get.js'
 import log from '../log/value.js'
 import logError from '../log/error.js'
 
-const RESERVED_CODES = ['__vite_ping', 'favicon.ico']
+const RESERVED_CODES = ['__vite_ping', 'robots.txt', 'favicon.ico']
 
 const router = Router()
 
@@ -18,7 +18,7 @@ router.get('/:code', async (req, res, next) => {
 
 	if (RESERVED_CODES.includes(code)) {
 		log('Skipping intercepting game page request', code)
-		return
+		return next()
 	}
 
 	try {
