@@ -13,7 +13,6 @@ const handle: Handle<Record<string, never>, unknown> = async ({
 	return {
 		...response,
 		headers: {
-			...response.headers,
 			'content-security-policy': security.value,
 			'cache-control': 'no-store',
 			'expect-ct': '0',
@@ -24,7 +23,8 @@ const handle: Handle<Record<string, never>, unknown> = async ({
 			'x-download-options': 'noopen',
 			'x-frame-options': 'SAMEORIGIN',
 			'x-permitted-cross-domain-policies': 'none',
-			'x-xss-protection': '0'
+			'x-xss-protection': '0',
+			...response.headers
 		},
 		body:
 			typeof response.body === 'string'

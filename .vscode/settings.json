@@ -6,5 +6,8 @@
 	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"javascript.preferences.importModuleSpecifierEnding": "js",
 	"typescript.preferences.importModuleSpecifierEnding": "js",
-	"svelte.enable-ts-plugin": true
+	"svelte.enable-ts-plugin": true,
+	"[svg]": {
+		"editor.defaultFormatter": "jock.svg"
+	}
 }

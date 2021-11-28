@@ -30,7 +30,7 @@ const config = {
 			hooks: 'lib/hooks',
 			lib: 'lib',
 			routes: 'routes',
-			serviceWorker: 'lib/service-worker',
+			serviceWorker: 'lib/worker',
 			template: 'lib/index.html'
 		},
 		vite: {

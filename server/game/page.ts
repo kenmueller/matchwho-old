@@ -8,7 +8,12 @@ import getSavedGame from './saved/get.js'
 import log from '../log/value.js'
 import logError from '../log/error.js'
 
-const RESERVED_CODES = ['__vite_ping', 'robots.txt', 'favicon.ico']
+const RESERVED_CODES = [
+	'__vite_ping',
+	'manifest.webmanifest',
+	'robots.txt',
+	'favicon.ico'
+]
 
 const router = Router()
 
