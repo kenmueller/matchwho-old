@@ -31,7 +31,12 @@ const getContentSecurityPolicy = (): ContentSecurityPolicy => {
 				'default-src': [SELF],
 				'connect-src': [SELF, SOCKET_ORIGIN.href],
 				'style-src': [SELF, ...(dev ? [INLINE] : [])],
-				'script-src': [SELF, nonce(nonceId), ANALYTICS_SCRIPT.href],
+				'script-src': [
+					SELF,
+					nonce(nonceId),
+					"'sha256-cXOZe05CqZ4xvGscU85F4K+8OEag6anwgMUZSpWB/WA='", // Service worker
+					ANALYTICS_SCRIPT.href
+				],
 				'img-src': [SELF, ANALYTICS_IMAGE.href],
 				'base-uri': [SELF],
 				'upgrade-insecure-requests': !dev
