@@ -10,6 +10,7 @@ import logError from '../log/error.js'
 
 const RESERVED_CODES = [
 	'__vite_ping',
+	'service-worker.js',
 	'manifest.webmanifest',
 	'robots.txt',
 	'favicon.ico'
