@@ -21,29 +21,19 @@ worker.addEventListener('install', event => {
 worker.addEventListener('activate', event => {
 	event.waitUntil(
 		caches.keys().then(async keys => {
-			await Promise.all(
-				keys.filter(key => key !== CACHE).map(key => caches.delete(key))
-			)
-
+			await Promise.all(keys.map(key => key === CACHE || caches.delete(key)))
 			await worker.clients.claim()
 		})
 	)
 })
 
 worker.addEventListener('fetch', event => {
-	if (event.request.method !== 'GET' || event.request.headers.has('range'))
-		return
+	if (event.request.method !== 'GET') return
 
 	const url = new URL(event.request.url)
-	if (!url.protocol.startsWith('http')) return
+	if (url.origin !== self.location.origin) return
 
-	if (
-		url.hostname === self.location.hostname &&
-		url.port !== self.location.port
-	)
-		return
-
-	const asset = url.host === self.location.host && files.includes(url.pathname)
+	const asset = files.includes(url.pathname)
 	if (event.request.cache === 'only-if-cached' && !asset) return
 
 	event.respondWith((asset ? stale : revalidate)(event.request))
