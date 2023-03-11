@@ -1,26 +1,26 @@
 import { DatabaseTransactionConnectionType, sql } from 'slonik'
 
 import type Game from '../index.js'
-import pool from '../../pool.js'
-import cacheGame from './cache.js'
+// import pool from '../../pool.js'
+// import cacheGame from './cache.js'
 import log from '../../log/value.js'
 
 const saveGame = async (game: Game) => {
 	log('Creating game in database', game.code)
 
-	await pool.connect(async connection => {
-		await connection.transaction(async connection => {
-			await connection.query(
-				sql`INSERT INTO
-					games (code, next)
-					VALUES (${game.code}, ${game.results.next})`
-			)
+	// await pool.connect(async connection => {
+	// 	await connection.transaction(async connection => {
+	// 		await connection.query(
+	// 			sql`INSERT INTO
+	// 				games (code, next)
+	// 				VALUES (${game.code}, ${game.results.next})`
+	// 		)
 
-			await saveBranches(game, connection)
-		})
-	})
+	// 		await saveBranches(game, connection)
+	// 	})
+	// })
 
-	void cacheGame(game.saved)
+	// void cacheGame(game.saved)
 }
 
 const saveBranches = async (

@@ -33,7 +33,7 @@
 
 <main data-min-players={disabled ? MIN_PLAYERS : undefined}>
 	{#if isLeader}
-		<button aria-busy={loading} {disabled} on:click={start}> Start </button>
+		<button aria-busy={loading} {disabled} on:click={start}>Start</button>
 	{:else}
 		<Message>
 			Waiting {leader ? `for ${leader.name} ` : ''}to start the game
